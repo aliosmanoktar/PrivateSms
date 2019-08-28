@@ -6,4 +6,5 @@
     <color name="tools_theme">#00838F</color>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="dark">#192025</color>
 </resources>
