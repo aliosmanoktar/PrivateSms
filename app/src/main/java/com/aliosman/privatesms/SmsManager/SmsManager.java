@@ -8,41 +8,42 @@ package com.aliosman.privatesms.SmsManager;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
-import android.util.Log;
 
+import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Conversation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SmsManager {
 
     private String TAG = getClass().getName();
 
+    public static final String _conversationString="content://mms-sms/conversations";
+    public static final String _SmsString="content://sms/";
+    public static final String _address="address";
+    public static final String _id="_id";
+    public static final String _body="body";
+    public static final String _seen="seen";
+    public static final String _date="date";
+    public static final String _status="status";
+    public static final String _read="read";
+    public static final String _type="type";
+    public static final String _person="person";
 
-    public List<Conversation> GetConversation(Context ctx){
-        List<Conversation> items = new ArrayList<>();
-        Uri mSmsinboxQueryUri = Uri.parse("content://mms-sms/conversations/");
-        Cursor cursor1 = ctx.getContentResolver().query(mSmsinboxQueryUri,new String[] { "_id", "thread_id", "address", "person", "date","body", "type" }, null, null, null);
-        String[] columns = new String[] { "address", "person", "date", "body","type" };
-        if (cursor1.getCount() > 0) {
-            String count = Integer.toString(cursor1.getCount());
-            while (cursor1.moveToNext()){
-                String address = cursor1.getString(cursor1.getColumnIndex(columns[0]));
-                String name = cursor1.getString(cursor1.getColumnIndex(columns[1]));
-                long date = cursor1.getLong(cursor1.getColumnIndex(columns[2]));
-                String msg = cursor1.getString(cursor1.getColumnIndex(columns[3]));
-                int type = cursor1.getInt(cursor1.getColumnIndex(columns[4]));
-                Conversation item=new Conversation()
-                        .setMessage(msg)
-                        .setName(name)
-                        .setNumber(address)
-                        .setSent(type==2)
-                        .setDate(date);
-                items.add(item);
-                Log.e(TAG, "GetConversation: "+item.toString());
-            }
+    public List<Conversation> getConversation(Context ctx){
+        List<Conversation> items= new ArrayList<>();
+        Cursor cursor = ctx.getContentResolver().query(Uri.parse(_conversationString),null, null, null, null);
+        while (cursor.moveToNext()){
+            String body = cursor.getString(cursor.getColumnIndex(_body));
+            long TimeStamp=Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
+            String address=cursor.getString(cursor.getColumnIndex(_address));
+            String name = cursor.getString(cursor.getColumnIndex(_person));
+            items.add(new Conversation().setMessage(body).setDate(TimeStamp).setNumber(address).setName(name));
         }
+        Collections.sort(items,new ConversationComparator());
         return items;
     }
+
 }

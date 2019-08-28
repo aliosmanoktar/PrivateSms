@@ -32,7 +32,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_convarsation);
         recyclerView=findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ConversationAdapter(new SmsManager().GetConversation(this),null));
+        recyclerView.setAdapter(new ConversationAdapter(new SmsManager().getConversation(this),null));
     }
 
 }
