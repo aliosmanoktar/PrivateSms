@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -41,7 +40,6 @@ public class AvatarView extends FrameLayout {
         Drawable d =getResources().getDrawable(R.drawable.circle);
         d.setTint(getResources().getColor(R.color.tools_theme));
         setBackground(d);
-        Log.e(TAG, "UpdateView: ");
         TextView txt=findViewById(R.id.avatar_view_initial);
         txt.setTextColor(getResources().getColor(R.color.white));
         ImageView icon = findViewById(R.id.avatatar_view_icon);
@@ -53,5 +51,10 @@ public class AvatarView extends FrameLayout {
             txt.setVisibility(VISIBLE);
             icon.setVisibility(GONE);
         }
+    }
+
+    public void SetUser(String name){
+        this.name=name;
+        UpdateView();
     }
 }
