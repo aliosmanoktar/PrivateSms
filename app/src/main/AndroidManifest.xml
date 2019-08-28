@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aliosman.privatesms">
+
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
         android:allowBackup="true"
@@ -9,7 +17,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.MessageActivity"></activity>
+        <activity android:name=".Activity.MessageActivity" />
         <activity android:name=".Activity.ConvarsationActivity" />
         <activity android:name=".Activity.MainActivity">
             <intent-filter>
@@ -19,7 +27,4 @@
             </intent-filter>
         </activity>
     </application>
-
-    <uses-permission android:name="android.permission.READ_SMS" />
-
 </manifest>

@@ -1,27 +1,28 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019. Ali Osman OKTAR
   ~ aliosmanoktar@gmail.com
   -->
 
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.MessageActivity"
     android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@color/dark">
+
         <ImageView
             android:id="@+id/message_activity.back"
             android:padding="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back_white_24dp"/>
+            android:src="@drawable/ic_arrow_back_white_24dp" />
+
         <TextView
             android:layout_marginEnd="15dp"
             android:layout_weight="1"
@@ -35,35 +36,40 @@
             android:textColor="@color/white"
             tools:text="@tools:sample/lorem/random"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
         <LinearLayout
 
             android:id="@+id/message_activity.menu_layout"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_call_white_24dp"/>
+                android:src="@drawable/ic_call_white_24dp" />
+
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_more_vert_white_24dp"/>
+                android:src="@drawable/ic_more_vert_white_24dp" />
         </LinearLayout>
     </LinearLayout>
+
     <RelativeLayout
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <android.support.v7.widget.RecyclerView
             app:layoutManager="android.support.v7.widget.LinearLayoutManager"
             app:reverseLayout="true"
 
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
     </RelativeLayout>
+
     <LinearLayout
 
         android:backgroundTint="@color/dark"
