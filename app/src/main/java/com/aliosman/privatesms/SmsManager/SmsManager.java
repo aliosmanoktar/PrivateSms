@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.aliosman.privatesms.ConversationComparator;
+import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 
 import java.util.ArrayList;
@@ -40,7 +41,15 @@ public class SmsManager {
             long TimeStamp=Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
             String address=cursor.getString(cursor.getColumnIndex(_address));
             String name = cursor.getString(cursor.getColumnIndex(_person));
-            items.add(new Conversation().setMessage(body).setDate(TimeStamp).setNumber(address).setName(name));
+            items.add(new Conversation()
+                    .setMessage(body)
+                    .setDate(TimeStamp)
+                    .setContact(
+                            new Contact()
+                                    .setNumber(address)
+                                    .setName(name)
+                    )
+            );
         }
         Collections.sort(items,new ConversationComparator());
         return items;

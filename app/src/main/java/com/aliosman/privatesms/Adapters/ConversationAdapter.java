@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019. Ali Osman OKTAR
+ * aliosmanoktar@gmail.com
+ */
+
 package com.aliosman.privatesms.Adapters;
 
 import android.support.annotation.NonNull;
@@ -34,8 +39,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         Conversation item = items.get(i);
         viewHolder.message.setText(item.getMessage());
-        viewHolder.name.setText(item.getNameText());
-        viewHolder.avatarView.SetUser(item.getName());
+        viewHolder.name.setText(item.getContact().getNameText());
+        viewHolder.avatarView.SetUser(item.getContact().getName());
         viewHolder.date.setText(getDateText(item.getDate()));
     }
     private String getDateText(long date){

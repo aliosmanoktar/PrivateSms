@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019. Ali Osman OKTAR
+ * aliosmanoktar@gmail.com
+ */
+
 package com.aliosman.privatesms.Activity;
 
 import android.os.Bundle;
@@ -6,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
+import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.SmsManager;
@@ -18,12 +24,13 @@ public class ConvarsationActivity extends AppCompatActivity {
 
     private List<Conversation> items = new ArrayList<Conversation>(
             Arrays.asList(
-                    new Conversation().setMessage("test").setName("ali"),
-                    new Conversation().setMessage("test").setName("ali"),
-                    new Conversation().setMessage("test").setName("ali"),
-                    new Conversation().setMessage("test").setName("ali"),
-                    new Conversation().setMessage("test").setName("ali"),
-                    new Conversation().setMessage("test").setName("ali"))
+                    new Conversation().setMessage("test").setContact(new Contact().setName("Ali")),
+                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
+                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
+                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
+                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
+                    new Conversation().setMessage("test").setContact(new Contact().setName("ali"))
+            )
     );
     private RecyclerView recyclerView;
     @Override
