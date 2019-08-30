@@ -62,13 +62,22 @@ public class MessageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
         number=getIntent().getExtras().getString(AppContents.number_extras);
+
         txt_name=findViewById(R.id.message_activity_name);
         back=findViewById(R.id.message_activity_back);
-        back.setOnClickListener(back_click);
+        recyclerView = findViewById(R.id.message_activity_recylerview);
+
         txt_name.setText(smsmanager.getName(this,number));
         cursor= smsmanager.getMessageCursor(this,number);
-        recyclerView = findViewById(R.id.message_activity_recylerview);
         recyclerView.setAdapter(new MessageAdapter(items));
+
+        back.setOnClickListener(back_click);
+
+        SetReyclerListener();
+        LoadMessage();
+    }
+
+    private void SetReyclerListener(){
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -83,7 +92,6 @@ public class MessageActivity extends AppCompatActivity {
                 }
             }
         });
-        LoadMessage();
     }
 
     private void LoadMessage(){
@@ -96,6 +104,7 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
     }
+
     private View.OnClickListener back_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
