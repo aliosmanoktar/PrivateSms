@@ -5,12 +5,15 @@
 
 package com.aliosman.privatesms.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
+import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Listener.RecyclerViewListener;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
@@ -39,7 +42,16 @@ public class ConvarsationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_convarsation);
         recyclerView=findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ConversationAdapter(new SmsManager().getConversation(this),null));
+        recyclerView.setAdapter(new ConversationAdapter(new SmsManager().getConversation(this),conversation_click));
     }
-
+    private RecyclerViewListener<Conversation> conversation_click = new RecyclerViewListener<Conversation>() {
+        @Override
+        public void Onclick(Conversation item) {
+            Intent i = new Intent(getBaseContext(),MessageActivity.class);
+            Bundle bundle=new Bundle();
+            bundle.putString(AppContents.number_extras,item.getContact().getNumber());
+            i.putExtras(bundle);
+            startActivity(i);
+        }
+    };
 }

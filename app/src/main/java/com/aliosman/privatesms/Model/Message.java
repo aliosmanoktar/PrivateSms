@@ -5,11 +5,23 @@
 
 package com.aliosman.privatesms.Model;
 
+import android.text.format.DateUtils;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class Message {
+    private int ID;
     private Contact contact;
     private String message;
     private long time;
     private boolean sent;
+
+    public Message setID(int ID) {
+        this.ID = ID;
+        return this;
+    }
 
     public Message setContact(Contact contact) {
         this.contact = contact;
@@ -45,5 +57,26 @@ public class Message {
 
     public boolean isSent() {
         return sent;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public String getTimeString(){
+        DateFormat dateFormat =
+                DateUtils.isToday(time) ?
+                        new SimpleDateFormat("HH:mm") :
+                        (IsYear() ?
+                                new SimpleDateFormat("dd/MM\nHH:mm") :
+                                new SimpleDateFormat("dd/MM/yyyy\nHH:mm") );
+        return dateFormat.format(new Date(time));
+    }
+
+    private boolean IsYear(){
+        Date date = new Date(time);
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR);
     }
 }

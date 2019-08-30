@@ -37,11 +37,17 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        Conversation item = items.get(i);
+        final Conversation item = items.get(i);
         viewHolder.message.setText(item.getMessage());
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact().getName());
         viewHolder.date.setText(getDateText(item.getDate()));
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.Onclick(item);
+            }
+        });
     }
     private String getDateText(long date){
         return new SimpleDateFormat("dd MMM").format(new Date(date));

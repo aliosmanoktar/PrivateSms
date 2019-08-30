@@ -38,6 +38,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         viewHolder.message.setText(items.get(i).getMessage());
+        viewHolder.date.setText(items.get(i).getTimeString());
     }
 
     @Override
@@ -46,10 +47,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView message;
+        private TextView message,date;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            message=itemView.findViewById(R.id.item_message);
+            message=itemView.findViewById(R.id.item_message_body);
+            date=itemView.findViewById(R.id.item_message_date);
         }
     }
 }

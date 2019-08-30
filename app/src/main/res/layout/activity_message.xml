@@ -46,11 +46,13 @@
             android:layout_height="match_parent">
 
             <ImageView
+                android:id="@+id/message_activity.call"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_call_white_24dp" />
 
             <ImageView
+                android:id="@+id/message_activity.more"
                 android:layout_width="30dp"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_more_vert_white_24dp" />

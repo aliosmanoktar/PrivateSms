@@ -16,7 +16,6 @@ public class Conversation {
     private boolean isSent;
     private long date;
 
-
     public Conversation setContact(Contact contact) {
         this.contact = contact;
         return this;
@@ -41,11 +40,9 @@ public class Conversation {
         return date;
     }
 
-
     public String getMessage() {
         return message;
     }
-
 
     public boolean isSent() {
         return isSent;

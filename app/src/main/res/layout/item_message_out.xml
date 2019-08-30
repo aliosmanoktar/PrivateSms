@@ -12,7 +12,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
-        android:id="@+id/item_message"
+        android:id="@+id/item_message_body"
         android:backgroundTint="@color/dark"
         android:layout_alignParentEnd="true"
         android:textColor="@color/white"
@@ -24,11 +24,13 @@
         android:layout_marginStart="60dp"/>
 
     <TextView
+        android:id="@+id/item_message_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:paddingEnd="8dp"
-        android:text="21:48"
+        android:text="ali\n21:48"
+        android:textAlignment="center"
         android:textColor="@color/hint_color"
         android:textSize="10sp" />
 </RelativeLayout>

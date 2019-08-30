@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2019. Ali Osman OKTAR
+ * aliosmanoktar@gmail.com
+ */
+
 package com.aliosman.privatesms;
 
 import android.content.Context;
@@ -54,7 +59,7 @@ public class AvatarView extends FrameLayout {
     }
 
     public void SetUser(String name){
-        this.name=name;
+        this.name=name.toUpperCase();
         UpdateView();
     }
 }
