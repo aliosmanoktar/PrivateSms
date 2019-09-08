@@ -9,17 +9,25 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 public class SentReceiver extends BroadcastReceiver {
     private String TAG = getClass().getName();
     @Override
     public void onReceive(Context context, Intent arg1) {
-        Log.e(TAG,new Gson().toJson(arg1));
+        //Log.e(TAG,new Gson().toJson(arg1));
+        Uri uri = getUri(arg1);
+        Log.e(TAG, "onReceive: "+uri );
+
+        Intent i = new Intent("broadCastName");
+        // Data you need to pass to activity
+        i.putExtra("message_uri",uri.toString());
+        context.sendBroadcast(i);
+
         switch (getResultCode()) {
             case Activity.RESULT_OK:
                 Toast.makeText(context, "Sms Send", Toast.LENGTH_SHORT)
@@ -43,5 +51,19 @@ public class SentReceiver extends BroadcastReceiver {
                 break;
         }
 
+    }
+    private Uri getUri(Intent intent) {
+        Uri uri;
+        try {
+            uri = Uri.parse(intent.getStringExtra("message_uri"));
+
+            if (uri.equals("")) {
+                return null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+
+        return uri;
     }
 }

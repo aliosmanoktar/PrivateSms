@@ -6,7 +6,6 @@
 package com.aliosman.privatesms;
 
 import com.aliosman.privatesms.Model.Conversation;
-
 import java.util.Comparator;
 import java.util.Date;
 
