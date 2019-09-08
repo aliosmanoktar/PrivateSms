@@ -7,17 +7,18 @@ package com.aliosman.privatesms.Activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
 import com.aliosman.privatesms.AppContents;
-import com.aliosman.privatesms.Listener.RecyclerViewListener;
+import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
-import com.aliosman.privatesms.SmsManager.SmsManager;
+import com.aliosman.privatesms.SmsManager.MySmsManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +43,10 @@ public class ConvarsationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_convarsation);
         recyclerView=findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(new ConversationAdapter(new SmsManager().getConversation(this),conversation_click));
+        recyclerView.setAdapter(new ConversationAdapter(new MySmsManager().getConversation(this),conversation_click));
+        setDefaultSmsApp();
     }
+
     private RecyclerViewListener<Conversation> conversation_click = new RecyclerViewListener<Conversation>() {
         @Override
         public void Onclick(Conversation item) {
@@ -54,4 +57,12 @@ public class ConvarsationActivity extends AppCompatActivity {
             startActivity(i);
         }
     };
+
+    private void setDefaultSmsApp() {
+        Intent intent =
+                new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+        intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                getPackageName());
+        startActivity(intent);
+    }
 }

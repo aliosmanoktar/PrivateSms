@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SmsManager {
+public class MySmsManager {
 
     private String TAG = getClass().getName();
 
@@ -97,4 +97,5 @@ public class SmsManager {
             name=address;
         return name;
     }
+
 }

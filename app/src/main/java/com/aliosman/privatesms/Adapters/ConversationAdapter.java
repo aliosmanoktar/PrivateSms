@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.aliosman.privatesms.AvatarView;
-import com.aliosman.privatesms.Listener.RecyclerViewListener;
+import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 
