@@ -5,6 +5,7 @@
 
 package com.aliosman.privatesms.Adapters;
 
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -39,6 +40,8 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         final Conversation item = items.get(i);
         viewHolder.message.setText(item.getMessage());
+        if (!item.isRead())
+            viewHolder.message.setTypeface(null, Typeface.BOLD);
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact().getName());
         viewHolder.date.setText(getDateText(item.getDate()));

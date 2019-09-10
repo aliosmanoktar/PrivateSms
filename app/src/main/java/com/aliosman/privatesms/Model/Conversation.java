@@ -15,7 +15,7 @@ public class Conversation {
     private String message;
     private boolean isSent;
     private long date;
-
+    private boolean read;
     public Conversation setContact(Contact contact) {
         this.contact = contact;
         return this;
@@ -36,6 +36,11 @@ public class Conversation {
         return this;
     }
 
+    public Conversation setRead(boolean read) {
+        this.read = read;
+        return this;
+    }
+
     public long getDate() {
         return date;
     }
@@ -50,6 +55,10 @@ public class Conversation {
 
     public Contact getContact() {
         return contact;
+    }
+
+    public boolean isRead() {
+        return read;
     }
 
     @NonNull

@@ -25,7 +25,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
-import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Receiver.DeliverReceiver;
 import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.Model.Message;
@@ -69,6 +68,7 @@ public class MessageActivity extends AppCompatActivity {
     private MySmsManager smsmanager =new MySmsManager();
     private TextView txt_name;
     private ImageView back,send;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +90,7 @@ public class MessageActivity extends AppCompatActivity {
         SetReyclerListener();
         LoadMessage();
         ClearNotification();
+        smsmanager.ReadAllMessage(this,number);
 
     }
 
@@ -145,6 +146,13 @@ public class MessageActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver(sentReceiver, new IntentFilter("broadCastName"));
         registerReceiver(smsReceiver,new IntentFilter(number));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(sentReceiver);
+        unregisterReceiver(smsReceiver);
     }
 
     private View.OnClickListener back_click = new View.OnClickListener() {

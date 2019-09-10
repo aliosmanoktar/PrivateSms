@@ -50,9 +50,11 @@ public class MySmsManager {
             String body = cursor.getString(cursor.getColumnIndex(_body));
             long TimeStamp=Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
             String address=cursor.getString(cursor.getColumnIndex(_address));
+            int read = cursor.getInt(cursor.getColumnIndex(_read));
             items.add(new Conversation()
                     .setMessage(body)
                     .setDate(TimeStamp)
+                    .setRead(read==1)
                     .setContact(
                             new Contact()
                                     .setNumber(address)
@@ -118,7 +120,7 @@ public class MySmsManager {
         String name="";
         if(Character.isAlphabetic(address.charAt(0)))
             name= address;
-        else if(cs.getCount()>0){
+        else if(cs!=null && cs.getCount()>0){
             cs.moveToFirst();
             name= cs.getString(cs.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
         }
@@ -159,9 +161,11 @@ public class MySmsManager {
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, messageBody, sentPI, deliveredPI);
     }
+
     public Uri getMessageUriWithID(int ID){
         return Uri.parse(_SmsString+ID);
     }
+
     public int ReciveMessage(Context ctx,String phoneNumber,String messageBody){
         Calendar cal = Calendar.getInstance();
         Message message= new Message()
@@ -174,6 +178,7 @@ public class MySmsManager {
                 );
         return AddMessage(ctx,message);
     }
+
     private int AddMessage(Context ctx,Message message){
         ContentValues values = new ContentValues();
         values.put(_address, message.getContact().getNumber());
@@ -193,6 +198,7 @@ public class MySmsManager {
         query.close();
         return messageId;
     }
+
     /**
      * Eksik var
      * Random olarak oluşturmak yerine conversation eklenerek onun id'si Kullanılmalı
@@ -222,4 +228,11 @@ public class MySmsManager {
         Random random = new Random();
         return random.nextLong();
     }
+
+    public void ReadAllMessage(Context ctx,String phoneNumber){
+        ContentValues values = new ContentValues();
+        values.put(_read, 1);
+        ctx.getContentResolver().update(Uri.parse(_SmsString), values, _address+" = '"+phoneNumber+"'", null);
+    }
+
 }
