@@ -130,9 +130,10 @@ public class MySmsManager {
     /**
      * Parçalı gönderme eklenecek
      * @param ctx
-     * @param message
+     * @param messageBody
+     * @param phoneNumber
      */
-    public void sendSms(Context ctx, Message message){
+    public void sendSms(Context ctx,String messageBody,String phoneNumber){
 
         /*Calendar cal = Calendar.getInstance();
         ContentValues values = new ContentValues();
@@ -142,6 +143,16 @@ public class MySmsManager {
         values.put(_read, 1);
         values.put(_type, 4);
         long threadId=getThreadID(ctx,phoneNumber);*/
+        Calendar cal = Calendar.getInstance();
+        Message message = new Message()
+                .setMessage(messageBody)
+                .setSent(true)
+                .setType(4)
+                .setTime(cal.getTimeInMillis() )
+                .setRead(true)
+                .setContact(
+                        new Contact()
+                                .setNumber(phoneNumber));
         int messageId = AddMessage(ctx,message);
 
         /*Uri messageUri = ctx.getContentResolver().insert(Uri.parse(_SmsString), values);
@@ -165,12 +176,23 @@ public class MySmsManager {
                 deliveredIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(message.getContact().getNumber(), null, message.getMessage(), sentPI, deliveredPI);
+        sms.sendTextMessage(phoneNumber, null, messageBody, sentPI, deliveredPI);
     }
     public Uri getMessageUriWithID(int ID){
         return Uri.parse(_SmsString+ID);
     }
-
+    public int ReciveMessage(Context ctx,String phoneNumber,String messageBody){
+        Calendar cal = Calendar.getInstance();
+        Message message= new Message()
+                .setRead(false)
+                .setType(1)
+                .setMessage(messageBody)
+                .setTime(cal.getTimeInMillis())
+                .setContact(
+                        new Contact().setNumber(phoneNumber)
+                );
+        return AddMessage(ctx,message);
+    }
     private int AddMessage(Context ctx,Message message){
         ContentValues values = new ContentValues();
         values.put(_address, message.getContact().getNumber());

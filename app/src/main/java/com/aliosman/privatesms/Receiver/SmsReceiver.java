@@ -9,9 +9,8 @@ import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationManagerCompat;
 import android.telephony.SmsMessage;
-import android.util.Log;
+import com.aliosman.privatesms.SmsManager.MySmsManager;
 
 public class SmsReceiver extends BroadcastReceiver {
     private String TAG = getClass().getName();
@@ -19,14 +18,14 @@ public class SmsReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Object[] smsExtra = (Object[]) intent.getExtras().get("pdus");
         String body = "";
-        String addres="";
+        String phoneNumber="";
         for (int i = 0; i < smsExtra.length; ++i) {
             SmsMessage sms = SmsMessage.createFromPdu((byte[]) smsExtra[i]);
-            addres=sms.getOriginatingAddress();
+            phoneNumber=sms.getOriginatingAddress();
             body += sms.getMessageBody();
         }
-
-        Notification notification = new Notification.Builder(context)
+        new MySmsManager().ReciveMessage(context,phoneNumber,body);
+        /*Notification notification = new Notification.Builder(context)
                 .setContentText(body)
                 .setContentTitle("New Message")
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
@@ -36,6 +35,6 @@ public class SmsReceiver extends BroadcastReceiver {
         context.sendBroadcast(i);
         Log.e(TAG, "onReceive: " );
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        notificationManagerCompat.notify(1, notification);
+        notificationManagerCompat.notify(1, notification);*/
     }
 }

@@ -125,14 +125,7 @@ public class MessageActivity extends AppCompatActivity {
 
         registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
 
-        smsmanager.sendSms(this,new Message()
-                .setMessage(message)
-                .setContact(
-                        new Contact()
-                                .setNumber(phoneNumber))
-                .setSent(true)
-                .setType(4)
-                .setRead(true));
+        smsmanager.sendSms(this,message,phoneNumber);
 
     }
 
