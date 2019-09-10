@@ -1,3 +1,10 @@
+<!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+
 <resources>
     <string name="app_name">PrivateSms</string>
+    <string name="tag_position"></string>
+    <string name="tag_item"></string>
 </resources>

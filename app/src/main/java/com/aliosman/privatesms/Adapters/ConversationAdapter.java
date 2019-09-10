@@ -20,13 +20,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
+public class ConversationAdapter extends BaseSelectedAdapter<Conversation, ConversationAdapter.ViewHolder> {
     private List<Conversation> items;
+    private String TAG = getClass().getName();
     private RecyclerViewListener<Conversation> listener;
-
     public ConversationAdapter(List<Conversation> items, RecyclerViewListener<Conversation> listener) {
-        this.items = items;
+        super(items);
+        this.items=items;
         this.listener = listener;
+        setListener(listener);
     }
 
     @NonNull
@@ -37,6 +39,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+        super.onBindViewHolder(viewHolder, i);
         final Conversation item = items.get(i);
         viewHolder.message.setText(item.getMessage());
         if (!item.isRead()) {
@@ -44,15 +47,16 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             viewHolder.count.setVisibility(View.VISIBLE);
             viewHolder.count.setText(item.getCount()+"");
         }
+        viewHolder.itemView.setTag(item);
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact().getName());
         viewHolder.date.setText(getDateText(item.getDate()));
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                listener.Onclick(item);
-            }
-        });
+
+        if (isSelect(item)){
+            viewHolder.date.setText("select");
+        }
+        viewHolder.itemView.setOnClickListener(this);
+        viewHolder.itemView.setOnLongClickListener(this);
     }
 
     private String getDateText(long date){
@@ -64,7 +68,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         return items.size();
     }
 
-    class ViewHolder extends android.support.v7.widget.RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder{
 
         private TextView name;
         private TextView message;
