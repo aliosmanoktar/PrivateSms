@@ -90,7 +90,7 @@ public class MessageActivity extends AppCompatActivity {
         SetReyclerListener();
         LoadMessage();
         ClearNotification();
-        smsmanager.ReadAllMessage(this,number);
+        smsmanager.readAllMessage(this,number);
 
     }
 

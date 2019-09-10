@@ -16,7 +16,6 @@ import com.aliosman.privatesms.AvatarView;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -40,8 +39,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         final Conversation item = items.get(i);
         viewHolder.message.setText(item.getMessage());
-        if (!item.isRead())
+        if (!item.isRead()) {
             viewHolder.message.setTypeface(null, Typeface.BOLD);
+            viewHolder.count.setVisibility(View.VISIBLE);
+            viewHolder.count.setText(item.getCount()+"");
+        }
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact().getName());
         viewHolder.date.setText(getDateText(item.getDate()));
@@ -52,9 +54,11 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             }
         });
     }
+
     private String getDateText(long date){
         return new SimpleDateFormat("dd MMM").format(new Date(date));
     }
+
     @Override
     public int getItemCount() {
         return items.size();
@@ -66,6 +70,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         private TextView message;
         private AvatarView avatarView;
         private TextView date;
+        private TextView count;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -73,6 +78,7 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
             message=itemView.findViewById(R.id.conversation_item_message);
             avatarView=itemView.findViewById(R.id.conversation_item_avatar);
             date=itemView.findViewById(R.id.conversation_item_date);
+            count=itemView.findViewById(R.id.conversation_item_count);
         }
     }
 }

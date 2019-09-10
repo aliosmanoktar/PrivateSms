@@ -37,6 +37,7 @@ public class MySmsManager {
     private static final String _body="body";
     private static final String _seen="seen";
     private static final String _date="date";
+    private static final String _msgCount ="msg_count";
     private static final String _status="status";
     private static final String _read="read";
     private static final String _type="type";
@@ -55,6 +56,7 @@ public class MySmsManager {
                     .setMessage(body)
                     .setDate(TimeStamp)
                     .setRead(read==1)
+                    .setCount(getNonReadSmsCount(ctx,address))
                     .setContact(
                             new Contact()
                                     .setNumber(address)
@@ -229,10 +231,14 @@ public class MySmsManager {
         return random.nextLong();
     }
 
-    public void ReadAllMessage(Context ctx,String phoneNumber){
+    public void readAllMessage(Context ctx, String phoneNumber){
         ContentValues values = new ContentValues();
         values.put(_read, 1);
         ctx.getContentResolver().update(Uri.parse(_SmsString), values, _address+" = '"+phoneNumber+"'", null);
     }
 
+    public int getNonReadSmsCount(Context ctx,String phoneNumber){
+        Cursor cur = ctx.getContentResolver().query(Uri.parse(_SmsString),null,_address+" = '"+phoneNumber+"' and read=0",null,null);
+        return cur.getCount();
+    }
 }

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+
 <LinearLayout
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -54,6 +59,19 @@
                 android:ellipsize="end"
                 android:lines="1"
                 tools:text="@tools:sample/lorem/random"/>
+            <TextView
+                android:visibility="gone"
+                android:id="@+id/conversation_item.count"
+                android:ellipsize="end"
+                android:lines="1"
+                android:layout_marginStart="10dp"
+                android:text=""
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/tools_theme"
+                android:background="@drawable/circle"
+                android:layout_width="24dp"
+                android:layout_height="24dp"/>
         </LinearLayout>
     </LinearLayout>
 
