@@ -38,14 +38,15 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         MySmsManager manager=new MySmsManager();
         int id = manager.ReciveMessage(context,phoneNumber,body);
-        ShowNotification(context,body,phoneNumber,manager.getName(context,phoneNumber));
+        int notificationID = ShowNotification(context,body,phoneNumber,manager.getName(context,phoneNumber));
         Intent i = new Intent(phoneNumber);
         Bundle bu=new Bundle();
         bu.putInt(AppContents.messageId_extras,id);
+        bu.putInt(AppContents.notificationId_extras,notificationID);
         i.putExtras(bu);
         context.sendBroadcast(i);
     }
-    private void ShowNotification(Context ctx,String body,String address,String name){
+    private int ShowNotification(Context ctx,String body,String address,String name){
         Intent intent = new Intent(ctx,MessageActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(AppContents.number_extras,address);
@@ -68,6 +69,8 @@ public class SmsReceiver extends BroadcastReceiver {
             mChannel.setShowBadge(true);
             notificationManager.createNotificationChannel(mChannel);
         }
-        notificationManager.notify(new Random().nextInt(), notificationBuilder.build());
+        int NotificationID = new Random().nextInt();
+        notificationManager.notify(address,NotificationID, notificationBuilder.build());
+        return NotificationID;
     }
 }

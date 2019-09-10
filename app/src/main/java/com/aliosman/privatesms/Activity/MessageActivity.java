@@ -5,12 +5,15 @@
 
 package com.aliosman.privatesms.Activity;
 
+import android.app.NotificationManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -86,6 +89,7 @@ public class MessageActivity extends AppCompatActivity {
 
         SetReyclerListener();
         LoadMessage();
+        ClearNotification();
 
     }
 
@@ -171,6 +175,7 @@ public class MessageActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             load=true;
             int id = intent.getExtras().getInt(AppContents.messageId_extras);
+            int notificationID=intent.getExtras().getInt(AppContents.notificationId_extras);
             Message message=smsmanager.getMessage(smsmanager.getMessageUriWithID(id),context);
             items.add(0,message);
             recyclerView.post(new Runnable() {
@@ -180,7 +185,21 @@ public class MessageActivity extends AppCompatActivity {
                     recyclerView.getAdapter().notifyDataSetChanged();
                 }
             });
+            clearNotification(notificationID);
             Log.e(TAG, "onReceive: Sms Receiver");
         }
     };
+
+    private void clearNotification(int notificationID) {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(notificationID);
+    }
+
+    private void ClearNotification(){
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            for (StatusBarNotification notification : notificationManager.getActiveNotifications())
+                if (notification.getTag().equals(number))
+                    notificationManager.cancel(notification.getTag(),notification.getId());
+    }
 }
