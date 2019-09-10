@@ -87,7 +87,7 @@ public class MySmsManager {
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(_id));
             long date = cursor.getLong(cursor.getColumnIndexOrThrow(_date));
             String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
-            boolean send = cursor.getInt(cursor.getColumnIndex(_type))==2;
+            boolean send = cursor.getInt(cursor.getColumnIndex(_type)) != 1;
             items.add(new Message()
                     .setMessage(body)
                     .setTime(date)
@@ -131,27 +131,28 @@ public class MySmsManager {
      * Parçalı gönderme eklenecek
      * @param ctx
      * @param message
-     * @param phoneNumber
      */
-    public void sendSms(Context ctx, String message, String phoneNumber){
+    public void sendSms(Context ctx, Message message){
 
-        Calendar cal = Calendar.getInstance();
+        /*Calendar cal = Calendar.getInstance();
         ContentValues values = new ContentValues();
-        values.put(_address, phoneNumber);
+        values.put(_address, message.getContact().);
         values.put(_body, message);
         values.put(_date, cal.getTimeInMillis() + "");
         values.put(_read, 1);
         values.put(_type, 4);
-        long threadId=getThreadID(ctx,phoneNumber);
-        values.put(_thread_id, threadId);
-        Uri messageUri = ctx.getContentResolver().insert(Uri.parse(_SmsString), values);
+        long threadId=getThreadID(ctx,phoneNumber);*/
+        int messageId = AddMessage(ctx,message);
+
+        /*Uri messageUri = ctx.getContentResolver().insert(Uri.parse(_SmsString), values);
         Cursor query = ctx.getContentResolver().query(messageUri, new String[] {_id}, null, null, null);
         int messageId = -1;
         if (query != null && query.moveToFirst()) {
             messageId = query.getInt(0);
             query.close();
-        }
+        }*/
 
+        Uri messageUri = getMessageUriWithID(messageId);
         Intent sentIntent = new Intent(SENT);
         sentIntent.putExtra("message_uri", messageUri == null ? "" : messageUri.toString());
 
@@ -164,9 +165,31 @@ public class MySmsManager {
                 deliveredIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, message, sentPI, deliveredPI);
+        sms.sendTextMessage(message.getContact().getNumber(), null, message.getMessage(), sentPI, deliveredPI);
+    }
+    public Uri getMessageUriWithID(int ID){
+        return Uri.parse(_SmsString+ID);
     }
 
+    private int AddMessage(Context ctx,Message message){
+        ContentValues values = new ContentValues();
+        values.put(_address, message.getContact().getNumber());
+        values.put(_body, message.getMessage());
+        values.put(_date, message.getTime() + "");
+        values.put(_read, message.isRead()? 1 : 0);
+        values.put(_type, message.getType());
+        long threadId=getThreadID(ctx,message.getContact().getNumber());
+        values.put(_thread_id, threadId);
+        Uri messageUri = ctx.getContentResolver().insert(Uri.parse(_SmsString), values);
+        Cursor query = ctx.getContentResolver().query(messageUri, new String[] {_id}, null, null, null);
+        int messageId =-1;
+        if (query != null && query.moveToFirst()) {
+            messageId = query.getInt(0);
+            query.close();
+        }
+        query.close();
+        return messageId;
+    }
     /**
      * Eksik var
      * Random olarak oluşturmak yerine conversation eklenerek onun id'si Kullanılmalı

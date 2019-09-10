@@ -17,6 +17,8 @@ public class Message {
     private String message;
     private long time;
     private boolean sent;
+    private int type;
+    private boolean read;
 
     public Message setID(int ID) {
         this.ID = ID;
@@ -40,6 +42,27 @@ public class Message {
 
     public Message setSent(boolean sent) {
         this.sent = sent;
+        return this;
+    }
+
+    /**
+     * @param type
+     * MESSAGE_TYPE_ALL    = 0;
+     * MESSAGE_TYPE_INBOX  = 1;
+     * MESSAGE_TYPE_SENT   = 2;
+     * MESSAGE_TYPE_DRAFT  = 3;
+     * MESSAGE_TYPE_OUTBOX = 4;
+     * MESSAGE_TYPE_FAILED = 5; // for failed outgoing messages
+     * MESSAGE_TYPE_QUEUED = 6; // for messages to send later
+     * @return
+     */
+    public Message setType(int type) {
+        this.type = type;
+        return this;
+    }
+
+    public Message setRead(boolean read) {
+        this.read = read;
         return this;
     }
 
@@ -78,5 +101,13 @@ public class Message {
         Calendar calendar=Calendar.getInstance();
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR);
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public boolean isRead() {
+        return read;
     }
 }

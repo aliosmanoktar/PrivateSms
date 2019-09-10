@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Receiver.DeliverReceiver;
 import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.Model.Message;
@@ -34,7 +35,6 @@ public class MessageActivity extends AppCompatActivity {
     BroadcastReceiver sendBroadcastReceiver = new SentReceiver();
     BroadcastReceiver deliveryBroadcastReciever = new DeliverReceiver();
 
-    String sms_sent="Sms Gönderildi";
     private List<Message> items = new ArrayList<>(
     /*Arrays.asList(new Message[]{
                     new Message().setMessage("test").setSent(false),
@@ -121,13 +121,18 @@ public class MessageActivity extends AppCompatActivity {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 
-
-
         registerReceiver(sendBroadcastReceiver, new IntentFilter(SENT));
 
         registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
 
-        smsmanager.sendSms(this,message,phoneNumber);
+        smsmanager.sendSms(this,new Message()
+                .setMessage(message)
+                .setContact(
+                        new Contact()
+                                .setNumber(phoneNumber))
+                .setSent(true)
+                .setType(4)
+                .setRead(true));
 
     }
 
@@ -142,6 +147,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(sentReceiver, new IntentFilter("broadCastName"));
+        registerReceiver(smsReceiver,new IntentFilter(number));
     }
 
     private View.OnClickListener back_click = new View.OnClickListener() {
@@ -166,4 +172,10 @@ public class MessageActivity extends AppCompatActivity {
         }
     };
 
+    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.e(TAG, "onReceive: Sms Receiver");
+        }
+    };
 }
