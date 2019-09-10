@@ -132,7 +132,7 @@ public class MessageActivity extends AppCompatActivity {
     private View.OnClickListener send_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            sendSMS("55552155542","SmsContentTest23");
+            sendSMS(number,"SmsContentTest23");
         }
     };
 
@@ -153,7 +153,8 @@ public class MessageActivity extends AppCompatActivity {
     private BroadcastReceiver sentReceiver =  new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent ıntent) {
-            /*Uri uri = Uri.parse(ıntent.getStringExtra("message_uri"));
+            load=true;
+            Uri uri = Uri.parse(ıntent.getStringExtra("message_uri"));
             items.add(0,smsmanager.getMessage(uri,getBaseContext()));
             recyclerView.post(new Runnable() {
                 @Override
@@ -161,13 +162,24 @@ public class MessageActivity extends AppCompatActivity {
                     load=false;
                     recyclerView.getAdapter().notifyDataSetChanged();
                 }
-            });*/
+            });
         }
     };
 
     private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            load=true;
+            int id = intent.getExtras().getInt(AppContents.messageId_extras);
+            Message message=smsmanager.getMessage(smsmanager.getMessageUriWithID(id),context);
+            items.add(0,message);
+            recyclerView.post(new Runnable() {
+                @Override
+                public void run() {
+                    load=false;
+                    recyclerView.getAdapter().notifyDataSetChanged();
+                }
+            });
             Log.e(TAG, "onReceive: Sms Receiver");
         }
     };

@@ -18,6 +18,7 @@ import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsMessage;
 import com.aliosman.privatesms.Activity.MessageActivity;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
 import java.util.Random;
 
@@ -35,23 +36,30 @@ public class SmsReceiver extends BroadcastReceiver {
             phoneNumber=sms.getOriginatingAddress();
             body += sms.getMessageBody();
         }
-        new MySmsManager().ReciveMessage(context,phoneNumber,body);
-        ShowNotification(context,body,phoneNumber);
+        MySmsManager manager=new MySmsManager();
+        int id = manager.ReciveMessage(context,phoneNumber,body);
+        ShowNotification(context,body,phoneNumber,manager.getName(context,phoneNumber));
+        Intent i = new Intent(phoneNumber);
+        Bundle bu=new Bundle();
+        bu.putInt(AppContents.messageId_extras,id);
+        i.putExtras(bu);
+        context.sendBroadcast(i);
     }
-    private void ShowNotification(Context ctx,String body,String address){
+    private void ShowNotification(Context ctx,String body,String address,String name){
         Intent intent = new Intent(ctx,MessageActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(AppContents.number_extras,address);
         intent.putExtras(bundle);
         PendingIntent pendingIntent= PendingIntent.getActivity(ctx,0,intent,PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx,ChannelID)
-                .setSmallIcon(android.R.drawable.ic_dialog_alert)
-                .setContentTitle(address)
+                .setSmallIcon(R.drawable.ic_message)
+                .setContentTitle(name)
                 .setContentText(body)
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setFullScreenIntent(pendingIntent,true);
+                .setOngoing(true)
+                .setContentIntent(pendingIntent);
         NotificationManager notificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {

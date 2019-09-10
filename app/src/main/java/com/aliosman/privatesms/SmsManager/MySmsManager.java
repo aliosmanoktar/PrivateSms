@@ -15,7 +15,6 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
-
 import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
@@ -87,11 +86,11 @@ public class MySmsManager {
             int id = cursor.getInt(cursor.getColumnIndexOrThrow(_id));
             long date = cursor.getLong(cursor.getColumnIndexOrThrow(_date));
             String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
-            boolean send = cursor.getInt(cursor.getColumnIndex(_type)) != 1;
+            int type = cursor.getInt(cursor.getColumnIndex(_type));
             items.add(new Message()
                     .setMessage(body)
                     .setTime(date)
-                    .setSent(send)
+                    .setType(type)
                     .setID(id)
             );
         }
@@ -104,11 +103,12 @@ public class MySmsManager {
         int id = cursor.getInt(cursor.getColumnIndexOrThrow(_id));
         long date = cursor.getLong(cursor.getColumnIndexOrThrow(_date));
         String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
-        boolean send = cursor.getInt(cursor.getColumnIndex(_type))==2;
+        int type = cursor.getInt(cursor.getColumnIndex(_type));
+
         return new Message()
                 .setMessage(body)
                 .setTime(date)
-                .setSent(send)
+                .setType(type)
                 .setID(id);
     }
 
@@ -134,19 +134,9 @@ public class MySmsManager {
      * @param phoneNumber
      */
     public void sendSms(Context ctx,String messageBody,String phoneNumber){
-
-        /*Calendar cal = Calendar.getInstance();
-        ContentValues values = new ContentValues();
-        values.put(_address, message.getContact().);
-        values.put(_body, message);
-        values.put(_date, cal.getTimeInMillis() + "");
-        values.put(_read, 1);
-        values.put(_type, 4);
-        long threadId=getThreadID(ctx,phoneNumber);*/
         Calendar cal = Calendar.getInstance();
         Message message = new Message()
                 .setMessage(messageBody)
-                .setSent(true)
                 .setType(4)
                 .setTime(cal.getTimeInMillis() )
                 .setRead(true)
@@ -154,15 +144,6 @@ public class MySmsManager {
                         new Contact()
                                 .setNumber(phoneNumber));
         int messageId = AddMessage(ctx,message);
-
-        /*Uri messageUri = ctx.getContentResolver().insert(Uri.parse(_SmsString), values);
-        Cursor query = ctx.getContentResolver().query(messageUri, new String[] {_id}, null, null, null);
-        int messageId = -1;
-        if (query != null && query.moveToFirst()) {
-            messageId = query.getInt(0);
-            query.close();
-        }*/
-
         Uri messageUri = getMessageUriWithID(messageId);
         Intent sentIntent = new Intent(SENT);
         sentIntent.putExtra("message_uri", messageUri == null ? "" : messageUri.toString());

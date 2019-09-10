@@ -16,7 +16,6 @@ public class Message {
     private Contact contact;
     private String message;
     private long time;
-    private boolean sent;
     private int type;
     private boolean read;
 
@@ -37,11 +36,6 @@ public class Message {
 
     public Message setTime(long time) {
         this.time = time;
-        return this;
-    }
-
-    public Message setSent(boolean sent) {
-        this.sent = sent;
         return this;
     }
 
@@ -79,7 +73,7 @@ public class Message {
     }
 
     public boolean isSent() {
-        return sent;
+        return type!=1;
     }
 
     public int getID() {
