@@ -5,7 +5,10 @@
 
 package com.aliosman.privatesms.Activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +46,12 @@ public class ConvarsationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        registerReceiver(smsReceiver,new IntentFilter(AppContents.conversationBroadcast));
+        ReplaceScreen();
+    }
+
+
+    private void ReplaceScreen(){
         recyclerView.setAdapter(new ConversationAdapter(new MySmsManager().getConversation(this),conversation_click));
     }
 
@@ -64,4 +73,11 @@ public class ConvarsationActivity extends AppCompatActivity {
                 getPackageName());
         startActivity(intent);
     }
+
+    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ReplaceScreen();
+        }
+    };
 }

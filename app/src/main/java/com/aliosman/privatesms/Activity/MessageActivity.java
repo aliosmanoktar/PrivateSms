@@ -21,6 +21,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.aliosman.privatesms.Adapters.MessageAdapter;
@@ -67,6 +68,7 @@ public class MessageActivity extends AppCompatActivity {
     private Cursor cursor;
     private MySmsManager smsmanager =new MySmsManager();
     private TextView txt_name;
+    private EditText edit_message;
     private ImageView back,send;
 
     @Override
@@ -79,6 +81,7 @@ public class MessageActivity extends AppCompatActivity {
         back=findViewById(R.id.message_activity_back);
         recyclerView = findViewById(R.id.message_activity_recylerview);
         send=findViewById(R.id.message_activity_send);
+        edit_message= findViewById(R.id.message_activity_input_message);
 
         txt_name.setText(smsmanager.getName(this,number));
         cursor= smsmanager.getMessageCursor(this,number);
@@ -134,10 +137,13 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Düzeltilmesi Gerek
+     */
     private View.OnClickListener send_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            sendSMS(number,"SmsContentTest23");
+            sendSMS(number,edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString());
         }
     };
 

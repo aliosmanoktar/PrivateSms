@@ -24,8 +24,7 @@ import java.util.Random;
 
 public class SmsReceiver extends BroadcastReceiver {
     private String TAG = getClass().getName();
-    private String ChannelID="10561";
-    private String ChannelName="Messages2";
+
     @Override
     public void onReceive(Context context, Intent intent) {
         Object[] smsExtra = (Object[]) intent.getExtras().get("pdus");
@@ -45,14 +44,16 @@ public class SmsReceiver extends BroadcastReceiver {
         bu.putInt(AppContents.notificationId_extras,notificationID);
         i.putExtras(bu);
         context.sendBroadcast(i);
+        context.sendBroadcast(new Intent(AppContents.conversationBroadcast));
     }
+
     private int ShowNotification(Context ctx,String body,String address,String name){
         Intent intent = new Intent(ctx,MessageActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(AppContents.number_extras,address);
         intent.putExtras(bundle);
         PendingIntent pendingIntent= PendingIntent.getActivity(ctx,0,intent,PendingIntent.FLAG_ONE_SHOT);
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx,ChannelID)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx,AppContents.ChannelID)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(name)
                 .setContentText(body)
@@ -64,8 +65,8 @@ public class SmsReceiver extends BroadcastReceiver {
         NotificationManager notificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationBuilder.setChannelId(ChannelID);
-            NotificationChannel mChannel = new NotificationChannel(ChannelID, ChannelName,NotificationManager.IMPORTANCE_HIGH);
+            notificationBuilder.setChannelId(AppContents.ChannelID);
+            NotificationChannel mChannel = new NotificationChannel(AppContents.ChannelID, AppContents.ChannelName,NotificationManager.IMPORTANCE_HIGH);
             mChannel.setShowBadge(true);
             notificationManager.createNotificationChannel(mChannel);
         }
