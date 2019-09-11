@@ -13,4 +13,5 @@
     <color name="black">#000000</color>
     <color name="dark">#192025</color>
     <color name="hint_color">#AD192025</color>
+    <color name="select_color">#6AFFFFFF</color>
 </resources>

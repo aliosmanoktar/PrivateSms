@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.aliosman.privatesms.AvatarView;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
+import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import java.text.SimpleDateFormat;
@@ -24,11 +25,12 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
     private List<Conversation> items;
     private String TAG = getClass().getName();
     private RecyclerViewListener<Conversation> listener;
-    public ConversationAdapter(List<Conversation> items, RecyclerViewListener<Conversation> listener) {
+    public ConversationAdapter(List<Conversation> items, RecyclerViewListener<Conversation> listener, RecylerSelectedListener selectedListener) {
         super(items);
         this.items=items;
         this.listener = listener;
-        setListener(listener);
+        setClicklistener(listener);
+        setSelectedListener(selectedListener);
     }
 
     @NonNull
@@ -53,7 +55,9 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         viewHolder.date.setText(getDateText(item.getDate()));
 
         if (isSelect(item)){
-            viewHolder.date.setText("select");
+            viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.dark));
+        }else{
+            viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.white));
         }
         viewHolder.itemView.setOnClickListener(this);
         viewHolder.itemView.setOnLongClickListener(this);

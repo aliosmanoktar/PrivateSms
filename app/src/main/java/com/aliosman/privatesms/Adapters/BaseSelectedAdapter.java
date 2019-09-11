@@ -7,9 +7,9 @@ package com.aliosman.privatesms.Adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
+import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.R;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +19,21 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
     private List<T> items;
     private boolean select=false;
     private String TAG = getClass().getName();
-    private RecyclerViewListener<T> listener;
+    private RecyclerViewListener<T> clicklistener;
+    private RecylerSelectedListener selectedListener;
+
 
     public BaseSelectedAdapter(List<T> items){
         this.items=items;
         selected=new ArrayList<>();
     }
 
-    public void setListener(RecyclerViewListener<T> listener) {
-        this.listener = listener;
+    public void setClicklistener(RecyclerViewListener<T> clicklistener) {
+        this.clicklistener = clicklistener;
+    }
+
+    public void setSelectedListener(RecylerSelectedListener selectedListener) {
+        this.selectedListener = selectedListener;
     }
 
     @Override
@@ -41,8 +47,8 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
         if (select){
             onLongClick(v);
         }else{
-            if (listener!=null)
-                listener.Onclick((T) v.getTag(R.string.tag_item));
+            if (clicklistener !=null)
+                clicklistener.Onclick((T) v.getTag(R.string.tag_item));
         }
     }
 
@@ -50,14 +56,16 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
     public boolean onLongClick(View v) {
         T item = (T)v.getTag(R.string.tag_item);
         int position = (int)v.getTag(R.string.tag_position);
-        if (!select)
+        if (!select){
+            selectedListener.SelectedStart();
             select=true;
-
+        }
         if (isSelect(item)){
             removeSelect(item,position);
         }else{
             setSelect(item,position);
         }
+        selectedListener.Selected(selected.size(),position);
         return false;
     }
 
@@ -93,10 +101,16 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
      * Güncellenecek
      * Pozisyonlara göre silme yapılacak
      */
-    public void RemoveSelected(){
-        Log.e(TAG, "RemoveSelected: " );
+    private void RemoveSelected(){
         selected.clear();
         select=false;
         notifyDataSetChanged();
+        selectedListener.SelectedEnded(null);
+    }
+
+    public void EndSelect(){
+        select=false;
+        notifyDataSetChanged();
+        selectedListener.SelectedEnded(items);
     }
 }

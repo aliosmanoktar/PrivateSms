@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:visible="false"
+        android:id="@+id/menu_remove"
+        android:title="test"
+        android:icon="@drawable/ic_delete"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/menu_add"
+        android:title="add"
+        android:icon="@drawable/ic_call_white_24dp"
+        app:showAsAction="always"
+        />
+</menu>
