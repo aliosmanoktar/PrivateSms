@@ -19,8 +19,6 @@ import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.Model.Message;
-
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -245,10 +243,7 @@ public class MySmsManager {
     }
 
     public void RemoveConversations(Context ctx,List<Conversation> items){
-        for (Conversation item:
-             items) {
-            Log.e(TAG, "RemoveConversations: "+item.getContact());
-            ctx.getContentResolver().delete(Uri.parse(_SmsString),_address+"='"+item.getContact().getNumber()+"'",null);
-        }
+        for (Conversation item: items)
+            ctx.getContentResolver().delete(Uri.parse(_SmsString),_address+" = '"+item.getContact().getNumber()+"'",null);
     }
 }
