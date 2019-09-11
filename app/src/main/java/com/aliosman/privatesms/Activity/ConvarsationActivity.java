@@ -17,6 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
 import com.aliosman.privatesms.AppContents;
@@ -39,6 +41,7 @@ public class ConvarsationActivity extends AppCompatActivity {
                     new Conversation().setMessage("test").setContact(new Contact().setName("ali"))
             )
     );*/
+    private ConversationAdapter recylerAdapter=null;
     private TextView toolbar_title;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
@@ -52,7 +55,9 @@ public class ConvarsationActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         recyclerView=findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(recylerAdapter);
         setDefaultSmsApp();
+
     }
 
     @Override
@@ -67,10 +72,6 @@ public class ConvarsationActivity extends AppCompatActivity {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.conversation_select_menu,menu);
         return true;
-    }
-
-    private void ReplaceScreen(){
-        recyclerView.setAdapter(new ConversationAdapter(new MySmsManager().getConversation(this),conversation_click,selectedListener));
     }
 
     private RecyclerViewListener<Conversation> conversation_click = new RecyclerViewListener<Conversation>() {
@@ -97,15 +98,40 @@ public class ConvarsationActivity extends AppCompatActivity {
             toolbar.getMenu().findItem(R.id.menu_remove).setVisible(false);
             toolbar_title.setText(R.string.app_name);
             toolbar.setNavigationIcon(null);
+            if (items!=null)
+                RemoveConversations(items);
         }
 
         @Override
         public void SelectedStart() {
             toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
+            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    recylerAdapter.RemoveSelected();
+                }
+            });
             toolbar.getMenu().findItem(R.id.menu_add).setVisible(false);
             toolbar.getMenu().findItem(R.id.menu_remove).setVisible(true);
         }
     };
+
+    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ReplaceScreen();
+        }
+    };
+
+    /***
+     * Fix Edilmesi Gerek
+     */
+    private void ReplaceScreen(){
+        recylerAdapter=new ConversationAdapter(new MySmsManager().getConversation(this),conversation_click,selectedListener);
+        recyclerView.setAdapter(recylerAdapter);
+    }
+
+
     private void setDefaultSmsApp() {
         Intent intent =
                 new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
@@ -114,10 +140,15 @@ public class ConvarsationActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            ReplaceScreen();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_remove : recylerAdapter.EndSelect();
         }
-    };
+        return true;
+    }
+    private void RemoveConversations(List<Conversation> items){
+        new MySmsManager().RemoveConversations(this,items);
+        ReplaceScreen();
+    }
 }

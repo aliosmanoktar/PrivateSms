@@ -7,6 +7,7 @@ package com.aliosman.privatesms.Adapters;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
@@ -14,6 +15,11 @@ import com.aliosman.privatesms.R;
 import java.util.ArrayList;
 import java.util.List;
 
+/***
+ * Hata Var Düzeltilmesi gerek
+ * @param <T>
+ * @param <VH>
+ */
 public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> implements View.OnClickListener,View.OnLongClickListener {
     private List<T> selected;
     private List<T> items;
@@ -26,6 +32,11 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
     public BaseSelectedAdapter(List<T> items){
         this.items=items;
         selected=new ArrayList<>();
+    }
+
+    public void setItems(List<T> items) {
+        /*this.items = items;
+        RemoveSelected();*/
     }
 
     public void setClicklistener(RecyclerViewListener<T> clicklistener) {
@@ -72,9 +83,11 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
     protected void setSelect(T item, int position){
         selected.add(item);
         notifyItemChanged(position);
+        Log.e(TAG, "setSelect: "+position);
     }
 
     protected void removeSelect(T item,int position){
+        Log.e(TAG, "removeSelect: "+position );
         selected.remove(item);
         if (selected.size()==0)
             RemoveSelected();
@@ -101,7 +114,8 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
      * Güncellenecek
      * Pozisyonlara göre silme yapılacak
      */
-    private void RemoveSelected(){
+    public void RemoveSelected(){
+        Log.e(TAG, "RemoveSelected: " );
         selected.clear();
         select=false;
         notifyDataSetChanged();

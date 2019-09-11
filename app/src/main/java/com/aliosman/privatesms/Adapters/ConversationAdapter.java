@@ -8,6 +8,7 @@ package com.aliosman.privatesms.Adapters;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +23,22 @@ import java.util.Date;
 import java.util.List;
 
 public class ConversationAdapter extends BaseSelectedAdapter<Conversation, ConversationAdapter.ViewHolder> {
+
     private List<Conversation> items;
     private String TAG = getClass().getName();
     private RecyclerViewListener<Conversation> listener;
+
     public ConversationAdapter(List<Conversation> items, RecyclerViewListener<Conversation> listener, RecylerSelectedListener selectedListener) {
         super(items);
         this.items=items;
         this.listener = listener;
         setClicklistener(listener);
         setSelectedListener(selectedListener);
+    }
+
+    public void setItems(List<Conversation> items) {
+        super.setItems(items);
+        this.items = items;
     }
 
     @NonNull
