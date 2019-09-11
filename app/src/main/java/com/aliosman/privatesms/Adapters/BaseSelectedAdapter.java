@@ -125,6 +125,6 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
     public void EndSelect(){
         select=false;
         notifyDataSetChanged();
-        selectedListener.SelectedEnded(items);
+        selectedListener.SelectedEnded(selected);
     }
 }
