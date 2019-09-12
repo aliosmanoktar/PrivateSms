@@ -12,15 +12,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Message;
 import com.aliosman.privatesms.R;
 
 import java.util.List;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
+public class MessageAdapter extends BaseSelectedAdapter<Message,MessageAdapter.ViewHolder> {
     private final List<Message> items;
 
-    public MessageAdapter(List<Message> items) {
+    public MessageAdapter(List<Message> items, RecylerSelectedListener<Message> selectedListener) {
+        super(items);
+        setSelectedListener(selectedListener);
         this.items = items;
     }
 
@@ -37,8 +40,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.message.setText(items.get(i).getMessage());
-        viewHolder.date.setText(items.get(i).getTimeString());
+        super.onBindViewHolder(viewHolder,i);
+        Message item = items.get(i);
+        viewHolder.message.setText(item.getMessage());
+        viewHolder.date.setText(item.getTimeString());
+        if (isSelect(item)){
+            viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.colorAccent));
+        }else{
+            viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.white));
+        }
+        viewHolder.itemView.setOnClickListener(this);
+        viewHolder.itemView.setOnLongClickListener(this);
     }
 
     @Override

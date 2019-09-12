@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Receiver.DeliverReceiver;
 import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.Model.Message;
@@ -85,7 +86,7 @@ public class MessageActivity extends AppCompatActivity {
 
         txt_name.setText(smsmanager.getName(this,number));
         cursor= smsmanager.getMessageCursor(this,number);
-        recyclerView.setAdapter(new MessageAdapter(items));
+        recyclerView.setAdapter(new MessageAdapter(items,selectedListener));
 
         back.setOnClickListener(back_click);
         send.setOnClickListener(send_click);
@@ -203,7 +204,22 @@ public class MessageActivity extends AppCompatActivity {
             Log.e(TAG, "onReceive: Sms Receiver");
         }
     };
+    private RecylerSelectedListener<Message> selectedListener= new RecylerSelectedListener<Message>() {
+        @Override
+        public void Selected(int count, int position) {
 
+        }
+
+        @Override
+        public void SelectedEnded(List<Message> items) {
+
+        }
+
+        @Override
+        public void SelectedStart() {
+
+        }
+    };
     private void clearNotification(int notificationID) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationID);
