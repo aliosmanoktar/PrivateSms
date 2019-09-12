@@ -25,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.RECEIVE_SMS,
                     Manifest.permission.RECEIVE_MMS,
+                    Manifest.permission.CALL_PHONE
             }, 0);
         }
     }

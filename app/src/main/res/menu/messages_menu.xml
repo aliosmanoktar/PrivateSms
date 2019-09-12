@@ -8,16 +8,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/message_menu.info"
+        android:title="Bilgi"
+        android:icon="@drawable/ic_info_outline"
+        app:showAsAction="always"
         android:visible="false"
-        android:id="@+id/conversation_menu.remove"
-        android:title="test"
+        />
+
+    <item
+        android:id="@+id/message_menu.rempve"
+        android:title="Sil"
         android:icon="@drawable/ic_delete"
         app:showAsAction="always"
+        android:visible="false"
         />
+
     <item
-        android:id="@+id/menu_add"
-        android:title="add"
+        android:id="@+id/message_menu.call"
+        android:title="Ara"
         android:icon="@drawable/ic_call_white_24dp"
-        android:iconTint="@color/dark"
+        app:showAsAction="always"
         />
+
 </menu>

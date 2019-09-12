@@ -22,11 +22,13 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
@@ -112,55 +114,12 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void SetReyclerListener(){
-        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
-        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                totalItemCount = linearLayoutManager.getItemCount();
-                lastVisibleItem=linearLayoutManager.findLastVisibleItemPosition();
-                if (!load && lastVisibleItem==totalItemCount-1){
-                    LoadMessage();
-                    load=true;
-                    Log.e(TAG, "onScrolled: Add More");
-                }
-            }
-        });
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.messages_menu,menu);
+        return true;
     }
-
-    private void LoadMessage(){
-        items.addAll(smsmanager.getMessages(cursor));
-        recyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                load=false;
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
-        });
-    }
-
-    private void sendSMS(String phoneNumber, String message) {
-        String SENT = "SMS_SENT";
-        String DELIVERED = "SMS_DELIVERED";
-
-        registerReceiver(sendBroadcastReceiver, new IntentFilter(SENT));
-
-        registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
-
-        smsmanager.sendSms(this,message,phoneNumber);
-
-    }
-
-    /**
-     * Düzeltilmesi Gerek
-     */
-    private View.OnClickListener send_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-            sendSMS(contact.getNumber(),edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString());
-        }
-    };
 
     @Override
     protected void onResume() {
@@ -175,6 +134,26 @@ public class MessageActivity extends AppCompatActivity {
         unregisterReceiver(sentReceiver);
         unregisterReceiver(smsReceiver);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.message_menu_call:
+                CallNumber();
+                break;
+        }
+        return true;
+    }
+
+    /**
+     * Düzeltilmesi Gerek
+     */
+    private View.OnClickListener send_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            sendSMS(contact.getNumber(),edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString());
+        }
+    };
 
     private View.OnClickListener name_click = new View.OnClickListener() {
         @Override
@@ -225,6 +204,7 @@ public class MessageActivity extends AppCompatActivity {
             Log.e(TAG, "onReceive: Sms Receiver");
         }
     };
+
     private RecylerSelectedListener<Message> selectedListener= new RecylerSelectedListener<Message>() {
         @Override
         public void Selected(int count, int position) {
@@ -241,6 +221,46 @@ public class MessageActivity extends AppCompatActivity {
 
         }
     };
+
+    private void SetReyclerListener(){
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItemCount = linearLayoutManager.getItemCount();
+                lastVisibleItem=linearLayoutManager.findLastVisibleItemPosition();
+                if (!load && lastVisibleItem==totalItemCount-1){
+                    LoadMessage();
+                    load=true;
+                    Log.e(TAG, "onScrolled: Add More");
+                }
+            }
+        });
+    }
+
+    private void LoadMessage(){
+        items.addAll(smsmanager.getMessages(cursor));
+        recyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                load=false;
+                recyclerView.getAdapter().notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void sendSMS(String phoneNumber, String message) {
+        String SENT = "SMS_SENT";
+        String DELIVERED = "SMS_DELIVERED";
+
+        registerReceiver(sendBroadcastReceiver, new IntentFilter(SENT));
+
+        registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
+
+        smsmanager.sendSms(this,message,phoneNumber);
+
+    }
 
     private void ShowContact(){
         if (contact.getLookupKey().isEmpty()) {
@@ -259,6 +279,7 @@ public class MessageActivity extends AppCompatActivity {
                     ContactsContract.QuickContact.MODE_MEDIUM, null);
         }
     }
+
     private void clearNotification(int notificationID) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationID);
@@ -270,5 +291,10 @@ public class MessageActivity extends AppCompatActivity {
             for (StatusBarNotification notification : notificationManager.getActiveNotifications())
                 if (notification.getTag().equals(contact.getNumber()))
                     notificationManager.cancel(notification.getTag(),notification.getId());
+    }
+
+    private void CallNumber(){
+        Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + contact.getNumber()));
+        startActivity(intent);
     }
 }
