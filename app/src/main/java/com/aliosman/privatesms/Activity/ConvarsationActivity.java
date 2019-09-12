@@ -9,12 +9,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -59,7 +63,25 @@ public class ConvarsationActivity extends AppCompatActivity {
         setDefaultSmsApp();
 
     }
+    private String TAG = getClass().getName();
+    void tintMenuIcons(Menu menu)
+    {
+        MenuItem item;
+        int color;
 
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+
+        /*for(int i = 0; i < menu.size(); i++)
+        {
+            item  = menu.getItem(i);
+            color = getResources().getColor(R.color.white);
+
+            DrawableCompat.setTint(item.getIcon(), color);
+        }*/
+        for (int i = 0;i<menu.size();i++){
+            Log.e(TAG, "tintMenuIcons: "+menu.getItem(i).getTitle() );
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -71,6 +93,7 @@ public class ConvarsationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.conversation_select_menu,menu);
+        tintMenuIcons(menu);
         return true;
     }
 
@@ -79,7 +102,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         public void Onclick(Conversation item) {
             Intent i = new Intent(getBaseContext(),MessageActivity.class);
             Bundle bundle=new Bundle();
-            bundle.putString(AppContents.number_extras,item.getContact().getNumber());
+            bundle.putSerializable(AppContents.contact_extras,item.getContact());
             i.putExtras(bundle);
             startActivity(i);
         }

@@ -27,9 +27,9 @@ import java.util.Random;
 
 public class MySmsManager {
 
-    /***
-     * Değegleri String yerine index Olarak Güncelle
-     */
+    /**
+     * Değerleri String yerine index Olarak Güncelle
+     **/
     private final String TAG = getClass().getName();
     private final String SENT = "SMS_SENT";
     private final String DELIVERED = "SMS_DELIVERED";
@@ -64,9 +64,6 @@ public class MySmsManager {
                     .setCount(getNonReadSmsCount(ctx,address))
                     .setContact(
                             getContact(ctx,address)
-                            /*new Contact()
-                                    .setNumber(address)
-                                    .setName(getName(ctx,address))*/
                     )
             );
         }

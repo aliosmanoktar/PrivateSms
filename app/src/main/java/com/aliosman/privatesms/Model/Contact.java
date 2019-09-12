@@ -5,7 +5,9 @@
 
 package com.aliosman.privatesms.Model;
 
-public class Contact {
+import java.io.Serializable;
+
+public class Contact implements Serializable {
     private int ID;
     private String number;
     private String name;

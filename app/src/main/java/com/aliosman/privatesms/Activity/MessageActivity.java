@@ -13,20 +13,24 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.ContactsContract;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
+import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Receiver.DeliverReceiver;
 import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.Model.Message;
@@ -65,36 +69,46 @@ public class MessageActivity extends AppCompatActivity {
     int totalItemCount,lastVisibleItem;
     private String TAG = getClass().getName();
     private RecyclerView recyclerView;
-    private String number;
     private Cursor cursor;
     private MySmsManager smsmanager =new MySmsManager();
     private TextView txt_name;
     private EditText edit_message;
-    private ImageView back,send;
-
+    private ImageView send;
+    private Toolbar toolbar;
+    private Contact contact;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
-        number=getIntent().getExtras().getString(AppContents.number_extras);
+        contact= (Contact) getIntent().getExtras().getSerializable(AppContents.contact_extras);
+        if (contact==null){
+            String number = getIntent().getExtras().getString(AppContents.number_extras);
+            contact=smsmanager.getContact(this,number);
+        }
 
-        txt_name=findViewById(R.id.message_activity_name);
-        back=findViewById(R.id.message_activity_back);
+        toolbar=findViewById(R.id.message_activity_toolbar);
+        txt_name=toolbar.findViewById(R.id.message_activity_name);
+        toolbar.setTitle("");
+
         recyclerView = findViewById(R.id.message_activity_recylerview);
         send=findViewById(R.id.message_activity_send);
         edit_message= findViewById(R.id.message_activity_input_message);
 
-        txt_name.setText(smsmanager.getName(this,number));
-        cursor= smsmanager.getMessageCursor(this,number);
+        txt_name.setText(smsmanager.getName(this,contact.getNumber()));
+        cursor= smsmanager.getMessageCursor(this,contact.getNumber());
         recyclerView.setAdapter(new MessageAdapter(items,selectedListener));
+        setSupportActionBar(toolbar);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
 
-        back.setOnClickListener(back_click);
+        //back.setOnClickListener(back_click);
+        toolbar.setNavigationOnClickListener(back_click);
         send.setOnClickListener(send_click);
+        txt_name.setOnClickListener(name_click);
 
         SetReyclerListener();
         LoadMessage();
         ClearNotification();
-        smsmanager.readAllMessage(this,number);
+        smsmanager.readAllMessage(this,contact.getNumber());
 
     }
 
@@ -144,7 +158,7 @@ public class MessageActivity extends AppCompatActivity {
     private View.OnClickListener send_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            sendSMS(number,edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString());
+            sendSMS(contact.getNumber(),edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString());
         }
     };
 
@@ -152,7 +166,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(sentReceiver, new IntentFilter("broadCastName"));
-        registerReceiver(smsReceiver,new IntentFilter(number));
+        registerReceiver(smsReceiver,new IntentFilter(contact.getNumber()));
     }
 
     @Override
@@ -161,6 +175,13 @@ public class MessageActivity extends AppCompatActivity {
         unregisterReceiver(sentReceiver);
         unregisterReceiver(smsReceiver);
     }
+
+    private View.OnClickListener name_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            ShowContact();
+        }
+    };
 
     private View.OnClickListener back_click = new View.OnClickListener() {
         @Override
@@ -220,6 +241,24 @@ public class MessageActivity extends AppCompatActivity {
 
         }
     };
+
+    private void ShowContact(){
+        if (contact.getLookupKey().isEmpty()) {
+            Uri uri = Uri.parse("tel: "+contact.getNumber());
+            Intent intent =  new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
+
+            if (intent.resolveActivity(getPackageManager()) == null) {
+                intent = new Intent(Intent.ACTION_INSERT)
+                        .setType(ContactsContract.Contacts.CONTENT_TYPE)
+                        .putExtra(ContactsContract.Intents.Insert.PHONE, contact.getNumber());
+            }
+            startActivity(intent);
+        }else{
+            Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contact.getLookupKey());
+            ContactsContract.QuickContact.showQuickContact(this, txt_name, uri,
+                    ContactsContract.QuickContact.MODE_MEDIUM, null);
+        }
+    }
     private void clearNotification(int notificationID) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancel(notificationID);
@@ -229,7 +268,7 @@ public class MessageActivity extends AppCompatActivity {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             for (StatusBarNotification notification : notificationManager.getActiveNotifications())
-                if (notification.getTag().equals(number))
+                if (notification.getTag().equals(contact.getNumber()))
                     notificationManager.cancel(notification.getTag(),notification.getId());
     }
 }

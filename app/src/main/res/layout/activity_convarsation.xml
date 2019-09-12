@@ -15,7 +15,10 @@
         android:id="@+id/conversation_activity.toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dark">
+        android:background="@color/dark"
+        app:popupTheme="@style/AppThemeLL"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        >
         <TextView
             android:id="@+id/conversation_activity.toolbar_title"
             android:textSize="16sp"

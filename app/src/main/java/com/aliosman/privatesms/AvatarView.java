@@ -16,10 +16,7 @@ import android.widget.TextView;
 
 public class AvatarView extends FrameLayout {
 
-    private String lookupKey =  null;
     private String name = "ali";
-    private String address = null;
-    private String TAG = getClass().getName();
 
     public AvatarView(@NonNull Context context) {
         this(context,null);

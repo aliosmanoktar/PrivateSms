@@ -47,7 +47,7 @@ public class MessageAdapter extends BaseSelectedAdapter<Message,MessageAdapter.V
         if (isSelect(item)){
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.colorAccent));
         }else{
-            viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.white));
+            viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.transparent));
         }
         viewHolder.itemView.setOnClickListener(this);
         viewHolder.itemView.setOnLongClickListener(this);

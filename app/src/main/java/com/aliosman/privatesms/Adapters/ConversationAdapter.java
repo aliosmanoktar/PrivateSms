@@ -68,14 +68,14 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         if (isSelect(item)){
             viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.dark));
         }else{
-            viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.white));
+            viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.transparent));
         }
         viewHolder.itemView.setOnClickListener(this);
         viewHolder.itemView.setOnLongClickListener(this);
         viewHolder.avatarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (item.getContact().getNumber().equals(item.getContact().getNameText())) {
+                if (item.getContact().getLookupKey().isEmpty()) {
                     Uri uri = Uri.parse("tel: "+item.getContact().getNumber());
                     Intent intent =  new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
 
