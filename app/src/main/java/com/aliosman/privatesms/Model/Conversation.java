@@ -13,10 +13,15 @@ public class Conversation {
 
     private Contact contact;
     private String message;
-    private boolean isSent;
     private long date;
     private boolean read;
     private int count =0;
+    private int type;
+
+    public Conversation setType(int type) {
+        this.type = type;
+        return this;
+    }
 
     public Conversation setContact(Contact contact) {
         this.contact = contact;
@@ -25,11 +30,6 @@ public class Conversation {
 
     public Conversation setMessage(String message) {
         this.message = message;
-        return this;
-    }
-
-    public Conversation setSent(boolean sent) {
-        isSent = sent;
         return this;
     }
 
@@ -57,7 +57,7 @@ public class Conversation {
     }
 
     public boolean isSent() {
-        return isSent;
+        return type!=1;
     }
 
     public Contact getContact() {

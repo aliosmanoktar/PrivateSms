@@ -51,7 +51,7 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         super.onBindViewHolder(viewHolder, i);
         final Conversation item = items.get(i);
-        viewHolder.message.setText(item.getMessage());
+        viewHolder.message.setText(item.isSent() ? "Sen: "+item.getMessage() : item.getMessage());
         if (!item.isRead()) {
             viewHolder.message.setTypeface(null, Typeface.BOLD);
             viewHolder.count.setVisibility(View.VISIBLE);

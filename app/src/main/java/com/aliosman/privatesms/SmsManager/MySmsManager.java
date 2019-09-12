@@ -52,10 +52,12 @@ public class MySmsManager {
             long TimeStamp=Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
             String address=cursor.getString(cursor.getColumnIndex(_address));
             int read = cursor.getInt(cursor.getColumnIndex(_read));
+            int type = cursor.getInt(cursor.getColumnIndex(_type));
             items.add(new Conversation()
                     .setMessage(body)
                     .setDate(TimeStamp)
                     .setRead(read==1)
+                    .setType(type)
                     .setCount(getNonReadSmsCount(ctx,address))
                     .setContact(
                             new Contact()
