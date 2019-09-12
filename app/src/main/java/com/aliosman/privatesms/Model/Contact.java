@@ -9,6 +9,7 @@ public class Contact {
     private int ID;
     private String number;
     private String name;
+    private String lookupKey;
 
     public Contact setID(int ID) {
         this.ID = ID;
@@ -22,6 +23,11 @@ public class Contact {
 
     public Contact setName(String name) {
         this.name = name;
+        return this;
+    }
+
+    public Contact setLookupKey(String lookupKey) {
+        this.lookupKey = lookupKey;
         return this;
     }
 
@@ -39,5 +45,9 @@ public class Contact {
 
     public String getNameText() {
         return (name==null || name.isEmpty() )? number : name;
+    }
+
+    public String getLookupKey() {
+        return lookupKey;
     }
 }

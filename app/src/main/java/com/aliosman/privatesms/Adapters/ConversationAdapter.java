@@ -5,7 +5,10 @@
 
 package com.aliosman.privatesms.Adapters;
 
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -48,7 +51,7 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
         super.onBindViewHolder(viewHolder, i);
         final Conversation item = items.get(i);
         viewHolder.message.setText(item.isSent() ? "Sen: "+item.getMessage() : item.getMessage());
@@ -69,6 +72,26 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         }
         viewHolder.itemView.setOnClickListener(this);
         viewHolder.itemView.setOnLongClickListener(this);
+        viewHolder.avatarView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (item.getContact().getNumber().equals(item.getContact().getNameText())) {
+                    Uri uri = Uri.parse("tel: "+item.getContact().getNumber());
+                    Intent intent =  new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
+
+                    if (intent.resolveActivity(v.getContext().getPackageManager()) == null) {
+                        intent = new Intent(Intent.ACTION_INSERT)
+                                .setType(ContactsContract.Contacts.CONTENT_TYPE)
+                                .putExtra(ContactsContract.Intents.Insert.PHONE, item.getContact().getNumber());
+                    }
+                    v.getContext().startActivity(intent);
+                }else{
+                    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, item.getContact().getLookupKey());
+                    ContactsContract.QuickContact.showQuickContact(v.getContext(), v, uri,
+                            ContactsContract.QuickContact.MODE_MEDIUM, null);
+                }
+            }
+        });
     }
 
     private String getDateText(long date){

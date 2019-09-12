@@ -27,6 +27,9 @@ import java.util.Random;
 
 public class MySmsManager {
 
+    /***
+     * Değegleri String yerine index Olarak Güncelle
+     */
     private final String TAG = getClass().getName();
     private final String SENT = "SMS_SENT";
     private final String DELIVERED = "SMS_DELIVERED";
@@ -60,9 +63,10 @@ public class MySmsManager {
                     .setType(type)
                     .setCount(getNonReadSmsCount(ctx,address))
                     .setContact(
-                            new Contact()
+                            getContact(ctx,address)
+                            /*new Contact()
                                     .setNumber(address)
-                                    .setName(getName(ctx,address))
+                                    .setName(getName(ctx,address))*/
                     )
             );
         }
@@ -120,7 +124,7 @@ public class MySmsManager {
 
     public String getName(Context ctx, String address){
         Uri Nameuri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(address));
-        Cursor cs= ctx.getContentResolver().query(Nameuri, new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME}, ContactsContract.PhoneLookup.NUMBER+"='"+address+"'",null,null);
+        Cursor cs= ctx.getContentResolver().query(Nameuri, null, ContactsContract.PhoneLookup.NUMBER+"='"+address+"'",null,null);
         String name="";
         if(Character.isAlphabetic(address.charAt(0)))
             name= address;
@@ -133,6 +137,24 @@ public class MySmsManager {
         return name;
     }
 
+    public Contact getContact(Context ctx,String address){
+        Uri Nameuri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(address));
+        Cursor cs= ctx.getContentResolver().query(Nameuri, null, ContactsContract.PhoneLookup.NUMBER+"='"+address+"'",null,null);
+        String name="";
+        String lookoup="";
+        int id=-1;
+        if(Character.isAlphabetic(address.charAt(0)))
+            name= address;
+        else if(cs!=null && cs.getCount()>0){
+            cs.moveToFirst();
+            id=cs.getInt(cs.getColumnIndex(ContactsContract.PhoneLookup.CONTACT_ID));
+            lookoup=cs.getString(cs.getColumnIndex(ContactsContract.PhoneLookup.LOOKUP_KEY));
+            name= cs.getString(cs.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
+        }
+        else
+            name=address;
+        return new Contact().setLookupKey(lookoup).setNumber(address).setName(name).setID(id);
+    }
     /**
      * Parçalı gönderme eklenecek
      * @param ctx
