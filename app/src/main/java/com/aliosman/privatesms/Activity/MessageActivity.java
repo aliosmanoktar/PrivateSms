@@ -67,8 +67,9 @@ public class MessageActivity extends AppCompatActivity {
                     new Message().setMessage("Send").setSent(true),
             })*/
     );
+    private MessageAdapter messageAdapter;
     private boolean load=false;
-    int totalItemCount,lastVisibleItem;
+    private int totalItemCount,lastVisibleItem;
     private String TAG = getClass().getName();
     private RecyclerView recyclerView;
     private Cursor cursor;
@@ -78,6 +79,7 @@ public class MessageActivity extends AppCompatActivity {
     private ImageView send;
     private Toolbar toolbar;
     private Contact contact;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,11 +98,14 @@ public class MessageActivity extends AppCompatActivity {
         send=findViewById(R.id.message_activity_send);
         edit_message= findViewById(R.id.message_activity_input_message);
 
-        txt_name.setText(smsmanager.getName(this,contact.getNumber()));
+
         cursor= smsmanager.getMessageCursor(this,contact.getNumber());
-        recyclerView.setAdapter(new MessageAdapter(items,selectedListener));
+        messageAdapter=new MessageAdapter(items,selectedListener);
+
+        recyclerView.setAdapter(messageAdapter);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
+        txt_name.setText(smsmanager.getName(this,contact.getNumber()));
 
         //back.setOnClickListener(back_click);
         toolbar.setNavigationOnClickListener(back_click);
@@ -141,6 +146,9 @@ public class MessageActivity extends AppCompatActivity {
             case R.id.message_menu_call:
                 CallNumber();
                 break;
+            case R.id.message_menu_remove:
+                messageAdapter.EndSelect();
+                break;
         }
         return true;
     }
@@ -151,7 +159,8 @@ public class MessageActivity extends AppCompatActivity {
     private View.OnClickListener send_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            sendSMS(contact.getNumber(),edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString());
+            sendSMS(contact.getNumber(),edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString().trim());
+            edit_message.setText("");
         }
     };
 
@@ -165,7 +174,10 @@ public class MessageActivity extends AppCompatActivity {
     private View.OnClickListener back_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            finish();
+            if (messageAdapter.isSelect())
+                messageAdapter.RemoveSelected();
+            else
+                finish();
         }
     };
 
@@ -208,17 +220,25 @@ public class MessageActivity extends AppCompatActivity {
     private RecylerSelectedListener<Message> selectedListener= new RecylerSelectedListener<Message>() {
         @Override
         public void Selected(int count, int position) {
-
+            if (count>1)
+                toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
+            if (count!=0)
+                txt_name.setText(count+" Seçildi");
         }
 
         @Override
         public void SelectedEnded(List<Message> items) {
-
+            txt_name.setText(contact.getNameText());
+            toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(false);
+            toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
+            if (items!=null)
+                RemoveMessages(items);
         }
 
         @Override
         public void SelectedStart() {
-
+            toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(true);
+            toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(true);
         }
     };
 
@@ -296,5 +316,12 @@ public class MessageActivity extends AppCompatActivity {
     private void CallNumber(){
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + contact.getNumber()));
         startActivity(intent);
+    }
+
+    private void RemoveMessages(List<Message> items){
+        this.items.clear();
+        smsmanager.RemoveMessages(this,items);
+        cursor= smsmanager.getMessageCursor(this,contact.getNumber());
+        LoadMessage();
     }
 }

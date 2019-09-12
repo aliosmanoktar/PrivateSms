@@ -264,7 +264,16 @@ public class MySmsManager {
     }
 
     public void RemoveConversations(Context ctx,List<Conversation> items){
+        ContentResolver cr = ctx.getContentResolver();
         for (Conversation item: items)
-            ctx.getContentResolver().delete(Uri.parse(_SmsString),_address+" = '"+item.getContact().getNumber()+"'",null);
+            cr.delete(Uri.parse(_SmsString),_address+" = '"+item.getContact().getNumber()+"'",null);
+    }
+
+    public void RemoveMessages(Context ctx,List<Message> items){
+        ContentResolver cr = ctx.getContentResolver();
+        for (Message item : items){
+            cr.delete(Uri.parse(_SmsString),_id +" = "+item.getID(),null);
+            Log.e(TAG, "RemoveMessages: "+item.getID());
+        }
     }
 }

@@ -18,6 +18,5 @@
         android:id="@+id/menu_add"
         android:title="add"
         android:icon="@drawable/ic_call_white_24dp"
-        android:iconTint="@color/dark"
         />
 </menu>
