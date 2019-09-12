@@ -13,10 +13,11 @@ import android.util.AttributeSet;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import com.aliosman.privatesms.Model.Contact;
 
 public class AvatarView extends FrameLayout {
 
-    private String name = "ali";
+    private Contact contact =null;
 
     public AvatarView(@NonNull Context context) {
         this(context,null);
@@ -35,7 +36,7 @@ public class AvatarView extends FrameLayout {
 
     private void Init(Context context,AttributeSet atts){
         inflate(context,R.layout.avatar_view,this);
-        UpdateView();
+        //UpdateView();
     }
 
     private void UpdateView(){
@@ -45,18 +46,18 @@ public class AvatarView extends FrameLayout {
         TextView txt=findViewById(R.id.avatar_view_initial);
         txt.setTextColor(getResources().getColor(R.color.white));
         ImageView icon = findViewById(R.id.avatatar_view_icon);
-        if (name==null){
+        if (contact.getLookupKey().isEmpty()){
             txt.setVisibility(GONE);
             icon.setVisibility(VISIBLE);
         }else{
-            txt.setText(name.substring(0,1));
+            txt.setText(contact.getNameText().substring(0,1).toUpperCase());
             txt.setVisibility(VISIBLE);
             icon.setVisibility(GONE);
         }
     }
 
-    public void SetUser(String name){
-        this.name=name.toUpperCase();
+    public void SetUser(Contact contact){
+        this.contact=contact;
         UpdateView();
     }
 }

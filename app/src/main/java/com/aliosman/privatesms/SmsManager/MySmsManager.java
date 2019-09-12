@@ -271,9 +271,7 @@ public class MySmsManager {
 
     public void RemoveMessages(Context ctx,List<Message> items){
         ContentResolver cr = ctx.getContentResolver();
-        for (Message item : items){
+        for (Message item : items)
             cr.delete(Uri.parse(_SmsString),_id +" = "+item.getID(),null);
-            Log.e(TAG, "RemoveMessages: "+item.getID());
-        }
     }
 }

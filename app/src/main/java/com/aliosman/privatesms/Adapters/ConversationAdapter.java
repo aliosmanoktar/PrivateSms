@@ -62,7 +62,7 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         }
         viewHolder.itemView.setTag(item);
         viewHolder.name.setText(item.getContact().getNameText());
-        viewHolder.avatarView.SetUser(item.getContact().getName());
+        viewHolder.avatarView.SetUser(item.getContact());
         viewHolder.date.setText(getDateText(item.getDate()));
 
         if (isSelect(item)){
