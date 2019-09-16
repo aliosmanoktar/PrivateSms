@@ -15,13 +15,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!-- Activity -->
-        <activity android:name=".Activity.NewMessageActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".Activity.NewMessageActivity"/>
+        <activity android:name=".Activity.ConvarsationActivity"/>
 
         <activity
             android:name=".Activity.MessageActivity"
@@ -39,10 +34,14 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activity.ConvarsationActivity" />
         <activity android:name=".Activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        </activity> <!-- End Activity -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- End Activity -->
         <!-- Receiver -->
         <receiver android:name=".Receiver.DeliverReceiver">
             <intent-filter>

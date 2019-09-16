@@ -16,6 +16,7 @@ import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.ContactComparator;
 import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
@@ -306,6 +307,7 @@ public class MySmsManager {
                             .setNumber(number)
             );
         }
+        Collections.sort(items,new ContactComparator());
         return items;
     }
 }

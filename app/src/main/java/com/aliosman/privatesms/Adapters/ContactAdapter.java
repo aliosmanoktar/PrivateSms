@@ -53,6 +53,11 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         return items.size();
     }
 
+    public void setItems(List<Contact> items) {
+        this.items = items;
+        notifyDataSetChanged();
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder{
         private AvatarView avatarView;
         private TextView name,number;

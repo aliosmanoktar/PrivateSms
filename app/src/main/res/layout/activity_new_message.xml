@@ -4,15 +4,31 @@
   ~ aliosmanoktar@gmail.com
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.NewMessageActivity">
+    tools:context=".Activity.NewMessageActivity"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/newmessage_activity.toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark"
+        app:popupTheme="@style/AppThemeLL"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
+        <EditText
+            android:id="@+id/newmessage_activity.search"
+            android:textColor="@color/white"
+            android:textColorHint="@color/select_color"
+            android:hint="Bir numara yada isim arayın"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v7.widget.Toolbar>
     <android.support.v7.widget.RecyclerView
         android:id="@+id/newmessage_activity.recyler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="android.support.v7.widget.LinearLayoutManager"/>
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>
