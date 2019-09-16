@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +48,7 @@ public class ConvarsationActivity extends AppCompatActivity {
     private TextView toolbar_title;
     private Toolbar toolbar;
     private RecyclerView recyclerView;
+    private FloatingActionButton fab_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +60,8 @@ public class ConvarsationActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(recylerAdapter);
+        fab_button=findViewById(R.id.conversation_activity_fab);
+        fab_button.setOnClickListener(fab_click);
         setDefaultSmsApp();
 
     }
@@ -124,6 +128,13 @@ public class ConvarsationActivity extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener fab_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            startActivity(new Intent(getBaseContext(),NewMessageActivity.class));
+        }
+    };
+
     /***
      * Fix Edilmesi Gerek
      */
@@ -131,7 +142,6 @@ public class ConvarsationActivity extends AppCompatActivity {
         recylerAdapter=new ConversationAdapter(new MySmsManager().getConversation(this),conversation_click,selectedListener);
         recyclerView.setAdapter(recylerAdapter);
     }
-
 
     private void setDefaultSmsApp() {
         Intent intent =

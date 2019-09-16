@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
+import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
@@ -171,10 +172,10 @@ public class MySmsManager {
         int messageId = AddMessage(ctx,message);
         Uri messageUri = getMessageUriWithID(messageId);
         Intent sentIntent = new Intent(SENT);
-        sentIntent.putExtra("message_uri", messageUri == null ? "" : messageUri.toString());
+        sentIntent.putExtra(AppContents.MessageUri, messageUri == null ? "" : messageUri.toString());
 
         Intent deliveredIntent = new Intent(DELIVERED);
-        deliveredIntent.putExtra("message_uri", messageUri == null ? "" : messageUri.toString());
+        deliveredIntent.putExtra(AppContents.MessageUri, messageUri == null ? "" : messageUri.toString());
 
         PendingIntent sentPI = PendingIntent.getBroadcast(ctx, messageId, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -273,5 +274,38 @@ public class MySmsManager {
         ContentResolver cr = ctx.getContentResolver();
         for (Message item : items)
             cr.delete(Uri.parse(_SmsString),_id +" = "+item.getID(),null);
+    }
+
+    /***
+     * Hatalar var düzeltilmesi gerek
+     * @param ctx
+     * @return
+     */
+    public List<Contact> getAllNumber(Context ctx){
+        List<Contact> items=new ArrayList<>();
+        Cursor cs = ctx.getContentResolver().query(ContactsContract.Contacts.CONTENT_URI, null,null,null, null);
+        while (cs.moveToNext()){
+            String id = cs.getString(cs.getColumnIndex(ContactsContract.Contacts._ID));
+            String name = cs.getString(cs.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+            String lookoup=cs.getString(cs.getColumnIndex(ContactsContract.PhoneLookup.LOOKUP_KEY));
+            String number ="";
+            if (cs.getInt(cs.getColumnIndex(
+                    ContactsContract.Contacts.HAS_PHONE_NUMBER)) > 0) {
+                Cursor pCur = ctx.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[]{id}, null);
+                while (pCur.moveToNext()) {
+                    number = pCur.getString(pCur.getColumnIndex(
+                            ContactsContract.CommonDataKinds.Phone.NUMBER));
+                }
+                pCur.close();
+            }
+
+            items.add(
+                    new Contact()
+                            .setName(name)
+                            .setLookupKey(lookoup)
+                            .setNumber(number)
+            );
+        }
+        return items;
     }
 }

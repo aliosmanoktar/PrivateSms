@@ -13,4 +13,5 @@ public class AppContents {
     public static final String conversationBroadcast= "ConversationBroadcast";
     public static final String ChannelID="10561";
     public static final String ChannelName="Message";
+    public static final String MessageUri="message_uri";
 }

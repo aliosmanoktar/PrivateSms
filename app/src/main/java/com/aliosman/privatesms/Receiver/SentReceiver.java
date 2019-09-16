@@ -15,6 +15,8 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.aliosman.privatesms.AppContents;
+
 public class SentReceiver extends BroadcastReceiver {
     private String TAG = getClass().getName();
     @Override
@@ -25,7 +27,7 @@ public class SentReceiver extends BroadcastReceiver {
 
         Intent i = new Intent("broadCastName");
         // Data you need to pass to activity
-        i.putExtra("message_uri",uri.toString());
+        i.putExtra(AppContents.MessageUri,uri.toString());
         context.sendBroadcast(i);
 
         switch (getResultCode()) {
@@ -55,7 +57,7 @@ public class SentReceiver extends BroadcastReceiver {
     private Uri getUri(Intent intent) {
         Uri uri;
         try {
-            uri = Uri.parse(intent.getStringExtra("message_uri"));
+            uri = Uri.parse(intent.getStringExtra(AppContents.MessageUri));
 
             if (uri.equals("")) {
                 return null;

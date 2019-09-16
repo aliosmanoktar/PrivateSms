@@ -185,7 +185,7 @@ public class MessageActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent ıntent) {
             load=true;
-            Uri uri = Uri.parse(ıntent.getStringExtra("message_uri"));
+            Uri uri = Uri.parse(ıntent.getStringExtra(AppContents.MessageUri));
             items.add(0,smsmanager.getMessage(uri,getBaseContext()));
             recyclerView.post(new Runnable() {
                 @Override
