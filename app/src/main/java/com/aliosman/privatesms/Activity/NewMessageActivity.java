@@ -82,6 +82,7 @@ public class NewMessageActivity extends AppCompatActivity {
         for(Contact item: items)
             if (item.getNameText().contains(s) || item.getNumber().contains(s))
                 temp.add(item);
+            temp.add(0,new Contact().setName(s+"' Gonder").setNumber(s).setLookupKey(""));
         return temp;
     }
 
