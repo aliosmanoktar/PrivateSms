@@ -15,9 +15,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <!-- Activity -->
-        <activity android:name=".Activity.NewMessageActivity"/>
-        <activity android:name=".Activity.ConvarsationActivity"/>
 
+        <activity android:name=".Activity.PrivateActivity">
+
+        </activity>
+
+        <activity android:name=".Activity.NewMessageActivity" />
+        <activity android:name=".Activity.ConvarsationActivity" />
         <activity
             android:name=".Activity.MessageActivity"
             android:launchMode="singleTask">
@@ -40,8 +44,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!-- End Activity -->
+        </activity> <!-- End Activity -->
         <!-- Receiver -->
         <receiver android:name=".Receiver.DeliverReceiver">
             <intent-filter>
@@ -86,12 +89,12 @@
             </intent-filter>
         </service>
     </application>
-    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+
+    <uses-permission android:name="android.permission.READ_SMS" />
 
 </manifest>

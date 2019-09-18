@@ -56,6 +56,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         toolbar=findViewById(R.id.conversation_activity_toolbar);
         toolbar.setTitle("");
         toolbar_title=toolbar.findViewById(R.id.conversation_activity_toolbar_title);
+        toolbar_title.setOnClickListener(title_click);
         setSupportActionBar(toolbar);
         recyclerView=findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -78,6 +79,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         menuInflater.inflate(R.menu.conversation_select_menu,menu);
         return true;
     }
+
 
     private RecyclerViewListener<Conversation> conversation_click = new RecyclerViewListener<Conversation>() {
         @Override
@@ -103,8 +105,6 @@ public class ConvarsationActivity extends AppCompatActivity {
             toolbar.getMenu().findItem(R.id.conversation_menu_remove).setVisible(false);
             toolbar_title.setText(R.string.app_name);
             toolbar.setNavigationIcon(null);
-            if (items!=null)
-                RemoveConversations(items);
         }
 
         @Override
@@ -135,6 +135,14 @@ public class ConvarsationActivity extends AppCompatActivity {
         }
     };
 
+    private View.OnClickListener title_click = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (!recylerAdapter.isSelect())
+                startActivity(new Intent(getBaseContext(),PrivateActivity.class));
+        }
+    };
+
     /***
      * Fix Edilmesi Gerek
      */
@@ -154,7 +162,11 @@ public class ConvarsationActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
-            case R.id.conversation_menu_remove: recylerAdapter.EndSelect();
+            case R.id.conversation_menu_remove:
+
+                List<Conversation> items = recylerAdapter.getSelected();
+                RemoveConversations(items);
+                recylerAdapter.EndSelect();
         }
         return true;
     }

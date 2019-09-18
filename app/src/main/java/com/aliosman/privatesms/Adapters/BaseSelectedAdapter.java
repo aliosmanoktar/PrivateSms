@@ -65,6 +65,8 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
 
     @Override
     public boolean onLongClick(View v) {
+        if (selectedListener==null)
+            return false;
         T item = (T)v.getTag(R.string.tag_item);
         int position = (int)v.getTag(R.string.tag_position);
         if (!select){
@@ -119,16 +121,22 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
         selected.clear();
         select=false;
         notifyDataSetChanged();
-        selectedListener.SelectedEnded(null);
+        if (selectedListener!=null)
+            selectedListener.SelectedEnded(null);
     }
 
     public void EndSelect(){
         select=false;
         notifyDataSetChanged();
-        selectedListener.SelectedEnded(selected);
+        if (selectedListener!=null)
+            selectedListener.SelectedEnded(selected);
     }
 
     public boolean isSelect() {
         return select;
+    }
+
+    public List<T> getSelected() {
+        return selected;
     }
 }
