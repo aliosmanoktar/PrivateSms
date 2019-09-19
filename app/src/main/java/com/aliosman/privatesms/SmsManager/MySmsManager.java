@@ -10,7 +10,6 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -22,10 +21,7 @@ import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.Model.Message;
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -52,12 +48,10 @@ public class MySmsManager {
     private static final String _type="type";
     private static final String _thread_id ="thread_id";
     private static final String _person="person";
-    private static final String _preferences_name="privateSms";
-    private static final String _preferences_number="privateNumbers";
 
     public List<Conversation> getConversation(Context ctx){
         String selection = "";
-        List<String> numbers= getPrivateNumbers(ctx);
+        List<String> numbers= new PrivateDatabase(ctx).getAllPrivateNumbers();
         for(int i = 0; i < numbers.size(); i++) {
             selection += (_address+" != '"+numbers.get(i)+"'");
             if (i != (numbers.size() - 1))
@@ -68,7 +62,9 @@ public class MySmsManager {
 
     public List<Conversation> getPrivateConversations(Context ctx){
         String selection = "";
-        List<String> numbers= getPrivateNumbers(ctx);
+        List<String> numbers= new PrivateDatabase(ctx).getAllPrivateNumbers();
+        if (numbers.isEmpty())
+            return new ArrayList<>();
         for(int i = 0; i < numbers.size(); i++) {
             selection += (_address+" = '"+numbers.get(i)+"'");
             if (i != (numbers.size() - 1))
@@ -338,29 +334,6 @@ public class MySmsManager {
         }
         Collections.sort(items,new ContactComparator());
         return items;
-    }
-
-    public List<String> getPrivateNumbers(Context ctx){
-        SharedPreferences preferences=ctx.getSharedPreferences(_preferences_name,Context.MODE_PRIVATE);
-        String s= preferences.getString(_preferences_number,"[]");
-        return Arrays.asList(new Gson().fromJson(s, String[].class));
-    }
-
-    public void addPriveteNumber(Context ctx,String number){
-        List<String> numbers= new ArrayList<>(getPrivateNumbers(ctx));
-        numbers.add(number);
-        saveNumbers(ctx,numbers);
-    }
-
-    public void RemoveNumbers(Context ctx,List<String> removers){
-        List<String> numbers= new ArrayList<>(getPrivateNumbers(ctx));
-        numbers.removeAll(removers);
-        saveNumbers(ctx,numbers);
-    }
-    private void saveNumbers(Context ctx,List<String> numbers){
-        SharedPreferences.Editor editor= ctx.getSharedPreferences(_preferences_name,Context.MODE_PRIVATE).edit();
-        editor.putString(_preferences_number,new Gson().toJson(numbers));
-        editor.commit();
     }
 
 }

@@ -19,6 +19,7 @@ import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
+import com.aliosman.privatesms.SmsManager.PrivateDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,12 +33,14 @@ public class PrivateActivity extends AppCompatActivity {
     private MySmsManager manager=new MySmsManager();
     private String TAG = getClass().getName();
     private ConversationAdapter adapter;
+    private PrivateDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_private);
         toolbar=findViewById(R.id.private_activity_toolbar);
         recyclerView=findViewById(R.id.private_activity_recylerview);
+        database=new PrivateDatabase(this);
         setSupportActionBar(toolbar);
 
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
@@ -82,10 +85,8 @@ public class PrivateActivity extends AppCompatActivity {
 
     private void RemoveRemoveNumbers(){
         List<Conversation> items = adapter.getSelected();
-        List<String> numbers = new ArrayList<>();
         for(Conversation item : items)
-            numbers.add(item.getContact().getNumber());
-        manager.RemoveNumbers(getBaseContext(),numbers);
+            database.RemoveNumber(item.getContact().getNumber());
         adapter.RemoveSelected();
     }
     private void SetPrivateAdapter(){
@@ -105,7 +106,7 @@ public class PrivateActivity extends AppCompatActivity {
         @Override
         public void Onclick(Conversation item) {
           select=false;
-          manager.addPriveteNumber(getBaseContext(),item.getContact().getNumber());
+          database.AddNumber(item.getContact().getNumber());
           SetPrivateAdapter();
         }
     };
