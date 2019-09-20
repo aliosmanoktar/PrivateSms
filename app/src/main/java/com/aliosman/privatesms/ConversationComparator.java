@@ -12,6 +12,10 @@ import java.util.Date;
 public class ConversationComparator  implements Comparator<Conversation> {
     @Override
     public int compare(Conversation item, Conversation t1) {
-        return (new Date(t1.getDate()).compareTo(new Date(item.getDate())));
+        //true-true  false-false ==> true
+        //true-false ==> false
+        return ((item.isPinned() && t1.isPinned()) || (!item.isPinned() && !t1.isPinned()))
+                ? (new Date(t1.getDate()).compareTo(new Date(item.getDate())))
+                : item.isPinned() ? -1 : 1;
     }
 }

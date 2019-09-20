@@ -9,7 +9,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,7 @@ public class PrivateDatabase {
     private Context ctx;
     private PrivateDatabaseHelper helper;
     private SQLiteDatabase db;
-
+    private String TAG = getClass().getName();
     public PrivateDatabase(Context ctx) {
         this.ctx = ctx;
         helper=new PrivateDatabaseHelper(ctx);
@@ -42,5 +41,25 @@ public class PrivateDatabase {
 
     public void RemoveNumber(String Number){
         db.delete(PrivateNumberEntity.TableName,PrivateNumberEntity.NumberColumn+" = '"+Number+"'",null);
+    }
+
+    public void RemovePinnedNumber(String Number){
+        db.delete(PrivateNumberEntity.PinnedTableName,PrivateNumberEntity.NumberColumn+" = '"+Number+"'",null);
+    }
+
+    public void AddPinnedNumber(String number){
+        ContentValues values= new ContentValues();
+        values.put(PrivateNumberEntity.NumberColumn,number);
+        db.insert(PrivateNumberEntity.PinnedTableName,number,values);
+    }
+
+    public List<String> getAllPinnedNumbers(){
+        List<String> numbers=new ArrayList<>();
+        Cursor cr=db.query(PrivateNumberEntity.PinnedTableName,null,null,null,null,null,null);
+        while (cr.moveToNext()){
+            String number = cr.getString(cr.getColumnIndex(PrivateNumberEntity.NumberColumn));
+            numbers.add(number);
+        }
+        return numbers;
     }
 }

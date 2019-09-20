@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.aliosman.privatesms.AvatarView;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
@@ -59,7 +60,13 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
             viewHolder.message.setTypeface(null, Typeface.BOLD);
             viewHolder.count.setVisibility(View.VISIBLE);
             viewHolder.count.setText(item.getCount()+"");
+        }else{
+            viewHolder.count.setVisibility(View.GONE);
+            viewHolder.message.setTypeface(null);
         }
+        if (item.isPinned())
+            viewHolder.pinned.setVisibility(View.VISIBLE);
+        else viewHolder.pinned.setVisibility(View.GONE);
         viewHolder.itemView.setTag(item);
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact());
@@ -110,6 +117,7 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         private AvatarView avatarView;
         private TextView date;
         private TextView count;
+        private ImageView pinned;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -118,6 +126,7 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
             avatarView=itemView.findViewById(R.id.conversation_item_avatar);
             date=itemView.findViewById(R.id.conversation_item_date);
             count=itemView.findViewById(R.id.conversation_item_count);
+            pinned=itemView.findViewById(R.id.conversation_item_pinned);
         }
     }
 }

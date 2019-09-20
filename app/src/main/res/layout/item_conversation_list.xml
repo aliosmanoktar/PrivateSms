@@ -39,12 +39,30 @@
                 android:lines="1"
                 tools:text="@tools:sample/full_names" />
 
-            <TextView
-                android:id="@+id/conversation_item.date"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="1"
-                tools:text="@tools:sample/date/mmddyy" />
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/conversation_item.date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    tools:text="@tools:sample/date/mmddyy" />
+                <ImageView
+                    android:visibility="gone"
+                    android:tint="@color/tools_theme"
+                    android:tintMode="src_in"
+                    android:padding="2dp"
+                    android:id="@+id/conversation_item.pinned"
+                    android:src="@drawable/ic_pinned"
+                    android:layout_weight="1"
+                    android:layout_width="20dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="2dp"
+                    android:paddingStart="4dp"/>
+
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout

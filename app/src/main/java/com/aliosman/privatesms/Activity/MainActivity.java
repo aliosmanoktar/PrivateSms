@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import com.aliosman.privatesms.R;
+import com.aliosman.privatesms.SmsManager.PrivateDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.CALL_PHONE
             }, 0);
         }
+        new PrivateDatabase(this).getAllPinnedNumbers();
     }
 
     @Override

@@ -78,7 +78,7 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
         }else{
             setSelect(item,position);
         }
-        selectedListener.Selected(selected.size(),position);
+        selectedListener.Selected(selected.size(),position,selected);
         return false;
     }
 
@@ -96,6 +96,9 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
         notifyItemChanged(position);
     }
 
+    /**
+     * İşte bak hata o gördünmü kendini yenilemedi
+     */
     /**
      * Contains ile dene
      * @param item
@@ -126,10 +129,12 @@ public abstract class BaseSelectedAdapter<T,VH extends RecyclerView.ViewHolder> 
     }
 
     public void EndSelect(){
+        Log.e(TAG, "EndSelect: " );
         select=false;
-        notifyDataSetChanged();
         if (selectedListener!=null)
             selectedListener.SelectedEnded(selected);
+        selected=new ArrayList<>();
+        notifyDataSetChanged();
     }
 
     public boolean isSelect() {

@@ -17,6 +17,7 @@ public class Conversation {
     private boolean read;
     private int count =0;
     private int type;
+    private boolean pinned=false;
 
     public Conversation setType(int type) {
         this.type = type;
@@ -48,6 +49,11 @@ public class Conversation {
         return this;
     }
 
+    public Conversation setPinned(boolean pinned) {
+        this.pinned = pinned;
+        return this;
+    }
+
     public long getDate() {
         return date;
     }
@@ -70,6 +76,10 @@ public class Conversation {
 
     public int getCount() {
         return count;
+    }
+
+    public boolean isPinned() {
+        return pinned;
     }
 
     @NonNull

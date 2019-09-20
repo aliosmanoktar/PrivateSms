@@ -218,8 +218,9 @@ public class MessageActivity extends AppCompatActivity {
     };
 
     private RecylerSelectedListener<Message> selectedListener= new RecylerSelectedListener<Message>() {
+
         @Override
-        public void Selected(int count, int position) {
+        public void Selected(int count, int position, List<Message> items) {
             if (count>1)
                 toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
             if (count!=0)

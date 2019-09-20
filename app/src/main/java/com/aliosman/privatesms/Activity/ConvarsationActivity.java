@@ -9,6 +9,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +30,8 @@ import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
+import com.aliosman.privatesms.SmsManager.PrivateDatabase;
+
 import java.util.List;
 
 public class ConvarsationActivity extends AppCompatActivity {
@@ -77,6 +81,13 @@ public class ConvarsationActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
         menuInflater.inflate(R.menu.conversation_select_menu,menu);
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
         return true;
     }
 
@@ -93,16 +104,29 @@ public class ConvarsationActivity extends AppCompatActivity {
     };
 
     private RecylerSelectedListener<Conversation> selectedListener = new RecylerSelectedListener<Conversation>() {
+
         @Override
-        public void Selected(int count, int position) {
+        public void Selected(int count, int position, List<Conversation> items) {
+            boolean isPinnedShow=IsPinnedShow(items);
+            toolbar.getMenu().findItem(R.id.conversation_menu_pinned).setVisible(isPinnedShow);
+            toolbar.getMenu().findItem(R.id.conversation_menu_unpinned).setVisible(!isPinnedShow);
             if (count>0)
                 toolbar_title.setText(count+" Selected");
+            else SelectedEnded(null);
+        }
+
+        private boolean IsPinnedShow(List<Conversation> items){
+            for (Conversation item:items)
+                if (!item.isPinned())
+                    return true;
+            return false;
         }
 
         @Override
         public void SelectedEnded(List<Conversation> items) {
-            toolbar.getMenu().findItem(R.id.menu_add).setVisible(true);
             toolbar.getMenu().findItem(R.id.conversation_menu_remove).setVisible(false);
+            toolbar.getMenu().findItem(R.id.conversation_menu_pinned).setVisible(false);
+            toolbar.getMenu().findItem(R.id.conversation_menu_unpinned).setVisible(false);
             toolbar_title.setText(R.string.app_name);
             toolbar.setNavigationIcon(null);
         }
@@ -116,7 +140,6 @@ public class ConvarsationActivity extends AppCompatActivity {
                     recylerAdapter.RemoveSelected();
                 }
             });
-            toolbar.getMenu().findItem(R.id.menu_add).setVisible(false);
             toolbar.getMenu().findItem(R.id.conversation_menu_remove).setVisible(true);
         }
     };
@@ -163,12 +186,37 @@ public class ConvarsationActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()){
             case R.id.conversation_menu_remove:
-
                 List<Conversation> items = recylerAdapter.getSelected();
                 RemoveConversations(items);
                 recylerAdapter.EndSelect();
+                break;
+            case R.id.conversation_menu_pinned:
+                Pinned();
+                break;
+            case R.id.conversation_menu_unpinned:
+                Unpinned();
+                break;
+
         }
         return true;
+    }
+    private void Pinned(){
+        List<Conversation> items = recylerAdapter.getSelected();
+        PrivateDatabase database= new PrivateDatabase(getBaseContext());
+        for(Conversation item: items){
+            database.AddPinnedNumber(item.getContact().getNumber());
+        }
+        recylerAdapter.EndSelect();
+        ReplaceScreen();
+    }
+    private void Unpinned(){
+        List<Conversation> items = recylerAdapter.getSelected();
+        PrivateDatabase database= new PrivateDatabase(getBaseContext());
+        for(Conversation item: items){
+            database.RemovePinnedNumber(item.getContact().getNumber());
+        }
+        recylerAdapter.EndSelect();
+        ReplaceScreen();
     }
     private void RemoveConversations(List<Conversation> items){
         new MySmsManager().RemoveConversations(this,items);

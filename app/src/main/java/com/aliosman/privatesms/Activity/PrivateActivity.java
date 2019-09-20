@@ -5,11 +5,12 @@
 
 package com.aliosman.privatesms.Activity;
 
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,8 +21,6 @@ import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
 import com.aliosman.privatesms.SmsManager.PrivateDatabase;
-
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -53,6 +52,13 @@ public class PrivateActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.privates_menu,menu);
+        for(int i = 0; i < menu.size(); i++){
+            Drawable drawable = menu.getItem(i).getIcon();
+            if(drawable != null) {
+                drawable.mutate();
+                drawable.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+            }
+        }
         return true;
     }
 
@@ -64,7 +70,13 @@ public class PrivateActivity extends AppCompatActivity {
                 break;
             case R.id.privates_menu_remove:
                 RemoveRemoveNumbers();
-
+                break;
+            case R.id.private_menu_pinned:
+                AddedPinned();
+                break;
+            case R.id.private_menu_unpinned:
+                UnPinned();
+                break;
         }
         return true;
     }
@@ -83,6 +95,24 @@ public class PrivateActivity extends AppCompatActivity {
         }
     };
 
+    private void AddedPinned(){
+        List<Conversation> temp = adapter.getSelected();
+        PrivateDatabase database= new PrivateDatabase(getBaseContext());
+        for(Conversation cv_item: temp){
+            database.AddPinnedNumber(cv_item.getContact().getNumber());
+        }
+        adapter.EndSelect();
+        SetPrivateAdapter();
+    }
+    private void UnPinned(){
+        List<Conversation> temp = adapter.getSelected();
+        PrivateDatabase database= new PrivateDatabase(getBaseContext());
+        for(Conversation cv_item: temp){
+            database.RemovePinnedNumber(cv_item.getContact().getNumber());
+        }
+        adapter.EndSelect();
+        SetPrivateAdapter();
+    }
     private void RemoveRemoveNumbers(){
         List<Conversation> items = adapter.getSelected();
         for(Conversation item : items)
@@ -112,16 +142,30 @@ public class PrivateActivity extends AppCompatActivity {
     };
 
     private RecylerSelectedListener<Conversation> selectedListener=new RecylerSelectedListener<Conversation>() {
+
         @Override
-        public void Selected(int count, int position) {
-            if (count!=0)
-                toolbar.setTitle(count+" Seçildi");
+        public void Selected(int count, int position, List<Conversation> items) {
+            boolean isPinnedShow=IsPinnedShow(items);
+            toolbar.getMenu().findItem(R.id.private_menu_pinned).setVisible(isPinnedShow);
+            toolbar.getMenu().findItem(R.id.private_menu_unpinned).setVisible(!isPinnedShow);
+            if (count>0)
+                toolbar.setTitle(count+" Selected");
+            else SelectedEnded(null);
+        }
+
+        private boolean IsPinnedShow(List<Conversation> items){
+            for (Conversation item:items)
+                if (!item.isPinned())
+                    return true;
+            return false;
         }
 
         @Override
         public void SelectedEnded(List<Conversation> items) {
             toolbar.getMenu().findItem(R.id.privates_menu_add).setVisible(true);
             toolbar.getMenu().findItem(R.id.privates_menu_remove).setVisible(false);
+            toolbar.getMenu().findItem(R.id.private_menu_pinned).setVisible(false);
+            toolbar.getMenu().findItem(R.id.private_menu_unpinned).setVisible(false);
             SetPrivateAdapter();
             toolbar.setTitle("Gizli");
         }

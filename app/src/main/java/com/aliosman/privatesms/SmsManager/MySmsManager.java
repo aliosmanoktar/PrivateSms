@@ -75,7 +75,7 @@ public class MySmsManager {
 
     private List<Conversation> getConversationFromSelection(Context ctx,String selection){
         List<Conversation> items= new ArrayList<>();
-        Log.e(TAG, "getConversationFromSelection: "+selection);
+        List<String> pinned = new PrivateDatabase(ctx).getAllPinnedNumbers();
         Cursor cursor = ctx.getContentResolver().query(Uri.parse(_conversationString),null, selection, null, null);
         while (cursor.moveToNext()){
             String body = cursor.getString(cursor.getColumnIndex(_body));
@@ -89,6 +89,7 @@ public class MySmsManager {
                     .setRead(read==1)
                     .setType(type)
                     .setCount(getNonReadSmsCount(ctx,address))
+                    .setPinned(pinned.contains(address))
                     .setContact(
                             getContact(ctx,address)
                     )

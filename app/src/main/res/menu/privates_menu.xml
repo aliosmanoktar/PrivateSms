@@ -15,4 +15,20 @@
         android:icon="@drawable/ic_remove_circle"
         app:showAsAction="always"
         android:visible="false"/>
+    <item
+        android:visible="false"
+        android:title="Sabitle"
+        android:id="@+id/private_menu.pinned"
+        android:icon="@drawable/ic_pinned"
+        app:showAsAction="always"
+        android:iconTint="@color/white"
+        />
+    <item
+        android:visible="false"
+        android:title="Sabitlemeyi Kaldır"
+        android:id="@+id/private_menu.unpinned"
+        android:icon="@drawable/ic_unpin"
+        app:showAsAction="always"
+        android:iconTint="@color/white"
+        />
 </menu>
