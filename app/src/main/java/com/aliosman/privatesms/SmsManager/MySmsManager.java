@@ -181,7 +181,7 @@ public class MySmsManager {
         return new Contact().setLookupKey(lookoup).setNumber(address).setName(name).setID(id);
     }
     /**
-     * Parçalı gönderme eklenecek
+     * Parçalı gönderme eklenecek-Test Edilmesi Gerek
      * @param ctx
      * @param messageBody
      * @param phoneNumber
@@ -208,9 +208,15 @@ public class MySmsManager {
 
         PendingIntent deliveredPI = PendingIntent.getBroadcast(ctx, messageId,
                 deliveredIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
+        ArrayList<PendingIntent> sentPIS = new ArrayList<>();
+        ArrayList<PendingIntent> deliveredPIS=new ArrayList<>();
         SmsManager sms = SmsManager.getDefault();
-        sms.sendTextMessage(phoneNumber, null, messageBody, sentPI, deliveredPI);
+        ArrayList<String> parts = sms.divideMessage(messageBody);
+        for (int i=0;i<parts.size();i++) {
+            sentPIS.add(sentPI);
+            deliveredPIS.add(deliveredPI);
+        }
+        sms.sendMultipartTextMessage(phoneNumber,null,parts,sentPIS,deliveredPIS);
     }
 
     public Uri getMessageUriWithID(int ID){
