@@ -21,14 +21,11 @@
         </activity>
 
         <activity android:name=".Activity.NewMessageActivity" />
-        <activity android:name=".Activity.ConvarsationActivity" />
-        <activity
-            android:name=".Activity.MessageActivity"
-            android:launchMode="singleTask">
+        <activity android:name=".Activity.ConvarsationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SENDTO" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -37,6 +34,11 @@
                 <data android:scheme="mms" />
                 <data android:scheme="mmsto" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activity.MessageActivity"
+            android:launchMode="singleTask">
+
         </activity>
         <activity android:name=".Activity.MainActivity">
             <intent-filter>

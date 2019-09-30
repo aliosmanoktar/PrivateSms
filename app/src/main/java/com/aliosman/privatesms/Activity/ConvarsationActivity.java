@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import com.aliosman.privatesms.Adapters.ConversationAdapter;
 import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
+import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
@@ -53,6 +55,7 @@ public class ConvarsationActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private FloatingActionButton fab_button;
+    private MySmsManager manager=new MySmsManager();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,7 +71,32 @@ public class ConvarsationActivity extends AppCompatActivity {
         fab_button=findViewById(R.id.conversation_activity_fab);
         fab_button.setOnClickListener(fab_click);
         setDefaultSmsApp();
+        Bundle bundle = getIntent().getExtras();
 
+        if (bundle!=null){
+            String smsBody = bundle.getString(AppContents.Sms_Body);
+            String smsAddress= bundle.getString(AppContents.number_extras);
+            if (smsBody!=null)
+                ShowMessageActivity(smsBody,smsAddress);
+        }
+    }
+
+    private void ShowMessageActivity(String body,String address){
+        Intent i;
+        if (address==null){
+            i = new Intent(this,NewMessageActivity.class);
+            Bundle b= new Bundle();
+            b.putString(AppContents.Sms_Body,body);
+            i.putExtras(b);
+        }else {
+            i = new Intent(this,MessageActivity.class);
+            Bundle b= new Bundle();
+            Contact c = new Contact().setNumber(address).setName(manager.getName(this,address)).setLookupKey("");
+            b.putSerializable(AppContents.contact_extras,c);
+            b.putString(AppContents.Sms_Body,body);
+            i.putExtras(b);
+        }
+        startActivity(i);
     }
     @Override
     protected void onResume() {
@@ -170,7 +198,7 @@ public class ConvarsationActivity extends AppCompatActivity {
      * Fix Edilmesi Gerek
      */
     private void ReplaceScreen(){
-        recylerAdapter=new ConversationAdapter(new MySmsManager().getConversation(this),conversation_click,selectedListener);
+        recylerAdapter=new ConversationAdapter(manager.getConversation(this),conversation_click,selectedListener);
         recyclerView.setAdapter(recylerAdapter);
     }
 
@@ -219,7 +247,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         ReplaceScreen();
     }
     private void RemoveConversations(List<Conversation> items){
-        new MySmsManager().RemoveConversations(this,items);
+       manager.RemoveConversations(this,items);
         ReplaceScreen();
     }
 }

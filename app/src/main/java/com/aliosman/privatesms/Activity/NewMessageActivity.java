@@ -30,6 +30,7 @@ public class NewMessageActivity extends AppCompatActivity {
     private ContactAdapter adapter;
     private Toolbar toolbar;
     private EditText search;
+    private String smsBody=null;
     private String TAG = getClass().getName();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,11 @@ public class NewMessageActivity extends AppCompatActivity {
 
         search=toolbar.findViewById(R.id.newmessage_activity_search);
         recyclerView=findViewById(R.id.newmessage_activity_recyler);
+        Bundle b= getIntent().getExtras();
+        if (b!=null) {
+            smsBody = b.getString(AppContents.Sms_Body);
 
+        }
         items=new MySmsManager().getAllNumber(this);
         adapter=new ContactAdapter(items,click);
         recyclerView.setAdapter(adapter);
@@ -77,6 +82,7 @@ public class NewMessageActivity extends AppCompatActivity {
             }
         }
     };
+
     private List<Contact> Search(String s){
         List<Contact> temp = new ArrayList<>();
         for(Contact item: items)
@@ -93,6 +99,10 @@ public class NewMessageActivity extends AppCompatActivity {
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK );
             Bundle bundle=new Bundle();
             bundle.putSerializable(AppContents.contact_extras,item);
+            if (smsBody!=null) {
+                Log.e(TAG, "Onclick: Body NotNull" );
+                bundle.putString(AppContents.Sms_Body,smsBody);
+            }
             i.putExtras(bundle);
             startActivity(i);
         }

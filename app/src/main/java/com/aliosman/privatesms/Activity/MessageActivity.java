@@ -21,6 +21,10 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.SmsManager;
+import android.telephony.SmsMessage;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,7 +48,21 @@ import java.util.List;
 public class MessageActivity extends AppCompatActivity {
     BroadcastReceiver sendBroadcastReceiver = new SentReceiver();
     BroadcastReceiver deliveryBroadcastReciever = new DeliverReceiver();
-
+    /***
+     *   view.textChangedIntent
+     *                 .observeOn(Schedulers.computation())
+     *                 .mapNotNull { draft -> tryOrNull { SmsMessage.calculateLength(draft, prefs.unicode.get()) } }
+     *                 .map { array ->
+     *                     val messages = array[0]
+     *                     val remaining = array[2]
+     *
+     *                     when {
+     *                         messages <= 1 && remaining > 10 -> ""
+     *                         messages <= 1 && remaining <= 10 -> "$remaining"
+     *                         else -> "$remaining / $messages"
+     *                     }
+     *                 }
+     */
     private List<Message> items = new ArrayList<>(
     /*Arrays.asList(new Message[]{
                     new Message().setMessage("test").setSent(false),
@@ -74,7 +92,7 @@ public class MessageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private Cursor cursor;
     private MySmsManager smsmanager =new MySmsManager();
-    private TextView txt_name;
+    private TextView txt_name,txt_count;
     private EditText edit_message;
     private ImageView send;
     private Toolbar toolbar;
@@ -97,7 +115,7 @@ public class MessageActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.message_activity_recylerview);
         send=findViewById(R.id.message_activity_send);
         edit_message= findViewById(R.id.message_activity_input_message);
-
+        txt_count = findViewById(R.id.message_activity_message_count);
 
         cursor= smsmanager.getMessageCursor(this,contact.getNumber());
         messageAdapter=new MessageAdapter(items,selectedListener);
@@ -111,11 +129,19 @@ public class MessageActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(back_click);
         send.setOnClickListener(send_click);
         txt_name.setOnClickListener(name_click);
+        edit_message.addTextChangedListener(edit_message_listener);
 
         SetReyclerListener();
         LoadMessage();
         ClearNotification();
         smsmanager.readAllMessage(this,contact.getNumber());
+
+        String smsBody = getIntent().getExtras().getString(AppContents.Sms_Body);
+        if (smsBody!=null){
+            edit_message.setText(smsBody);
+            CalculateLength(smsBody);
+        }
+
 
     }
 
@@ -214,6 +240,31 @@ public class MessageActivity extends AppCompatActivity {
             });
             clearNotification(notificationID);
             Log.e(TAG, "onReceive: Sms Receiver");
+        }
+    };
+
+    private TextWatcher edit_message_listener = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String count = CalculateLength(s.toString());
+            if (!count.isEmpty()){
+                if (txt_count.getVisibility()==View.GONE)
+                    txt_count.setVisibility(View.VISIBLE);
+                txt_count.setText(count);
+            }else{
+                if (txt_count.getVisibility()!=View.GONE)
+                    txt_count.setVisibility(View.GONE);
+            }
         }
     };
 
@@ -324,5 +375,19 @@ public class MessageActivity extends AppCompatActivity {
         smsmanager.RemoveMessages(this,items);
         cursor= smsmanager.getMessageCursor(this,contact.getNumber());
         LoadMessage();
+    }
+
+    private String CalculateLength(String draft){
+        String s="";
+        int[] arr= SmsMessage.calculateLength(draft, false);
+        int messages = arr[0];
+        int remaining = arr[2];
+        if (messages <= 1 && remaining > 10)
+            s="";
+        else if ( messages <= 1 && remaining <= 10)
+            s+=remaining;
+        else
+            s+=(remaining+" / "+messages);
+        return s;
     }
 }
