@@ -6,6 +6,7 @@
 package com.aliosman.privatesms.Model;
 
 import android.text.format.DateUtils;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -40,14 +41,13 @@ public class Message {
     }
 
     /**
-     * @param type
-     * MESSAGE_TYPE_ALL    = 0;
-     * MESSAGE_TYPE_INBOX  = 1;
-     * MESSAGE_TYPE_SENT   = 2;
-     * MESSAGE_TYPE_DRAFT  = 3;
-     * MESSAGE_TYPE_OUTBOX = 4;
-     * MESSAGE_TYPE_FAILED = 5; // for failed outgoing messages
-     * MESSAGE_TYPE_QUEUED = 6; // for messages to send later
+     * @param type MESSAGE_TYPE_ALL    = 0;
+     *             MESSAGE_TYPE_INBOX  = 1;
+     *             MESSAGE_TYPE_SENT   = 2;
+     *             MESSAGE_TYPE_DRAFT  = 3;
+     *             MESSAGE_TYPE_OUTBOX = 4;
+     *             MESSAGE_TYPE_FAILED = 5; // for failed outgoing messages
+     *             MESSAGE_TYPE_QUEUED = 6; // for messages to send later
      * @return
      */
     public Message setType(int type) {
@@ -73,26 +73,26 @@ public class Message {
     }
 
     public boolean isSent() {
-        return type!=1;
+        return type != 1;
     }
 
     public int getID() {
         return ID;
     }
 
-    public String getTimeString(){
+    public String getTimeString() {
         DateFormat dateFormat =
                 DateUtils.isToday(time) ?
                         new SimpleDateFormat("HH:mm") :
                         (IsYear() ?
                                 new SimpleDateFormat("dd/MM\nHH:mm") :
-                                new SimpleDateFormat("dd/MM/yyyy\nHH:mm") );
+                                new SimpleDateFormat("dd/MM/yyyy\nHH:mm"));
         return dateFormat.format(new Date(time));
     }
 
-    private boolean IsYear(){
+    private boolean IsYear() {
         Date date = new Date(time);
-        Calendar calendar=Calendar.getInstance();
+        Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR);
     }

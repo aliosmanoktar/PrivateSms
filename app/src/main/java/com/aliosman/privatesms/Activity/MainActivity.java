@@ -10,14 +10,13 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.aliosman.privatesms.R;
-import com.aliosman.privatesms.SmsManager.PrivateDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = getClass().getName();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,12 +31,13 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.CALL_PHONE
             }, 0);
         }
-        new PrivateDatabase(this).getAllPinnedNumbers();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 
         startActivity(new Intent(this, ConvarsationActivity.class));
         finish();
     }
+
 }

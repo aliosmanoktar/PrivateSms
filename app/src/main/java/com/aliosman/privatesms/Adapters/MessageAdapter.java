@@ -18,7 +18,7 @@ import com.aliosman.privatesms.R;
 
 import java.util.List;
 
-public class MessageAdapter extends BaseSelectedAdapter<Message,MessageAdapter.ViewHolder> {
+public class MessageAdapter extends BaseSelectedAdapter<Message, MessageAdapter.ViewHolder> {
     private final List<Message> items;
 
     public MessageAdapter(List<Message> items, RecylerSelectedListener<Message> selectedListener) {
@@ -35,18 +35,18 @@ public class MessageAdapter extends BaseSelectedAdapter<Message,MessageAdapter.V
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(i,viewGroup,false));
+        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(i, viewGroup, false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        super.onBindViewHolder(viewHolder,i);
+        super.onBindViewHolder(viewHolder, i);
         Message item = items.get(i);
         viewHolder.message.setText(item.getMessage());
         viewHolder.date.setText(item.getTimeString());
-        if (isSelect(item)){
+        if (isSelect(item)) {
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.colorAccent));
-        }else{
+        } else {
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.transparent));
         }
         viewHolder.itemView.setOnClickListener(this);
@@ -58,12 +58,13 @@ public class MessageAdapter extends BaseSelectedAdapter<Message,MessageAdapter.V
         return items.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
-        private TextView message,date;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        private TextView message, date;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            message=itemView.findViewById(R.id.item_message_body);
-            date=itemView.findViewById(R.id.item_message_date);
+            message = itemView.findViewById(R.id.item_message_body);
+            date = itemView.findViewById(R.id.item_message_date);
         }
     }
 }

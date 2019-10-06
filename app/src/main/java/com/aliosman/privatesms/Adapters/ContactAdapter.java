@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import com.aliosman.privatesms.AvatarView;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Model.Contact;
@@ -30,7 +31,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_contact,viewGroup,false));
+        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.item_contact, viewGroup, false));
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         viewHolder.avatarView.SetUser(item);
         viewHolder.name.setText(item.getNameText());
         viewHolder.number.setText(item.getNumber());
-        if (listener!=null)
+        if (listener != null)
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -58,14 +59,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder{
+    class ViewHolder extends RecyclerView.ViewHolder {
         private AvatarView avatarView;
-        private TextView name,number;
+        private TextView name, number;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            avatarView=itemView.findViewById(R.id.contact_item_avatar);
-            number=itemView.findViewById(R.id.contact_item_number);
-            name=itemView.findViewById(R.id.contact_item_name);
+            avatarView = itemView.findViewById(R.id.contact_item_avatar);
+            number = itemView.findViewById(R.id.contact_item_number);
+            name = itemView.findViewById(R.id.contact_item_name);
         }
     }
 }

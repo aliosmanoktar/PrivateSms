@@ -15,9 +15,9 @@ public class Conversation {
     private String message;
     private long date;
     private boolean read;
-    private int count =0;
+    private int count = 0;
     private int type;
-    private boolean pinned=false;
+    private boolean pinned = false;
 
     public Conversation setType(int type) {
         this.type = type;
@@ -63,7 +63,7 @@ public class Conversation {
     }
 
     public boolean isSent() {
-        return type!=1;
+        return type != 1;
     }
 
     public Contact getContact() {

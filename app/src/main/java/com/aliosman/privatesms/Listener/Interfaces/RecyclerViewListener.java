@@ -9,5 +9,6 @@ public abstract class RecyclerViewListener<T> {
 
     public abstract void Onclick(T item);
 
-    public void OnLongClick(T item){}
+    public void OnLongClick(T item) {
+    }
 }

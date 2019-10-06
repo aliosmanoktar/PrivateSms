@@ -46,7 +46,7 @@ public class Contact implements Serializable {
     }
 
     public String getNameText() {
-        return (name==null || name.isEmpty() )? number : name;
+        return (name == null || name.isEmpty()) ? number : name;
     }
 
     public String getLookupKey() {

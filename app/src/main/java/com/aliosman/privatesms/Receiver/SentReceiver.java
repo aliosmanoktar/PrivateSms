@@ -10,7 +10,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -19,15 +18,16 @@ import com.aliosman.privatesms.AppContents;
 
 public class SentReceiver extends BroadcastReceiver {
     private String TAG = getClass().getName();
+
     @Override
     public void onReceive(Context context, Intent arg1) {
         //Log.e(TAG,new Gson().toJson(arg1));
         Uri uri = getUri(arg1);
-        Log.e(TAG, "onReceive: "+uri );
+        Log.e(TAG, "onReceive: " + uri);
 
         Intent i = new Intent("broadCastName");
         // Data you need to pass to activity
-        i.putExtra(AppContents.MessageUri,uri.toString());
+        i.putExtra(AppContents.MessageUri, uri.toString());
         context.sendBroadcast(i);
 
         switch (getResultCode()) {
@@ -54,6 +54,7 @@ public class SentReceiver extends BroadcastReceiver {
         }
 
     }
+
     private Uri getUri(Intent intent) {
         Uri uri;
         try {

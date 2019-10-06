@@ -6,10 +6,11 @@
 package com.aliosman.privatesms;
 
 import com.aliosman.privatesms.Model.Conversation;
+
 import java.util.Comparator;
 import java.util.Date;
 
-public class ConversationComparator  implements Comparator<Conversation> {
+public class ConversationComparator implements Comparator<Conversation> {
     @Override
     public int compare(Conversation item, Conversation t1) {
         //true-true  false-false ==> true

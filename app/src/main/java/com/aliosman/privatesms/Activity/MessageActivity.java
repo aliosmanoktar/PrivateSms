@@ -13,15 +13,14 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.telephony.SmsManager;
 import android.telephony.SmsMessage;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,15 +32,17 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Contact;
-import com.aliosman.privatesms.Receiver.DeliverReceiver;
-import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.Model.Message;
 import com.aliosman.privatesms.R;
+import com.aliosman.privatesms.Receiver.DeliverReceiver;
+import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,13 +87,13 @@ public class MessageActivity extends AppCompatActivity {
             })*/
     );
     private MessageAdapter messageAdapter;
-    private boolean load=false;
-    private int totalItemCount,lastVisibleItem;
+    private boolean load = false;
+    private int totalItemCount, lastVisibleItem;
     private String TAG = getClass().getName();
     private RecyclerView recyclerView;
     private Cursor cursor;
-    private MySmsManager smsmanager =new MySmsManager();
-    private TextView txt_name,txt_count;
+    private MySmsManager smsmanager = new MySmsManager();
+    private TextView txt_name, txt_count;
     private EditText edit_message;
     private ImageView send;
     private Toolbar toolbar;
@@ -102,28 +103,28 @@ public class MessageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
-        contact= (Contact) getIntent().getExtras().getSerializable(AppContents.contact_extras);
-        if (contact==null){
+        contact = (Contact) getIntent().getExtras().getSerializable(AppContents.contact_extras);
+        if (contact == null) {
             String number = getIntent().getExtras().getString(AppContents.number_extras);
-            contact=smsmanager.getContact(this,number);
+            contact = smsmanager.getContact(this, number);
         }
 
-        toolbar=findViewById(R.id.message_activity_toolbar);
-        txt_name=toolbar.findViewById(R.id.message_activity_name);
+        toolbar = findViewById(R.id.message_activity_toolbar);
+        txt_name = toolbar.findViewById(R.id.message_activity_name);
         toolbar.setTitle("");
 
         recyclerView = findViewById(R.id.message_activity_recylerview);
-        send=findViewById(R.id.message_activity_send);
-        edit_message= findViewById(R.id.message_activity_input_message);
+        send = findViewById(R.id.message_activity_send);
+        edit_message = findViewById(R.id.message_activity_input_message);
         txt_count = findViewById(R.id.message_activity_message_count);
 
-        cursor= smsmanager.getMessageCursor(this,contact.getNumber());
-        messageAdapter=new MessageAdapter(items,selectedListener);
+        cursor = smsmanager.getMessageCursor(this, contact.getNumber());
+        messageAdapter = new MessageAdapter(items, selectedListener);
 
         recyclerView.setAdapter(messageAdapter);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
-        txt_name.setText(smsmanager.getName(this,contact.getNumber()));
+        txt_name.setText(smsmanager.getName(this, contact.getNumber()));
 
         //back.setOnClickListener(back_click);
         toolbar.setNavigationOnClickListener(back_click);
@@ -134,10 +135,10 @@ public class MessageActivity extends AppCompatActivity {
         SetReyclerListener();
         LoadMessage();
         ClearNotification();
-        smsmanager.readAllMessage(this,contact.getNumber());
+        smsmanager.readAllMessage(this, contact.getNumber());
 
         String smsBody = getIntent().getExtras().getString(AppContents.Sms_Body);
-        if (smsBody!=null){
+        if (smsBody != null) {
             edit_message.setText(smsBody);
             CalculateLength(smsBody);
         }
@@ -148,7 +149,7 @@ public class MessageActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.messages_menu,menu);
+        menuInflater.inflate(R.menu.messages_menu, menu);
         return true;
     }
 
@@ -156,7 +157,7 @@ public class MessageActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(sentReceiver, new IntentFilter("broadCastName"));
-        registerReceiver(smsReceiver,new IntentFilter(contact.getNumber()));
+        registerReceiver(smsReceiver, new IntentFilter(contact.getNumber()));
     }
 
     @Override
@@ -168,7 +169,7 @@ public class MessageActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.message_menu_call:
                 CallNumber();
                 break;
@@ -185,7 +186,7 @@ public class MessageActivity extends AppCompatActivity {
     private View.OnClickListener send_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            sendSMS(contact.getNumber(),edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString().trim());
+            sendSMS(contact.getNumber(), edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString().trim());
             edit_message.setText("");
         }
     };
@@ -207,16 +208,16 @@ public class MessageActivity extends AppCompatActivity {
         }
     };
 
-    private BroadcastReceiver sentReceiver =  new BroadcastReceiver() {
+    private BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent ıntent) {
-            load=true;
+            load = true;
             Uri uri = Uri.parse(ıntent.getStringExtra(AppContents.MessageUri));
-            items.add(0,smsmanager.getMessage(uri,getBaseContext()));
+            items.add(0, smsmanager.getMessage(uri, getBaseContext()));
             recyclerView.post(new Runnable() {
                 @Override
                 public void run() {
-                    load=false;
+                    load = false;
                     recyclerView.getAdapter().notifyDataSetChanged();
                 }
             });
@@ -226,15 +227,15 @@ public class MessageActivity extends AppCompatActivity {
     private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            load=true;
+            load = true;
             int id = intent.getExtras().getInt(AppContents.messageId_extras);
-            int notificationID=intent.getExtras().getInt(AppContents.notificationId_extras);
-            Message message=smsmanager.getMessage(smsmanager.getMessageUriWithID(id),context);
-            items.add(0,message);
+            int notificationID = intent.getExtras().getInt(AppContents.notificationId_extras);
+            Message message = smsmanager.getMessage(smsmanager.getMessageUriWithID(id), context);
+            items.add(0, message);
             recyclerView.post(new Runnable() {
                 @Override
                 public void run() {
-                    load=false;
+                    load = false;
                     recyclerView.getAdapter().notifyDataSetChanged();
                 }
             });
@@ -257,25 +258,25 @@ public class MessageActivity extends AppCompatActivity {
         @Override
         public void afterTextChanged(Editable s) {
             String count = CalculateLength(s.toString());
-            if (!count.isEmpty()){
-                if (txt_count.getVisibility()==View.GONE)
+            if (!count.isEmpty()) {
+                if (txt_count.getVisibility() == View.GONE)
                     txt_count.setVisibility(View.VISIBLE);
                 txt_count.setText(count);
-            }else{
-                if (txt_count.getVisibility()!=View.GONE)
+            } else {
+                if (txt_count.getVisibility() != View.GONE)
                     txt_count.setVisibility(View.GONE);
             }
         }
     };
 
-    private RecylerSelectedListener<Message> selectedListener= new RecylerSelectedListener<Message>() {
+    private RecylerSelectedListener<Message> selectedListener = new RecylerSelectedListener<Message>() {
 
         @Override
         public void Selected(int count, int position, List<Message> items) {
-            if (count>1)
+            if (count > 1)
                 toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
-            if (count!=0)
-                txt_name.setText(count+" Seçildi");
+            if (count != 0)
+                txt_name.setText(count + " Seçildi");
         }
 
         @Override
@@ -283,7 +284,7 @@ public class MessageActivity extends AppCompatActivity {
             txt_name.setText(contact.getNameText());
             toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(false);
             toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
-            if (items!=null)
+            if (items != null)
                 RemoveMessages(items);
         }
 
@@ -294,29 +295,29 @@ public class MessageActivity extends AppCompatActivity {
         }
     };
 
-    private void SetReyclerListener(){
+    private void SetReyclerListener() {
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 totalItemCount = linearLayoutManager.getItemCount();
-                lastVisibleItem=linearLayoutManager.findLastVisibleItemPosition();
-                if (!load && lastVisibleItem==totalItemCount-1){
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!load && lastVisibleItem == totalItemCount - 1) {
                     LoadMessage();
-                    load=true;
+                    load = true;
                     Log.e(TAG, "onScrolled: Add More");
                 }
             }
         });
     }
 
-    private void LoadMessage(){
+    private void LoadMessage() {
         items.addAll(smsmanager.getMessages(cursor));
         recyclerView.post(new Runnable() {
             @Override
             public void run() {
-                load=false;
+                load = false;
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         });
@@ -330,14 +331,14 @@ public class MessageActivity extends AppCompatActivity {
 
         registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
 
-        smsmanager.sendSms(this,message,phoneNumber);
+        smsmanager.sendSms(this, message, phoneNumber);
 
     }
 
-    private void ShowContact(){
+    private void ShowContact() {
         if (contact.getLookupKey().isEmpty()) {
-            Uri uri = Uri.parse("tel: "+contact.getNumber());
-            Intent intent =  new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
+            Uri uri = Uri.parse("tel: " + contact.getNumber());
+            Intent intent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
 
             if (intent.resolveActivity(getPackageManager()) == null) {
                 intent = new Intent(Intent.ACTION_INSERT)
@@ -345,7 +346,7 @@ public class MessageActivity extends AppCompatActivity {
                         .putExtra(ContactsContract.Intents.Insert.PHONE, contact.getNumber());
             }
             startActivity(intent);
-        }else{
+        } else {
             Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contact.getLookupKey());
             ContactsContract.QuickContact.showQuickContact(this, txt_name, uri,
                     ContactsContract.QuickContact.MODE_MEDIUM, null);
@@ -357,37 +358,37 @@ public class MessageActivity extends AppCompatActivity {
         notificationManager.cancel(notificationID);
     }
 
-    private void ClearNotification(){
+    private void ClearNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             for (StatusBarNotification notification : notificationManager.getActiveNotifications())
                 if (notification.getTag().equals(contact.getNumber()))
-                    notificationManager.cancel(notification.getTag(),notification.getId());
+                    notificationManager.cancel(notification.getTag(), notification.getId());
     }
 
-    private void CallNumber(){
+    private void CallNumber() {
         Intent intent = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + contact.getNumber()));
         startActivity(intent);
     }
 
-    private void RemoveMessages(List<Message> items){
+    private void RemoveMessages(List<Message> items) {
         this.items.clear();
-        smsmanager.RemoveMessages(this,items);
-        cursor= smsmanager.getMessageCursor(this,contact.getNumber());
+        smsmanager.RemoveMessages(this, items);
+        cursor = smsmanager.getMessageCursor(this, contact.getNumber());
         LoadMessage();
     }
 
-    private String CalculateLength(String draft){
-        String s="";
-        int[] arr= SmsMessage.calculateLength(draft, false);
+    private String CalculateLength(String draft) {
+        String s = "";
+        int[] arr = SmsMessage.calculateLength(draft, false);
         int messages = arr[0];
         int remaining = arr[2];
         if (messages <= 1 && remaining > 10)
-            s="";
-        else if ( messages <= 1 && remaining <= 10)
-            s+=remaining;
+            s = "";
+        else if (messages <= 1 && remaining <= 10)
+            s += remaining;
         else
-            s+=(remaining+" / "+messages);
+            s += (remaining + " / " + messages);
         return s;
     }
 }

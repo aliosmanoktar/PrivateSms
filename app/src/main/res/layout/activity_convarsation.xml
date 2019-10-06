@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (c) 2019. Ali Osman OKTAR
   ~ aliosmanoktar@gmail.com
   -->
@@ -10,38 +9,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.ConvarsationActivity">
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical">
-       <android.support.v7.widget.Toolbar
-           android:id="@+id/conversation_activity.toolbar"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:background="@color/dark"
-           app:popupTheme="@style/AppThemeLL"
-           android:theme="@style/ThemeOverlay.AppCompat.Dark"
-           >
-           <TextView
-               android:id="@+id/conversation_activity.toolbar_title"
-               android:textSize="16sp"
-               android:textColor="@color/white"
-               android:text="@string/app_name"
-               android:layout_width="wrap_content"
-               android:layout_height="match_parent"/>
 
-       </android.support.v7.widget.Toolbar>
-       <android.support.v7.widget.RecyclerView
-           android:padding="10dp"
-           android:id="@+id/conversation_activity.recylerview"
-           android:layout_width="match_parent"
-           android:layout_height="match_parent" />
-   </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/conversation_activity.toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/dark"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/AppThemeLL">
+
+            <TextView
+                android:id="@+id/conversation_activity.toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/app_name"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/conversation_activity.recylerview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp" />
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/conversation_activity.fab"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
@@ -49,6 +51,6 @@
         app:backgroundTint="@color/tools_theme"
         app:borderWidth="0dp"
         app:elevation="6dp"
-        app:fabSize="normal"/>
+        app:fabSize="normal" />
 
 </RelativeLayout>
