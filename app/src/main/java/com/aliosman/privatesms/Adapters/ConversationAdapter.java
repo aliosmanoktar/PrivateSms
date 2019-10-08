@@ -23,8 +23,6 @@ import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class ConversationAdapter extends BaseSelectedAdapter<Conversation, ConversationAdapter.ViewHolder> {
@@ -71,7 +69,7 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         viewHolder.itemView.setTag(item);
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact());
-        viewHolder.date.setText(getDateText(item.getDate()));
+        viewHolder.date.setText(item.getTimeString());
 
         if (isSelect(item)) {
             viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.dark));
@@ -100,10 +98,6 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
                 }
             }
         });
-    }
-
-    private String getDateText(long date) {
-        return new SimpleDateFormat("dd MMM").format(new Date(date));
     }
 
     @Override

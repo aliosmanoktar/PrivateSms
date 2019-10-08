@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.telephony.SmsMessage;
+import android.util.Log;
 
 import com.aliosman.privatesms.Activity.MessageActivity;
 import com.aliosman.privatesms.AppContents;
@@ -39,7 +40,7 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         MySmsManager manager = new MySmsManager();
         int id = manager.ReciveMessage(context, phoneNumber, body);
-        int notificationID = ShowNotification(context, body, phoneNumber, manager.getName(context, phoneNumber));
+        int notificationID = ShowNotification(context, body, phoneNumber, manager.getName(context, phoneNumber), id);
         Intent i = new Intent(phoneNumber);
         Bundle bu = new Bundle();
         bu.putInt(AppContents.messageId_extras, id);
@@ -49,12 +50,17 @@ public class SmsReceiver extends BroadcastReceiver {
         context.sendBroadcast(new Intent(AppContents.conversationBroadcast));
     }
 
-    private int ShowNotification(Context ctx, String body, String address, String name) {
-        /*Intent snoozeIntent = new Intent(ctx, Test.class);
-        snoozeIntent.setAction("Action Test");
-        snoozeIntent.putExtra(EXTRA_NOTIFICATION_ID, 0);*/
-        /*PendingIntent snoozePendingIntent =
-                PendingIntent.getBroadcast(ctx, 0, snoozeIntent, 0);*/
+    private int ShowNotification(Context ctx, String body, String address, String name, int messsageID) {
+        int NotificationID = new Random().nextInt();
+        Log.e(TAG, "ShowNotification: MessageID = " + messsageID);
+        Log.e(TAG, "ShowNotification: NotificationID = " + NotificationID);
+        Intent seen_intent = new Intent(ctx, NotificationActionReceiver.class);
+        seen_intent.setAction(AppContents.Action_seen_sms);
+        Bundle seen_bundle = new Bundle();
+        seen_bundle.putInt(AppContents.notificationId_extras, NotificationID);
+        seen_bundle.putInt(AppContents.messageId_extras, messsageID);
+        seen_intent.putExtras(seen_bundle);
+        PendingIntent seen_Pending_intent = PendingIntent.getBroadcast(ctx, 0, seen_intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Intent intent = new Intent(ctx, MessageActivity.class);
         Bundle bundle = new Bundle();
         bundle.putString(AppContents.number_extras, address);
@@ -67,9 +73,8 @@ public class SmsReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent);
-                /*.addAction(R.drawable.ic_delete, "Test", snoozePendingIntent)
-                .addAction(R.drawable.ic_delete, "Test 2", snoozePendingIntent);*/
+                .setContentIntent(pendingIntent)
+                .addAction(R.drawable.ic_double_tick, "Okundu olarak İşaretle", seen_Pending_intent);
         NotificationManager notificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -78,7 +83,6 @@ public class SmsReceiver extends BroadcastReceiver {
             mChannel.setShowBadge(true);
             notificationManager.createNotificationChannel(mChannel);
         }
-        int NotificationID = new Random().nextInt();
         notificationManager.notify(address, NotificationID, notificationBuilder.build());
         return NotificationID;
     }

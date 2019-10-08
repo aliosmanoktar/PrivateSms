@@ -240,6 +240,7 @@ public class MessageActivity extends AppCompatActivity {
                 }
             });
             clearNotification(notificationID);
+            smsmanager.readSms(context, id);
             Log.e(TAG, "onReceive: Sms Receiver");
         }
     };
@@ -355,15 +356,20 @@ public class MessageActivity extends AppCompatActivity {
 
     private void clearNotification(int notificationID) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(notificationID);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            for (StatusBarNotification notification : notificationManager.getActiveNotifications())
+                if (notification.getId() == notificationID) {
+                    notificationManager.cancel(notification.getTag(), notification.getId());
+                }
     }
 
     private void ClearNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             for (StatusBarNotification notification : notificationManager.getActiveNotifications())
-                if (notification.getTag().equals(contact.getNumber()))
+                if (notification.getTag().equals(contact.getNumber())) {
                     notificationManager.cancel(notification.getTag(), notification.getId());
+                }
     }
 
     private void CallNumber() {

@@ -15,4 +15,5 @@ public class AppContents {
     public static final String ChannelName = "Message";
     public static final String MessageUri = "message_uri";
     public static final String Sms_Body = "sms_body";
+    public static final String Action_seen_sms = "Action_Seen_Sms";
 }

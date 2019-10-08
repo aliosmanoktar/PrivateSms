@@ -295,6 +295,12 @@ public class MySmsManager {
         ctx.getContentResolver().update(Uri.parse(_SmsString), values, _address + " = '" + phoneNumber + "'", null);
     }
 
+    public void readSms(Context ctx, int ID) {
+        ContentValues values = new ContentValues();
+        values.put(_read, 1);
+        ctx.getContentResolver().update(Uri.parse(_SmsString), values, _id + " = " + ID, null);
+    }
+
     public int getNonReadSmsCount(Context ctx, String phoneNumber) {
         Cursor cur = ctx.getContentResolver().query(Uri.parse(_SmsString), null, _address + " = '" + phoneNumber + "' and read=0", null, null);
         return cur.getCount();

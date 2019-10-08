@@ -75,7 +75,9 @@
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
             </intent-filter>
-        </receiver> <!-- End Receiver -->
+        </receiver>
+        <receiver android:name=".Receiver.NotificationActionReceiver" />
+        <!-- End Receiver -->
         <!-- Service -->
         <service
             android:name=".Services.SmsService"

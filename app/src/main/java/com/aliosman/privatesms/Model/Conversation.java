@@ -6,8 +6,14 @@
 package com.aliosman.privatesms.Model;
 
 import android.support.annotation.NonNull;
+import android.text.format.DateUtils;
 
 import com.google.gson.Gson;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Conversation {
 
@@ -82,6 +88,22 @@ public class Conversation {
         return pinned;
     }
 
+    public String getTimeString() {
+        DateFormat dateFormat =
+                DateUtils.isToday(date) ?
+                        new SimpleDateFormat("HH:mm") :
+                        (IsYear() ?
+                                new SimpleDateFormat("dd MMM") :
+                                new SimpleDateFormat("dd MM yyyy"));
+        return dateFormat.format(new Date(date));
+    }
+
+    private boolean IsYear() {
+        Date date = new Date(getDate());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR);
+    }
     @NonNull
     @Override
     public String toString() {
