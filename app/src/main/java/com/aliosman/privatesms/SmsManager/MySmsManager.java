@@ -181,13 +181,6 @@ public class MySmsManager {
         return new Contact().setLookupKey(lookoup).setNumber(address).setName(name).setID(id);
     }
 
-    /**
-     * Parçalı gönderme eklenecek-Test Edilmesi Gerek
-     *
-     * @param ctx
-     * @param messageBody
-     * @param phoneNumber
-     */
     public void sendSms(Context ctx, String messageBody, String phoneNumber) {
         Calendar cal = Calendar.getInstance();
         Message message = new Message()

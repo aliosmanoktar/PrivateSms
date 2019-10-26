@@ -47,45 +47,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MessageActivity extends AppCompatActivity {
-    BroadcastReceiver sendBroadcastReceiver = new SentReceiver();
-    BroadcastReceiver deliveryBroadcastReciever = new DeliverReceiver();
-    /***
-     *   view.textChangedIntent
-     *                 .observeOn(Schedulers.computation())
-     *                 .mapNotNull { draft -> tryOrNull { SmsMessage.calculateLength(draft, prefs.unicode.get()) } }
-     *                 .map { array ->
-     *                     val messages = array[0]
-     *                     val remaining = array[2]
-     *
-     *                     when {
-     *                         messages <= 1 && remaining > 10 -> ""
-     *                         messages <= 1 && remaining <= 10 -> "$remaining"
-     *                         else -> "$remaining / $messages"
-     *                     }
-     *                 }
-     */
-    private List<Message> items = new ArrayList<>(
-    /*Arrays.asList(new Message[]{
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("Send").setSent(true),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("Send").setSent(true),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("Send").setSent(true),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("test").setSent(false),
-                    new Message().setMessage("Send").setSent(true),
-            })*/
-    );
+    private BroadcastReceiver sendBroadcastReceiver = new SentReceiver();
+    private BroadcastReceiver deliveryBroadcastReciever = new DeliverReceiver();
+    private List<Message> items = new ArrayList<>();
     private MessageAdapter messageAdapter;
     private boolean load = false;
     private int totalItemCount, lastVisibleItem;
@@ -186,7 +150,7 @@ public class MessageActivity extends AppCompatActivity {
     private View.OnClickListener send_click = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            sendSMS(contact.getNumber(), edit_message.getText().toString().isEmpty() ? "SmsContentTest23" : edit_message.getText().toString().trim());
+            sendSMS(contact.getNumber(), edit_message.getText().toString().trim());
             edit_message.setText("");
         }
     };
@@ -241,7 +205,6 @@ public class MessageActivity extends AppCompatActivity {
             });
             clearNotification(notificationID);
             smsmanager.readSms(context, id);
-            Log.e(TAG, "onReceive: Sms Receiver");
         }
     };
 

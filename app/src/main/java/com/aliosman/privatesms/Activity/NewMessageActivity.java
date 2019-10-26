@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
@@ -103,7 +102,6 @@ public class NewMessageActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putSerializable(AppContents.contact_extras, item);
             if (smsBody != null) {
-                Log.e(TAG, "Onclick: Body NotNull");
                 bundle.putString(AppContents.Sms_Body, smsBody);
             }
             i.putExtras(bundle);

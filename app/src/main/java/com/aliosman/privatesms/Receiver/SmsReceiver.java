@@ -108,11 +108,6 @@ public class SmsReceiver extends BroadcastReceiver {
         RemoteInput remoteInput = new RemoteInput.Builder(AppContents.Action_reply_text)
                 .setLabel(replyLabel)
                 .build();
-        /*PendingIntent replyPendingIntent =
-                PendingIntent.getBroadcast(ctx,
-                        0,
-                        getSeenIntent(ctx,-1,-1),
-                        PendingIntent.FLAG_UPDATE_CURRENT);*/
         NotificationCompat.Action action =
                 new NotificationCompat.Action.Builder(R.drawable.ic_reply,
                         "Cevapla", getReplyIntent(ctx, NotificationID, MessadeID, address))

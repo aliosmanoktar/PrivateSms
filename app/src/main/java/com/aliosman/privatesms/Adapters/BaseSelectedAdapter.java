@@ -105,10 +105,11 @@ public abstract class BaseSelectedAdapter<T, VH extends RecyclerView.ViewHolder>
      * @return
      */
     protected boolean isSelect(T item) {
-        for (T temp : selected)
+        return selected.contains(item);
+        /*for (T temp : selected)
             if (temp.equals(item))
                 return true;
-        return false;
+        return false;*/
     }
 
     protected void Select(T item, int position, boolean select) {
