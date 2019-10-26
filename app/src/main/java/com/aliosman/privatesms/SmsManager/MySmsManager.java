@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
-import android.util.Log;
 
 import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.ContactComparator;
@@ -85,6 +84,7 @@ public class MySmsManager {
             String address = cursor.getString(cursor.getColumnIndex(_address));
             int read = cursor.getInt(cursor.getColumnIndex(_read));
             int type = cursor.getInt(cursor.getColumnIndex(_type));
+            long thread_id = cursor.getLong(cursor.getColumnIndex(_thread_id));
             items.add(new Conversation()
                     .setMessage(body)
                     .setDate(TimeStamp)
@@ -92,6 +92,7 @@ public class MySmsManager {
                     .setType(type)
                     .setCount(getNonReadSmsCount(ctx, address))
                     .setPinned(pinned.contains(address))
+                    .setThreadId(thread_id)
                     .setContact(
                             getContact(ctx, address)
                     )
@@ -181,6 +182,10 @@ public class MySmsManager {
         return new Contact().setLookupKey(lookoup).setNumber(address).setName(name).setID(id);
     }
 
+    // remove spaces and dashes from destination number
+    // (e.g. "801 555 1212" -> "8015551212")
+    // (e.g. "+8211-123-4567" -> "+82111234567")
+    //sms sender 205
     public void sendSms(Context ctx, String messageBody, String phoneNumber) {
         Calendar cal = Calendar.getInstance();
         Message message = new Message()
@@ -251,19 +256,10 @@ public class MySmsManager {
         return messageId;
     }
 
-    /**
-     * Eksik var
-     * Random olarak oluşturmak yerine conversation eklenerek onun id'si Kullanılmalı
-     *
-     * @param ctx
-     * @param phoneNumber
-     * @return
-     */
     private long getThreadID(Context ctx, String phoneNumber) {
         Uri.Builder uriBuilder = Uri.parse("content://mms-sms/threadID").buildUpon();
         uriBuilder.appendQueryParameter("recipient", phoneNumber);
         Uri uri = uriBuilder.build();
-        Log.e(TAG, "getThreadID: " + uri);
         Cursor cursor = ctx.getContentResolver().query(uri, new String[]{"_id"}, null, null, null);
         if (cursor != null) {
             try {
@@ -333,7 +329,6 @@ public class MySmsManager {
                 }
                 pCur.close();
             }
-
             items.add(
                     new Contact()
                             .setName(name)

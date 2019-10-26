@@ -38,17 +38,6 @@ import java.util.List;
 
 public class ConvarsationActivity extends AppCompatActivity {
 
-    /*private List<Conversation> items = new ArrayList<Conversation>(
-            Arrays.asList(
-                    new Conversation().setMessage("test").setContact(new Contact().setName("Ali")),
-                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
-                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
-                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
-                    new Conversation().setMessage("test").setContact(new Contact().setName("ali")),
-                    new Conversation().setMessage("test").setContact(new Contact().setName("ali"))
-            )
-    );*/
-
     private String TAG = getClass().getName();
     private ConversationAdapter recylerAdapter = null;
     private TextView toolbar_title;

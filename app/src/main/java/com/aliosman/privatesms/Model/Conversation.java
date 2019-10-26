@@ -24,6 +24,7 @@ public class Conversation {
     private int count = 0;
     private int type;
     private boolean pinned = false;
+    private long threadId;
 
     public Conversation setType(int type) {
         this.type = type;
@@ -60,6 +61,11 @@ public class Conversation {
         return this;
     }
 
+    public Conversation setThreadId(long threadId) {
+        this.threadId = threadId;
+        return this;
+    }
+
     public long getDate() {
         return date;
     }
@@ -86,6 +92,10 @@ public class Conversation {
 
     public boolean isPinned() {
         return pinned;
+    }
+
+    public long getThreadId() {
+        return threadId;
     }
 
     public String getTimeString() {
