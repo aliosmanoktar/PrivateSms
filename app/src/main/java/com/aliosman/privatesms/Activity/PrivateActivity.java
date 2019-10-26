@@ -160,14 +160,17 @@ public class PrivateActivity extends AppCompatActivity {
     private RecyclerViewListener<Conversation> select_listener = new RecyclerViewListener<Conversation>() {
         @Override
         public void Onclick(Conversation item) {
-          /*select=false;
-          database.AddNumber(item.getContact().getNumber());
-          SetPrivateAdapter();*/
-            Intent i = new Intent(getBaseContext(), MessageActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putSerializable(AppContents.contact_extras, item.getContact());
-            i.putExtras(bundle);
-            startActivity(i);
+            if (select) {
+                select = false;
+                database.AddNumber(item.getContact().getNumber());
+                SetPrivateAdapter();
+            } else {
+                Intent i = new Intent(getBaseContext(), MessageActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(AppContents.contact_extras, item.getContact());
+                i.putExtras(bundle);
+                startActivity(i);
+            }
         }
     };
 
