@@ -5,7 +5,10 @@
 
 package com.aliosman.privatesms.Activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -84,6 +87,19 @@ public class PrivateActivity extends AppCompatActivity {
                 break;
         }
         return true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(smsReceiver, new IntentFilter(AppContents.conversationBroadcast));
+        SetPrivateAdapter();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(smsReceiver);
     }
 
     private View.OnClickListener back_listener = new View.OnClickListener() {
@@ -190,4 +206,12 @@ public class PrivateActivity extends AppCompatActivity {
             toolbar.getMenu().findItem(R.id.privates_menu_remove).setVisible(true);
         }
     };
+
+    private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            SetPrivateAdapter();
+        }
+    };
+
 }

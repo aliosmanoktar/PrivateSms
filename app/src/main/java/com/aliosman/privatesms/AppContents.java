@@ -16,4 +16,6 @@ public class AppContents {
     public static final String MessageUri = "message_uri";
     public static final String Sms_Body = "sms_body";
     public static final String Action_seen_sms = "Action_Seen_Sms";
+    public static final String Action_reply_sms = "Action_Reply_Sms";
+    public static final String Action_reply_text = "key_text_reply";
 }

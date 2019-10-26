@@ -99,9 +99,6 @@ public abstract class BaseSelectedAdapter<T, VH extends RecyclerView.ViewHolder>
     }
 
     /**
-     * İşte bak hata o gördünmü kendini yenilemedi
-     */
-    /**
      * Contains ile dene
      *
      * @param item

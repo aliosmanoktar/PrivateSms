@@ -15,8 +15,8 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.telephony.SmsMessage;
-import android.util.Log;
 
 import com.aliosman.privatesms.Activity.MessageActivity;
 import com.aliosman.privatesms.AppContents;
@@ -52,20 +52,6 @@ public class SmsReceiver extends BroadcastReceiver {
 
     private int ShowNotification(Context ctx, String body, String address, String name, int messsageID) {
         int NotificationID = new Random().nextInt();
-        Log.e(TAG, "ShowNotification: MessageID = " + messsageID);
-        Log.e(TAG, "ShowNotification: NotificationID = " + NotificationID);
-        Intent seen_intent = new Intent(ctx, NotificationActionReceiver.class);
-        seen_intent.setAction(AppContents.Action_seen_sms);
-        Bundle seen_bundle = new Bundle();
-        seen_bundle.putInt(AppContents.notificationId_extras, NotificationID);
-        seen_bundle.putInt(AppContents.messageId_extras, messsageID);
-        seen_intent.putExtras(seen_bundle);
-        PendingIntent seen_Pending_intent = PendingIntent.getBroadcast(ctx, 0, seen_intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        Intent intent = new Intent(ctx, MessageActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putString(AppContents.number_extras, address);
-        intent.putExtras(bundle);
-        PendingIntent pendingIntent = PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, AppContents.ChannelID)
                 .setSmallIcon(R.drawable.ic_message)
                 .setContentTitle(name)
@@ -73,8 +59,9 @@ public class SmsReceiver extends BroadcastReceiver {
                 .setAutoCancel(true)
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .addAction(R.drawable.ic_double_tick, "Okundu olarak İşaretle", seen_Pending_intent);
+                .setContentIntent(getClickIntent(ctx, address))
+                .addAction(R.drawable.ic_double_tick, "Okundu olarak İşaretle", getSeenIntent(ctx, NotificationID, messsageID))
+                .addAction(getQucikReply(ctx, NotificationID, messsageID, address));
         NotificationManager notificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -85,5 +72,52 @@ public class SmsReceiver extends BroadcastReceiver {
         }
         notificationManager.notify(address, NotificationID, notificationBuilder.build());
         return NotificationID;
+    }
+
+    private PendingIntent getReplyIntent(Context ctx, int NotificationID, int MessageID, String address) {
+        Intent reply_intent = new Intent(ctx, NotificationActionReceiver.class);
+        reply_intent.setAction(AppContents.Action_reply_sms);
+        Bundle reply_bundle = new Bundle();
+        reply_bundle.putInt(AppContents.notificationId_extras, NotificationID);
+        reply_bundle.putInt(AppContents.messageId_extras, MessageID);
+        reply_bundle.putString(AppContents.number_extras, address);
+        reply_intent.putExtras(reply_bundle);
+        return PendingIntent.getBroadcast(ctx, 0, reply_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent getSeenIntent(Context ctx, int NotificationID, int MessageID) {
+        Intent seen_intent = new Intent(ctx, NotificationActionReceiver.class);
+        seen_intent.setAction(AppContents.Action_seen_sms);
+        Bundle seen_bundle = new Bundle();
+        seen_bundle.putInt(AppContents.notificationId_extras, NotificationID);
+        seen_bundle.putInt(AppContents.messageId_extras, MessageID);
+        seen_intent.putExtras(seen_bundle);
+        return PendingIntent.getBroadcast(ctx, 0, seen_intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private PendingIntent getClickIntent(Context ctx, String address) {
+        Intent intent = new Intent(ctx, MessageActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString(AppContents.number_extras, address);
+        intent.putExtras(bundle);
+        return PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+    }
+
+    private NotificationCompat.Action getQucikReply(Context ctx, int NotificationID, int MessadeID, String address) {
+        String replyLabel = "Cevapla";
+        RemoteInput remoteInput = new RemoteInput.Builder(AppContents.Action_reply_text)
+                .setLabel(replyLabel)
+                .build();
+        /*PendingIntent replyPendingIntent =
+                PendingIntent.getBroadcast(ctx,
+                        0,
+                        getSeenIntent(ctx,-1,-1),
+                        PendingIntent.FLAG_UPDATE_CURRENT);*/
+        NotificationCompat.Action action =
+                new NotificationCompat.Action.Builder(R.drawable.ic_reply,
+                        "Cevapla", getReplyIntent(ctx, NotificationID, MessadeID, address))
+                        .addRemoteInput(remoteInput)
+                        .build();
+        return action;
     }
 }

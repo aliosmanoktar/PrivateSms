@@ -82,29 +82,18 @@ public class ConvarsationActivity extends AppCompatActivity {
         }
     }
 
-    private void ShowMessageActivity(String body, String address) {
-        Intent i;
-        if (address == null) {
-            i = new Intent(this, NewMessageActivity.class);
-            Bundle b = new Bundle();
-            b.putString(AppContents.Sms_Body, body);
-            i.putExtras(b);
-        } else {
-            i = new Intent(this, MessageActivity.class);
-            Bundle b = new Bundle();
-            Contact c = new Contact().setNumber(address).setName(manager.getName(this, address)).setLookupKey("");
-            b.putSerializable(AppContents.contact_extras, c);
-            b.putString(AppContents.Sms_Body, body);
-            i.putExtras(b);
-        }
-        startActivity(i);
-    }
 
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(smsReceiver, new IntentFilter(AppContents.conversationBroadcast));
         ReplaceScreen();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(smsReceiver);
     }
 
     @Override
@@ -180,6 +169,24 @@ public class ConvarsationActivity extends AppCompatActivity {
             ReplaceScreen();
         }
     };
+
+    private void ShowMessageActivity(String body, String address) {
+        Intent i;
+        if (address == null) {
+            i = new Intent(this, NewMessageActivity.class);
+            Bundle b = new Bundle();
+            b.putString(AppContents.Sms_Body, body);
+            i.putExtras(b);
+        } else {
+            i = new Intent(this, MessageActivity.class);
+            Bundle b = new Bundle();
+            Contact c = new Contact().setNumber(address).setName(manager.getName(this, address)).setLookupKey("");
+            b.putSerializable(AppContents.contact_extras, c);
+            b.putString(AppContents.Sms_Body, body);
+            i.putExtras(b);
+        }
+        startActivity(i);
+    }
 
     private View.OnClickListener fab_click = new View.OnClickListener() {
         @Override
