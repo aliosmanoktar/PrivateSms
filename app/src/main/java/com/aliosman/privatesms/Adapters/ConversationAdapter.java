@@ -105,6 +105,14 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         return items.size();
     }
 
+    @Override
+    public int GetPosition(Conversation item) {
+        for (int i = 0; i < items.size(); i++)
+            if (items.get(i).getThreadId() == item.getThreadId())
+                return i;
+        return -1;
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView name;

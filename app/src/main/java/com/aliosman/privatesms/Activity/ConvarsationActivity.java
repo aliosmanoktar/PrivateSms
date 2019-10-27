@@ -14,10 +14,12 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Telephony;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,8 +35,10 @@ import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
 import com.aliosman.privatesms.SmsManager.PrivateDatabase;
+import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeInfoDialog;
 
 import java.util.List;
+import java.util.Map;
 
 public class ConvarsationActivity extends AppCompatActivity {
 
@@ -45,6 +49,7 @@ public class ConvarsationActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private FloatingActionButton fab_button;
     private MySmsManager manager = new MySmsManager();
+    private View RootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +65,8 @@ public class ConvarsationActivity extends AppCompatActivity {
         recyclerView.setAdapter(recylerAdapter);
         fab_button = findViewById(R.id.conversation_activity_fab);
         fab_button.setOnClickListener(fab_click);
+
+        RootView = findViewById(R.id.conversation_activity_rootView);
         setDefaultSmsApp();
         Bundle bundle = getIntent().getExtras();
 
@@ -213,7 +220,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.conversation_menu_remove:
                 List<Conversation> items = recylerAdapter.getSelected();
-                RemoveConversations(items);
+                RemoveConversationQuestion(items);
                 recylerAdapter.EndSelect();
                 break;
             case R.id.conversation_menu_pinned:
@@ -247,8 +254,43 @@ public class ConvarsationActivity extends AppCompatActivity {
         ReplaceScreen();
     }
 
-    private void RemoveConversations(List<Conversation> items) {
-        manager.RemoveConversations(this, items);
-        ReplaceScreen();
+    private void RemoveConversationQuestion(List<Conversation> items) {
+        new AwesomeInfoDialog(this)
+                .setPositiveButtonText("Sil")
+                .setNegativeButtonText("İptal ")
+                .setNegativeButtonTextColor(R.color.white)
+                .setPositiveButtonbackgroundColor(R.color.colorRed)
+                .setNegativeButtonbackgroundColor(R.color.tools_theme)
+                .setTitle("Uyarı")
+                .setMessage("Geçerli konuşmaları silmek istediğinizden eminmisiniz?")
+                .setPositiveButtonClick(() -> {
+                    RemoveConversations(items);
+                })
+                .setNegativeButtonClick(() -> {
+
+                }).show();
+    }
+
+    private void RemoveConversations(final List<Conversation> items) {
+        final Map<Integer, Conversation> conversationMap = recylerAdapter.RemoveAll(items);
+        Snackbar snackbar = Snackbar.make(RootView, items.size() == 1
+                ? "Konuşma Silindi "
+                : "Konuşmalar Silindi", Snackbar.LENGTH_LONG);
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                Log.e(TAG, "onDismissed: " + event);
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    Log.e(TAG, "onDismissed: Silindi");
+                    manager.RemoveConversations(getBaseContext(), items);
+                    ReplaceScreen();
+                }
+            }
+        });
+        snackbar.setAction("Geri Al", v -> {
+            recylerAdapter.RestoreAll(conversationMap);
+        });
+        snackbar.setActionTextColor(getResources().getColor(R.color.colorRed));
+        snackbar.show();
     }
 }

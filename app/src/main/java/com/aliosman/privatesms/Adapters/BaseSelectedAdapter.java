@@ -15,7 +15,10 @@ import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /***
  * Hata Var Düzeltilmesi gerek
@@ -129,6 +132,32 @@ public abstract class BaseSelectedAdapter<T, VH extends RecyclerView.ViewHolder>
             selectedListener.SelectedEnded(null);
     }
 
+    public Map<Integer, T> RemoveAll(List<T> items) {
+        Map<Integer, T> items_hash =
+                new HashMap<>();
+        List<Integer> positionList = new ArrayList<>();
+        for (T item : items) {
+            int position = GetPosition(item);
+            positionList.add(position);
+            items_hash.put(position, item);
+            Log.e(TAG, "RemoveAll: {item: " + item.toString() + " position: " + position + " }");
+        }
+        this.items.removeAll(items);
+        notifyDataSetChanged();
+        return items_hash;
+    }
+
+    public void RestoreAll(Map<Integer, T> items_hash) {
+        List<Integer> sortedList = new ArrayList<>(items_hash.keySet());
+        Collections.sort(sortedList);
+        for (Integer position : sortedList) {
+            this.items.add(position, items_hash.get(position));
+            Log.e(TAG, "RestoreAll: {item : " + toString() + " position: " + position + " }");
+        }
+        notifyDataSetChanged();
+    }
+
+    public abstract int GetPosition(T item);
     public void EndSelect() {
         Log.e(TAG, "EndSelect: ");
         select = false;

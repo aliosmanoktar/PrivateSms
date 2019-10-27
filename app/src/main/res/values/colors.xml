@@ -15,4 +15,5 @@
     <color name="hint_color">#AD192025</color>
     <color name="select_color">#6AFFFFFF</color>
     <color name="transparent">#00000000</color>
+    <color name="colorRed">#B71C1C</color>
 </resources>

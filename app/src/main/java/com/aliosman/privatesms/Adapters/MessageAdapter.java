@@ -54,6 +54,14 @@ public class MessageAdapter extends BaseSelectedAdapter<Message, MessageAdapter.
     }
 
     @Override
+    public int GetPosition(Message item) {
+        for (int i = 0; i < items.size(); i++)
+            if (items.get(i).getID() == item.getID())
+                return i;
+        return -1;
+    }
+
+    @Override
     public int getItemCount() {
         return items.size();
     }
