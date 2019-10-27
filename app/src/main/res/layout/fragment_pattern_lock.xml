@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activity.LockActivity"
+    android:orientation="vertical"
+    android:background="@color/hint_color">
+
+    <RelativeLayout
+        android:padding="30dp"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center">
+
+        <LinearLayout
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:padding="20dp"
+                android:src="@drawable/ic_lock"
+                android:background="@drawable/circle"
+                android:backgroundTint="@color/dark"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
+            <TextView
+                android:id="@+id/pattern_lock_activity.title"
+                android:textColor="@color/white"
+                android:layout_gravity="center"
+                android:maxLines="1"
+                android:textSize="20sp"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Kilitli" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <com.andrognito.patternlockview.PatternLockView
+        android:id="@+id/pattern_lock_activity.pattern_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:dotCount="3"
+        app:dotAnimationDuration="200"
+        app:pathEndAnimationDuration="100"
+        app:normalStateColor="@color/white"
+        app:wrongStateColor="@color/colorRed"
+        app:correctStateColor="@color/colorPrimary"
+        app:aspectRatio="square"
+        app:aspectRatioEnabled="true" />
+</LinearLayout>

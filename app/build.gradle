@@ -34,4 +34,5 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.blennerSilva:AwesomeDialog:2.0.6'
+    implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
 }

@@ -183,7 +183,7 @@ public class ConvarsationActivity extends AppCompatActivity {
 
     private View.OnClickListener title_click = v -> {
         if (!recylerAdapter.isSelect())
-            startActivity(new Intent(getBaseContext(), PrivateActivity.class));
+            startActivity(new Intent(getBaseContext(), LockActivity.class));
     };
 
     /***
