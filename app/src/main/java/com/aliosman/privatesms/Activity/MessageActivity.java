@@ -242,6 +242,7 @@ public class MessageActivity extends AppCompatActivity {
             txt_name.setText(contact.getNameText());
             toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(false);
             toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
+            toolbar.getMenu().findItem(R.id.message_menu_call).setVisible(true);
             if (items != null)
                 RemoveConversationQuestion(items);
         }
@@ -250,6 +251,7 @@ public class MessageActivity extends AppCompatActivity {
         public void SelectedStart() {
             toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(true);
             toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(true);
+            toolbar.getMenu().findItem(R.id.message_menu_call).setVisible(false);
         }
     };
 

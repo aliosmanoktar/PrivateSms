@@ -12,6 +12,7 @@
     tools:context=".Activity.PrivateActivity"
     android:orientation="vertical">
     <android.support.v7.widget.Toolbar
+        android:animateLayoutChanges="true"
         android:id="@+id/private_activity.toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -17,11 +17,15 @@
         android:layout_height="wrap_content"
         android:background="@color/dark">
         <android.support.v7.widget.Toolbar
+            android:animateLayoutChanges="true"
             android:id="@+id/message_activity.toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:title="">
+            app:title=""
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:popupTheme="@style/AppThemeLL">
             <TextView
+                android:animateLayoutChanges="true"
                 android:id="@+id/message_activity.name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -29,47 +33,6 @@
                 android:textSize="16sp"
                 tools:text="@tools:sample/full_names"/>
         </android.support.v7.widget.Toolbar>
-<!--        <ImageView
-            android:id="@+id/message_activity.back"
-            android:padding="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_arrow_back_white_24dp" />
-
-        <TextView
-            android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            android:layout_alignEnd="@id/message_activity.menu_layout"
-            android:id="@+id/message_activity.name"
-            android:layout_toEndOf="@id/message_activity.back"
-            android:gravity="center_vertical"
-            android:textSize="20sp"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textColor="@color/white"
-            tools:text="@tools:sample/lorem/random"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
-
-        <LinearLayout
-
-            android:id="@+id/message_activity.menu_layout"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/message_activity.call"
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_call_white_24dp" />
-
-            <ImageView
-                android:id="@+id/message_activity.more"
-                android:layout_width="30dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_more_vert_white_24dp" />
-        </LinearLayout>-->
     </LinearLayout>
 
     <RelativeLayout
