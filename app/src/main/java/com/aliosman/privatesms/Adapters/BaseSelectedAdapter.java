@@ -157,7 +157,9 @@ public abstract class BaseSelectedAdapter<T, VH extends RecyclerView.ViewHolder>
         notifyDataSetChanged();
     }
 
-    public abstract int GetPosition(T item);
+    public int GetPosition(T item) {
+        return items.indexOf(item);
+    }
     public void EndSelect() {
         Log.e(TAG, "EndSelect: ");
         select = false;

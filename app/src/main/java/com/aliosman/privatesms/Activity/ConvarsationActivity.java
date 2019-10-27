@@ -149,12 +149,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         @Override
         public void SelectedStart() {
             toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    recylerAdapter.RemoveSelected();
-                }
-            });
+            toolbar.setNavigationOnClickListener(v -> recylerAdapter.RemoveSelected());
             toolbar.getMenu().findItem(R.id.conversation_menu_remove).setVisible(true);
         }
     };
@@ -184,19 +179,11 @@ public class ConvarsationActivity extends AppCompatActivity {
         startActivity(i);
     }
 
-    private View.OnClickListener fab_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent(getBaseContext(), NewMessageActivity.class));
-        }
-    };
+    private View.OnClickListener fab_click = v -> startActivity(new Intent(getBaseContext(), NewMessageActivity.class));
 
-    private View.OnClickListener title_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (!recylerAdapter.isSelect())
-                startActivity(new Intent(getBaseContext(), PrivateActivity.class));
-        }
+    private View.OnClickListener title_click = v -> {
+        if (!recylerAdapter.isSelect())
+            startActivity(new Intent(getBaseContext(), PrivateActivity.class));
     };
 
     /***
@@ -290,7 +277,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         snackbar.setAction("Geri Al", v -> {
             recylerAdapter.RestoreAll(conversationMap);
         });
-        snackbar.setActionTextColor(getResources().getColor(R.color.colorRed));
+        snackbar.setActionTextColor(getResources().getColor(R.color.tools_theme));
         snackbar.show();
     }
 }

@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.service.notification.StatusBarNotification;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -42,9 +43,11 @@ import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.Receiver.DeliverReceiver;
 import com.aliosman.privatesms.Receiver.SentReceiver;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
+import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeInfoDialog;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class MessageActivity extends AppCompatActivity {
     private BroadcastReceiver sendBroadcastReceiver = new SentReceiver();
@@ -62,6 +65,7 @@ public class MessageActivity extends AppCompatActivity {
     private ImageView send;
     private Toolbar toolbar;
     private Contact contact;
+    private View RootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +85,7 @@ public class MessageActivity extends AppCompatActivity {
         send = findViewById(R.id.message_activity_send);
         edit_message = findViewById(R.id.message_activity_input_message);
         txt_count = findViewById(R.id.message_activity_message_count);
+        RootView = findViewById(R.id.message_activity_rootView);
 
         cursor = smsmanager.getMessageCursor(this, contact.getNumber());
         messageAdapter = new MessageAdapter(items, selectedListener);
@@ -155,12 +160,7 @@ public class MessageActivity extends AppCompatActivity {
         }
     };
 
-    private View.OnClickListener name_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            ShowContact();
-        }
-    };
+    private View.OnClickListener name_click = v -> ShowContact();
 
     private View.OnClickListener back_click = new View.OnClickListener() {
         @Override
@@ -174,16 +174,13 @@ public class MessageActivity extends AppCompatActivity {
 
     private BroadcastReceiver sentReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent ıntent) {
+        public void onReceive(Context context, Intent intent) {
             load = true;
-            Uri uri = Uri.parse(ıntent.getStringExtra(AppContents.MessageUri));
+            Uri uri = Uri.parse(intent.getStringExtra(AppContents.MessageUri));
             items.add(0, smsmanager.getMessage(uri, getBaseContext()));
-            recyclerView.post(new Runnable() {
-                @Override
-                public void run() {
-                    load = false;
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                }
+            recyclerView.post(() -> {
+                load = false;
+                recyclerView.getAdapter().notifyDataSetChanged();
             });
         }
     };
@@ -196,12 +193,9 @@ public class MessageActivity extends AppCompatActivity {
             int notificationID = intent.getExtras().getInt(AppContents.notificationId_extras);
             Message message = smsmanager.getMessage(smsmanager.getMessageUriWithID(id), context);
             items.add(0, message);
-            recyclerView.post(new Runnable() {
-                @Override
-                public void run() {
-                    load = false;
-                    recyclerView.getAdapter().notifyDataSetChanged();
-                }
+            recyclerView.post(() -> {
+                load = false;
+                recyclerView.getAdapter().notifyDataSetChanged();
             });
             clearNotification(notificationID);
             smsmanager.readSms(context, id);
@@ -249,7 +243,7 @@ public class MessageActivity extends AppCompatActivity {
             toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(false);
             toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
             if (items != null)
-                RemoveMessages(items);
+                RemoveConversationQuestion(items);
         }
 
         @Override
@@ -278,12 +272,9 @@ public class MessageActivity extends AppCompatActivity {
 
     private void LoadMessage() {
         items.addAll(smsmanager.getMessages(cursor));
-        recyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                load = false;
-                recyclerView.getAdapter().notifyDataSetChanged();
-            }
+        recyclerView.post(() -> {
+            load = false;
+            recyclerView.getAdapter().notifyDataSetChanged();
         });
     }
 
@@ -340,11 +331,46 @@ public class MessageActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    private void RemoveConversationQuestion(List<Message> items) {
+        new AwesomeInfoDialog(this)
+                .setPositiveButtonText("Sil")
+                .setNegativeButtonText("İptal ")
+                .setNegativeButtonTextColor(R.color.white)
+                .setPositiveButtonbackgroundColor(R.color.colorRed)
+                .setNegativeButtonbackgroundColor(R.color.tools_theme)
+                .setTitle("Uyarı")
+                .setMessage("Geçerli mesajları silmek istediğinizden eminmisiniz?")
+                .setPositiveButtonClick(() -> {
+                    RemoveMessages(items);
+                })
+                .setNegativeButtonClick(() -> {
+
+                }).show();
+    }
+
     private void RemoveMessages(List<Message> items) {
-        this.items.clear();
-        smsmanager.RemoveMessages(this, items);
-        cursor = smsmanager.getMessageCursor(this, contact.getNumber());
-        LoadMessage();
+        final Map<Integer, Message> messageMap = messageAdapter.RemoveAll(items);
+        Snackbar snackbar = Snackbar.make(RootView, items.size() == 1
+                ? "Mesaj Silindi "
+                : "Mesajlar Silindi", Snackbar.LENGTH_LONG);
+        snackbar.addCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar transientBottomBar, int event) {
+                Log.e(TAG, "onDismissed: " + event);
+                if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                    Log.e(TAG, "onDismissed: Silindi");
+                    MessageActivity.this.items.clear();
+                    smsmanager.RemoveMessages(getBaseContext(), items);
+                    cursor = smsmanager.getMessageCursor(getBaseContext(), contact.getNumber());
+                    LoadMessage();
+                }
+            }
+        });
+        snackbar.setAction("Geri Al", v -> {
+            messageAdapter.RestoreAll(messageMap);
+        });
+        snackbar.setActionTextColor(getResources().getColor(R.color.tools_theme));
+        snackbar.show();
     }
 
     private String CalculateLength(String draft) {
