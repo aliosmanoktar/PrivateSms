@@ -87,13 +87,13 @@ public class MessageActivity extends AppCompatActivity {
         txt_count = findViewById(R.id.message_activity_message_count);
         RootView = findViewById(R.id.message_activity_rootView);
 
-        cursor = smsmanager.getMessageCursor(this, contact.getNumber());
+        cursor = smsmanager.getMessageCursor(this, contact.getThreadID());
         messageAdapter = new MessageAdapter(items, selectedListener);
 
         recyclerView.setAdapter(messageAdapter);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
-        txt_name.setText(smsmanager.getName(this, contact.getNumber()));
+        txt_name.setText(contact.getLookupKey().isEmpty() ? contact.getNumber() : contact.getNameText());
 
         //back.setOnClickListener(back_click);
         toolbar.setNavigationOnClickListener(back_click);
@@ -104,7 +104,7 @@ public class MessageActivity extends AppCompatActivity {
         SetReyclerListener();
         LoadMessage();
         ClearNotification();
-        smsmanager.readAllMessage(this, contact.getNumber());
+        smsmanager.readAllMessage(this, contact.getThreadID());
 
         String smsBody = getIntent().getExtras().getString(AppContents.Sms_Body);
         if (smsBody != null) {
@@ -361,7 +361,7 @@ public class MessageActivity extends AppCompatActivity {
                     Log.e(TAG, "onDismissed: Silindi");
                     MessageActivity.this.items.clear();
                     smsmanager.RemoveMessages(getBaseContext(), items);
-                    cursor = smsmanager.getMessageCursor(getBaseContext(), contact.getNumber());
+                    cursor = smsmanager.getMessageCursor(getBaseContext(), contact.getThreadID());
                     LoadMessage();
                 }
             }

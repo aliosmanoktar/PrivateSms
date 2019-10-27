@@ -225,7 +225,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         List<Conversation> items = recylerAdapter.getSelected();
         PrivateDatabase database = new PrivateDatabase(getBaseContext());
         for (Conversation item : items) {
-            database.AddPinnedNumber(item.getContact().getNumber());
+            database.AddPinnedNumber(item.getThreadId());
         }
         recylerAdapter.EndSelect();
         ReplaceScreen();
@@ -235,7 +235,7 @@ public class ConvarsationActivity extends AppCompatActivity {
         List<Conversation> items = recylerAdapter.getSelected();
         PrivateDatabase database = new PrivateDatabase(getBaseContext());
         for (Conversation item : items) {
-            database.RemovePinnedNumber(item.getContact().getNumber());
+            database.RemovePinnedNumber(item.getThreadId());
         }
         recylerAdapter.EndSelect();
         ReplaceScreen();

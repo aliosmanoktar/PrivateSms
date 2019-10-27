@@ -87,13 +87,21 @@ public class NewMessageActivity extends AppCompatActivity {
 
     private List<Contact> Search(String s) {
         List<Contact> temp = new ArrayList<>();
-        for (Contact item : items)
+        for (Contact item : items) {
             if (item.getNameText().contains(s) || item.getNumber().contains(s))
                 temp.add(item);
-        temp.add(0, new Contact().setName(s + "' Gonder").setNumber(s).setLookupKey(""));
+        }
+        if (!Check(s, temp))
+            temp.add(0, new Contact().setName(s + "' Gonder").setNumber(s).setLookupKey(""));
         return temp;
     }
 
+    private boolean Check(String number, List<Contact> items) {
+        for (Contact item : items)
+            if (item.getNameText().equals(number) || item.getNumber().equals(number))
+                return true;
+        return false;
+    }
     private RecyclerViewListener<Contact> click = new RecyclerViewListener<Contact>() {
         @Override
         public void Onclick(Contact item) {

@@ -78,24 +78,21 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         }
         viewHolder.itemView.setOnClickListener(this);
         viewHolder.itemView.setOnLongClickListener(this);
-        viewHolder.avatarView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (item.getContact().getLookupKey().isEmpty()) {
-                    Uri uri = Uri.parse("tel: " + item.getContact().getNumber());
-                    Intent intent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
+        viewHolder.avatarView.setOnClickListener(v -> {
+            if (item.getContact().getLookupKey().isEmpty()) {
+                Uri uri = Uri.parse("tel: " + item.getContact().getNumber());
+                Intent intent = new Intent(ContactsContract.Intents.SHOW_OR_CREATE_CONTACT, uri);
 
-                    if (intent.resolveActivity(v.getContext().getPackageManager()) == null) {
-                        intent = new Intent(Intent.ACTION_INSERT)
-                                .setType(ContactsContract.Contacts.CONTENT_TYPE)
-                                .putExtra(ContactsContract.Intents.Insert.PHONE, item.getContact().getNumber());
-                    }
-                    v.getContext().startActivity(intent);
-                } else {
-                    Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, item.getContact().getLookupKey());
-                    ContactsContract.QuickContact.showQuickContact(v.getContext(), v, uri,
-                            ContactsContract.QuickContact.MODE_MEDIUM, null);
+                if (intent.resolveActivity(v.getContext().getPackageManager()) == null) {
+                    intent = new Intent(Intent.ACTION_INSERT)
+                            .setType(ContactsContract.Contacts.CONTENT_TYPE)
+                            .putExtra(ContactsContract.Intents.Insert.PHONE, item.getContact().getNumber());
                 }
+                v.getContext().startActivity(intent);
+            } else {
+                Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, item.getContact().getLookupKey());
+                ContactsContract.QuickContact.showQuickContact(v.getContext(), v, uri,
+                        ContactsContract.QuickContact.MODE_MEDIUM, null);
             }
         });
     }

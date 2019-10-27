@@ -19,6 +19,7 @@ public class Message {
     private long time;
     private int type;
     private boolean read;
+    private long threadID;
 
     public Message setID(int ID) {
         this.ID = ID;
@@ -60,6 +61,11 @@ public class Message {
         return this;
     }
 
+    public Message setThreadID(long threadID) {
+        this.threadID = threadID;
+        return this;
+    }
+
     public Contact getContact() {
         return contact;
     }
@@ -80,6 +86,18 @@ public class Message {
         return ID;
     }
 
+    public int getType() {
+        return type;
+    }
+
+    public boolean isRead() {
+        return read;
+    }
+
+    public long getThreadID() {
+        return threadID;
+    }
+
     public String getTimeString() {
         DateFormat dateFormat =
                 DateUtils.isToday(time) ?
@@ -97,11 +115,4 @@ public class Message {
         return calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR);
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public boolean isRead() {
-        return read;
-    }
 }

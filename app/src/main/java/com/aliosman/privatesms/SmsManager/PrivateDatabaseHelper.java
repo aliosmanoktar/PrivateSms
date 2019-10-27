@@ -11,14 +11,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class PrivateDatabaseHelper extends SQLiteOpenHelper {
 
-    private static final int DatabaseVersion = 2;
+    private static final int DatabaseVersion = 3;
     private static final String DataBaseName = "Private.db";
     private final String CreatePrivateNumber_SQL = "CREATE TABLE " + PrivateNumberEntity.TableName + " (" +
             PrivateNumberEntity.ID + " INTEGER PRIMARY KEY," +
-            PrivateNumberEntity.NumberColumn + " TEXT)";
+            PrivateNumberEntity.ThreadID + " Long)";
     private final String CreatePinnedNumber_SQL = "CREATE TABLE " + PrivateNumberEntity.PinnedTableName + " (" +
             PrivateNumberEntity.ID + " INTEGER PRIMARY KEY," +
-            PrivateNumberEntity.NumberColumn + " TEXT)";
+            PrivateNumberEntity.ThreadID + " Long)";
     private final String DeleteTable_SQL = " DROP TABLE IF EXISTS " + PrivateNumberEntity.TableName;
     private final String DeletePinnedTable_SQL = " DROP TABLE IF EXISTS " + PrivateNumberEntity.PinnedTableName;
 

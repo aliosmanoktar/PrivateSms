@@ -39,7 +39,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ViewHold
         final Contact item = items.get(i);
         viewHolder.avatarView.SetUser(item);
         viewHolder.name.setText(item.getNameText());
-        viewHolder.number.setText(item.getNumber());
+        viewHolder.number.setText(item.getNumberText());
         if (listener != null)
             viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

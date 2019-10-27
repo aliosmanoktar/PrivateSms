@@ -25,43 +25,43 @@ public class PrivateDatabase {
         db = helper.getWritableDatabase();
     }
 
-    public void AddNumber(String number) {
+    public void AddNumber(Long ThreadID) {
         ContentValues values = new ContentValues();
-        values.put(PrivateNumberEntity.NumberColumn, number);
-        db.insert(PrivateNumberEntity.TableName, number, values);
+        values.put(PrivateNumberEntity.ThreadID, ThreadID);
+        db.insert(PrivateNumberEntity.TableName, null, values);
     }
 
-    public List<String> getAllPrivateNumbers() {
-        List<String> numbers = new ArrayList<>();
+    public List<Long> getAllPrivateNumbers() {
+        List<Long> ThreadIDs = new ArrayList<>();
         Cursor cr = db.query(PrivateNumberEntity.TableName, null, null, null, null, null, null);
         while (cr.moveToNext()) {
-            String number = cr.getString(cr.getColumnIndex(PrivateNumberEntity.NumberColumn));
-            numbers.add(number);
+            Long ThreadID = cr.getLong(cr.getColumnIndex(PrivateNumberEntity.ThreadID));
+            ThreadIDs.add(ThreadID);
         }
-        return numbers;
+        return ThreadIDs;
     }
 
-    public void RemoveNumber(String Number) {
-        db.delete(PrivateNumberEntity.TableName, PrivateNumberEntity.NumberColumn + " = '" + Number + "'", null);
+    public void RemoveNumber(Long ThreadID) {
+        db.delete(PrivateNumberEntity.TableName, PrivateNumberEntity.ThreadID + " = " + ThreadID, null);
     }
 
-    public void RemovePinnedNumber(String Number) {
-        db.delete(PrivateNumberEntity.PinnedTableName, PrivateNumberEntity.NumberColumn + " = '" + Number + "'", null);
+    public void RemovePinnedNumber(Long ThreadID) {
+        db.delete(PrivateNumberEntity.PinnedTableName, PrivateNumberEntity.ThreadID + " = " + ThreadID, null);
     }
 
-    public void AddPinnedNumber(String number) {
+    public void AddPinnedNumber(Long ThreadID) {
         ContentValues values = new ContentValues();
-        values.put(PrivateNumberEntity.NumberColumn, number);
-        db.insert(PrivateNumberEntity.PinnedTableName, number, values);
+        values.put(PrivateNumberEntity.ThreadID, ThreadID);
+        db.insert(PrivateNumberEntity.PinnedTableName, null, values);
     }
 
-    public List<String> getAllPinnedNumbers() {
-        List<String> numbers = new ArrayList<>();
+    public List<Long> getAllPinnedNumbers() {
+        List<Long> ThreadIDs = new ArrayList<>();
         Cursor cr = db.query(PrivateNumberEntity.PinnedTableName, null, null, null, null, null, null);
         while (cr.moveToNext()) {
-            String number = cr.getString(cr.getColumnIndex(PrivateNumberEntity.NumberColumn));
-            numbers.add(number);
+            Long ThreadID = cr.getLong(cr.getColumnIndex(PrivateNumberEntity.ThreadID));
+            ThreadIDs.add(ThreadID);
         }
-        return numbers;
+        return ThreadIDs;
     }
 }

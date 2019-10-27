@@ -9,5 +9,5 @@ public class PrivateNumberEntity {
     public static final String TableName = "PrivateNumbers";
     public static final String PinnedTableName = "PinnetNumbers";
     public static final String ID = "ID";
-    public static final String NumberColumn = "number";
+    public static final String ThreadID = "ThreadID";
 }

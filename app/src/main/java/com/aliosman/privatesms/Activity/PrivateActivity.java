@@ -120,7 +120,7 @@ public class PrivateActivity extends AppCompatActivity {
         List<Conversation> temp = adapter.getSelected();
         PrivateDatabase database = new PrivateDatabase(getBaseContext());
         for (Conversation cv_item : temp) {
-            database.AddPinnedNumber(cv_item.getContact().getNumber());
+            database.AddPinnedNumber(cv_item.getThreadId());
         }
         adapter.EndSelect();
         SetPrivateAdapter();
@@ -130,7 +130,7 @@ public class PrivateActivity extends AppCompatActivity {
         List<Conversation> temp = adapter.getSelected();
         PrivateDatabase database = new PrivateDatabase(getBaseContext());
         for (Conversation cv_item : temp) {
-            database.RemovePinnedNumber(cv_item.getContact().getNumber());
+            database.RemovePinnedNumber(cv_item.getThreadId());
         }
         adapter.EndSelect();
         SetPrivateAdapter();
@@ -139,7 +139,7 @@ public class PrivateActivity extends AppCompatActivity {
     private void RemoveRemoveNumbers() {
         List<Conversation> items = adapter.getSelected();
         for (Conversation item : items)
-            database.RemoveNumber(item.getContact().getNumber());
+            database.RemoveNumber(item.getThreadId());
         adapter.RemoveSelected();
     }
 
@@ -162,7 +162,7 @@ public class PrivateActivity extends AppCompatActivity {
         public void Onclick(Conversation item) {
             if (select) {
                 select = false;
-                database.AddNumber(item.getContact().getNumber());
+                database.AddNumber(item.getThreadId());
                 SetPrivateAdapter();
             } else {
                 Intent i = new Intent(getBaseContext(), MessageActivity.class);

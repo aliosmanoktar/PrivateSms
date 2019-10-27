@@ -13,7 +13,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.ContactComparator;
@@ -41,21 +43,17 @@ public class MySmsManager {
     private static final String _address = "address";
     private static final String _id = "_id";
     private static final String _body = "body";
-    private static final String _seen = "seen";
     private static final String _date = "date";
-    private static final String _msgCount = "msg_count";
-    private static final String _status = "status";
     private static final String _read = "read";
     private static final String _type = "type";
     private static final String _thread_id = "thread_id";
-    private static final String _person = "person";
 
     public List<Conversation> getConversation(Context ctx) {
         String selection = "";
-        List<String> numbers = new PrivateDatabase(ctx).getAllPrivateNumbers();
-        for (int i = 0; i < numbers.size(); i++) {
-            selection += (_address + " != '" + numbers.get(i) + "'");
-            if (i != (numbers.size() - 1))
+        List<Long> ThreadIDs = new PrivateDatabase(ctx).getAllPrivateNumbers();
+        for (int i = 0; i < ThreadIDs.size(); i++) {
+            selection += (_thread_id + " != " + ThreadIDs.get(i));
+            if (i != (ThreadIDs.size() - 1))
                 selection += " AND ";
         }
         return getConversationFromSelection(ctx, selection);
@@ -63,12 +61,12 @@ public class MySmsManager {
 
     public List<Conversation> getPrivateConversations(Context ctx) {
         String selection = "";
-        List<String> numbers = new PrivateDatabase(ctx).getAllPrivateNumbers();
-        if (numbers.isEmpty())
+        List<Long> ThreadIDs = new PrivateDatabase(ctx).getAllPrivateNumbers();
+        if (ThreadIDs.isEmpty())
             return new ArrayList<>();
-        for (int i = 0; i < numbers.size(); i++) {
-            selection += (_address + " = '" + numbers.get(i) + "'");
-            if (i != (numbers.size() - 1))
+        for (int i = 0; i < ThreadIDs.size(); i++) {
+            selection += (_thread_id + " = " + ThreadIDs.get(i));
+            if (i != (ThreadIDs.size() - 1))
                 selection += "OR ";
         }
         return getConversationFromSelection(ctx, selection);
@@ -76,7 +74,7 @@ public class MySmsManager {
 
     private List<Conversation> getConversationFromSelection(Context ctx, String selection) {
         List<Conversation> items = new ArrayList<>();
-        List<String> pinned = new PrivateDatabase(ctx).getAllPinnedNumbers();
+        List<Long> pinned = new PrivateDatabase(ctx).getAllPinnedNumbers();
         Cursor cursor = ctx.getContentResolver().query(Uri.parse(_conversationString), null, selection, null, null);
         while (cursor.moveToNext()) {
             String body = cursor.getString(cursor.getColumnIndex(_body));
@@ -90,31 +88,31 @@ public class MySmsManager {
                     .setDate(TimeStamp)
                     .setRead(read == 1)
                     .setType(type)
-                    .setCount(getNonReadSmsCount(ctx, address))
-                    .setPinned(pinned.contains(address))
+                    .setCount(getNonReadSmsCount(ctx, thread_id))
+                    .setPinned(pinned.contains(thread_id))
                     .setThreadId(thread_id)
                     .setContact(
                             getContact(ctx, address)
                     )
             );
+            Log.e(TAG, "getConversationFromSelection: Conversation Item : {" + getContact(ctx, address).getNameText() + " ThreadID: " + thread_id + " }");
         }
         Collections.sort(items, new ConversationComparator());
         return items;
     }
 
-    public Cursor getMessageCursor(Context ctx, String address) {
+    public Cursor getMessageCursor(Context ctx, long ThreadID) {
         Uri myMessage = Uri.parse(_SmsString);
         ContentResolver cr = ctx.getContentResolver();
         Cursor c = cr.query(myMessage, new String[]{_id, _address, _date,
-                _body, _read, _type}, _address + " = '" + address + "'", null, null);
+                _body, _read, _type, _thread_id}, _thread_id + " = " + ThreadID, null, null);
         return c;
-
     }
 
     private Cursor getMessageCursor(Uri uri, Context ctx) {
         ContentResolver cr = ctx.getContentResolver();
         return cr.query(uri, new String[]{_id, _address, _date,
-                _body, _read, _type}, null, null, null);
+                _body, _read, _type, _thread_id}, null, null, null);
     }
 
     public List<Message> getMessages(Cursor cursor) {
@@ -125,11 +123,13 @@ public class MySmsManager {
             long date = cursor.getLong(cursor.getColumnIndexOrThrow(_date));
             String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
             int type = cursor.getInt(cursor.getColumnIndex(_type));
+            long threadID = cursor.getLong(cursor.getColumnIndex(_thread_id));
             items.add(new Message()
                     .setMessage(body)
                     .setTime(date)
                     .setType(type)
                     .setID(id)
+                    .setThreadID(threadID)
             );
         }
         return items;
@@ -179,15 +179,15 @@ public class MySmsManager {
             name = cs.getString(cs.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME));
         } else
             name = address;
-        return new Contact().setLookupKey(lookoup).setNumber(address).setName(name).setID(id);
+        return new Contact().setLookupKey(lookoup).setNumber(address).setName(name).setID(id).setThreadID(getThreadID(ctx, address));
     }
 
-    // remove spaces and dashes from destination number
-    // (e.g. "801 555 1212" -> "8015551212")
-    // (e.g. "+8211-123-4567" -> "+82111234567")
-    //sms sender 205
     public void sendSms(Context ctx, String messageBody, String phoneNumber) {
         Calendar cal = Calendar.getInstance();
+        // remove spaces and dashes from destination number
+        // (e.g. "801 555 1212" -> "8015551212")
+        // (e.g. "+8211-123-4567" -> "+82111234567")
+        phoneNumber = PhoneNumberUtils.stripSeparators(phoneNumber);
         Message message = new Message()
                 .setMessage(messageBody)
                 .setType(4)
@@ -278,10 +278,10 @@ public class MySmsManager {
         return random.nextLong();
     }
 
-    public void readAllMessage(Context ctx, String phoneNumber) {
+    public void readAllMessage(Context ctx, long threadID) {
         ContentValues values = new ContentValues();
         values.put(_read, 1);
-        ctx.getContentResolver().update(Uri.parse(_SmsString), values, _address + " = '" + phoneNumber + "'", null);
+        ctx.getContentResolver().update(Uri.parse(_SmsString), values, _thread_id + " = " + threadID, null);
     }
 
     public void readSms(Context ctx, int ID) {
@@ -290,15 +290,15 @@ public class MySmsManager {
         ctx.getContentResolver().update(Uri.parse(_SmsString), values, _id + " = " + ID, null);
     }
 
-    public int getNonReadSmsCount(Context ctx, String phoneNumber) {
-        Cursor cur = ctx.getContentResolver().query(Uri.parse(_SmsString), null, _address + " = '" + phoneNumber + "' and read=0", null, null);
+    public int getNonReadSmsCount(Context ctx, long threadID) {
+        Cursor cur = ctx.getContentResolver().query(Uri.parse(_SmsString), null, _thread_id + " = " + threadID + " and read=0", null, null);
         return cur.getCount();
     }
 
     public void RemoveConversations(Context ctx, List<Conversation> items) {
         ContentResolver cr = ctx.getContentResolver();
         for (Conversation item : items)
-            cr.delete(Uri.parse(_SmsString), _address + " = '" + item.getContact().getNumber() + "'", null);
+            cr.delete(Uri.parse(_SmsString), _thread_id + " = " + item.getThreadId(), null);
     }
 
     public void RemoveMessages(Context ctx, List<Message> items) {

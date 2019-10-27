@@ -5,13 +5,17 @@
 
 package com.aliosman.privatesms.Model;
 
+import android.telephony.PhoneNumberUtils;
+
 import java.io.Serializable;
+import java.util.Locale;
 
 public class Contact implements Serializable {
     private int ID;
     private String number;
     private String name;
     private String lookupKey;
+    private long threadID;
 
     public Contact setID(int ID) {
         this.ID = ID;
@@ -33,6 +37,11 @@ public class Contact implements Serializable {
         return this;
     }
 
+    public Contact setThreadID(long threadID) {
+        this.threadID = threadID;
+        return this;
+    }
+
     public int getID() {
         return ID;
     }
@@ -49,7 +58,14 @@ public class Contact implements Serializable {
         return (name == null || name.isEmpty()) ? number : name;
     }
 
+    public String getNumberText() {
+        return PhoneNumberUtils.formatNumber(number, Locale.getDefault().getCountry());
+    }
     public String getLookupKey() {
         return lookupKey;
+    }
+
+    public long getThreadID() {
+        return threadID;
     }
 }
