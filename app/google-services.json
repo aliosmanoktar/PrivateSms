@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "453873987370",
+    "firebase_url": "https://privatesms-aeb3c.firebaseio.com",
+    "project_id": "privatesms-aeb3c",
+    "storage_bucket": "privatesms-aeb3c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:453873987370:android:b0f0d685670fd96bb07853",
+        "android_client_info": {
+          "package_name": "com.aliosman.privatesms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "453873987370-n8o8d8982m8kun2e26io8f7j4f0d6cu0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aliosman.privatesms",
+            "certificate_hash": "c0fc74443eb4f4d3cb9c72e4910455871e761b01"
+          }
+        },
+        {
+          "client_id": "453873987370-9kebs20bo9jccnirampoa8nliqi9gtg4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA31ibkbLBwwRQeX8YDW10KjReb-5jrs2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "453873987370-9kebs20bo9jccnirampoa8nliqi9gtg4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

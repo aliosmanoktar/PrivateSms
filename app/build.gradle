@@ -4,6 +4,7 @@
  */
 
 apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 28
@@ -35,4 +36,6 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.github.blennerSilva:AwesomeDialog:2.0.6'
     implementation 'com.andrognito.patternlockview:patternlockview:1.0.0'
+    implementation 'com.google.firebase:firebase-database:16.0.4'
+    implementation 'com.google.firebase:firebase-auth:16.0.5'
 }

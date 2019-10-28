@@ -16,7 +16,6 @@ import com.aliosman.privatesms.R;
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = getClass().getName();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.CALL_PHONE
             }, 0);
         }
+
     }
 
     @Override

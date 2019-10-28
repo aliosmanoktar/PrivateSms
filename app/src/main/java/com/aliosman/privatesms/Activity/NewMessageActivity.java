@@ -58,12 +58,7 @@ public class NewMessageActivity extends AppCompatActivity {
         search.addTextChangedListener(search_text_listener);
     }
 
-    private View.OnClickListener back_click = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            finish();
-        }
-    };
+    private View.OnClickListener back_click = v -> finish();
 
     private TextWatcher search_text_listener = new TextWatcher() {
         @Override
@@ -103,6 +98,7 @@ public class NewMessageActivity extends AppCompatActivity {
                 return true;
         return false;
     }
+
     private RecyclerViewListener<Contact> click = new RecyclerViewListener<Contact>() {
         @Override
         public void Onclick(Contact item) {
