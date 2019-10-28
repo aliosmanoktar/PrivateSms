@@ -13,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.provider.Telephony;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -32,10 +33,16 @@ import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
+import com.aliosman.privatesms.Model.Version;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
 import com.aliosman.privatesms.SmsManager.PrivateDatabase;
 import com.awesomedialog.blennersilva.awesomedialoglibrary.AwesomeInfoDialog;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 import java.util.Map;
@@ -76,6 +83,7 @@ public class ConvarsationActivity extends AppCompatActivity {
             if (smsBody != null)
                 ShowMessageActivity(smsBody, smsAddress);
         }
+        CheckVersion();
     }
 
 
@@ -279,5 +287,29 @@ public class ConvarsationActivity extends AppCompatActivity {
         });
         snackbar.setActionTextColor(getResources().getColor(R.color.tools_theme));
         snackbar.show();
+    }
+
+    private void CheckVersion() {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Version");
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Version version = dataSnapshot.getValue(Version.class);
+                if (CheckVersion(version))
+                    Log.e(TAG, "onDataChange: Güncelleme var");
+                else Log.e(TAG, "onDataChange: Günceleme Yok");
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private boolean CheckVersion(Version update) {
+        Version defult = new Version();
+        return defult.getVersionCode() < update.getVersionCode();
     }
 }

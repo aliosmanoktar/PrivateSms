@@ -10,12 +10,18 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.aliosman.privatesms.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
 
     private String TAG = getClass().getName();
+    private FirebaseAuth mAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +36,32 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.CALL_PHONE
             }, 0);
         }
+        mAuth = FirebaseAuth.getInstance();
+        if (CheckUser())
+            LoginUser();
+    }
 
+    /**
+     * Check User
+     *
+     * @return non login return true
+     */
+    private boolean CheckUser() {
+        return null == mAuth.getCurrentUser();
+    }
+
+    private void LoginUser() {
+        mAuth.signInWithEmailAndPassword("test@test.com", "test123")
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        Log.d(TAG, "signInWithEmail:success");
+                        FirebaseUser user = mAuth.getCurrentUser();
+                    } else {
+                        Log.w(TAG, "signInWithEmail:failure", task.getException());
+                        Toast.makeText(getApplicationContext(), "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     @Override
