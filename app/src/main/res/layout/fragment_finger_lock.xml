@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bottom_sheet_background">
+
+    <RelativeLayout
+        android:background="@drawable/bottom_sheet_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:id="@+id/fragment_finger_lock.titlebar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/fragment_finger_lock.title_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="marquee"
+                android:fadingEdge="horizontal"
+                android:scrollHorizontally="true"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textColor="@android:color/black"
+                android:text="@string/fingerprint_description" />
+
+            <TextView
+                android:id="@+id/fragment_finger_lock.subtitle_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:maxLines="2"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:textColor="@color/hint_color"
+                android:text="@string/fingerprint_hint" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/fragment_finger_lock.description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_finger_lock.titlebar"
+            android:layout_marginTop="8dp"
+            android:maxLines="4"
+            android:textColor="@android:color/secondary_text_light"
+            android:text="@string/fingerprint_description" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/fragment_finger_lock.icon"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/fragment_finger_lock.description"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_fp_40px" />
+
+        <Button
+            android:id="@+id/fragment_finger_lock.cancel"
+            android:textColor="@color/hint_color"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_finger_lock.icon"
+            android:layout_marginTop="16dp"
+            android:text="İptal Et" />
+
+    </RelativeLayout>
+</RelativeLayout>

@@ -93,7 +93,7 @@ public class FragmentPinLock extends Fragment {
             return;
         password_builder.append(((TextView) v).getText());
         password_text.setText(getPasswordTex());
-        if (password != null && password_builder.length() == password.length()) {
+        if (password != null && password.length() <= password_builder.length()) {
             if (password_builder.toString().equals(password)) {
                 Log.e(TAG, ": Şifre Doğru");
             } else {

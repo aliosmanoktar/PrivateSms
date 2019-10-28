@@ -7,4 +7,6 @@
     <string name="app_name">PrivateSms</string>
     <string name="tag_position"></string>
     <string name="tag_item"></string>
+    <string name="fingerprint_description">Devam etmek için parmak izinizi doğrulayınız!!</string>
+    <string name="fingerprint_hint">Sensöre dokunun!!</string>
 </resources>
