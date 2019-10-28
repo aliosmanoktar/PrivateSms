@@ -19,6 +19,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Listener.Interfaces.PasswordListener;
 import com.aliosman.privatesms.R;
 
 import java.security.NoSuchAlgorithmException;
@@ -26,22 +28,18 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 
-public class FragmentFingerLock extends BottomSheetDialogFragment implements FingerprintUiHelper.Callback {
+public class FragmentFingerLock extends BottomSheetDialogFragment implements PasswordListener {
     private TextView status;
     private ImageView icon;
     private FingerprintManager.CryptoObject mCryptoObject;
     private FingerprintUiHelper mFingerprintUiHelper;
     private Cipher defaultCipher;
-    static FingerprintUiHelper.Callback mcallback;
-
-    public static FragmentFingerLock newInstance(FingerprintUiHelper.Callback callback) {
-        mcallback = callback;
-        return new FragmentFingerLock();
-    }
+    private PasswordListener mcallback;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_finger_lock, container, false);
+        mcallback = (PasswordListener) getArguments().getSerializable(AppContents.Password_view_extras_listener);
         status = view.findViewById(R.id.fragment_finger_lock_description);
         icon = view.findViewById(R.id.fragment_finger_lock_icon);
         try {

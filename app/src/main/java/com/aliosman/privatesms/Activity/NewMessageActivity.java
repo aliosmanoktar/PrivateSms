@@ -32,6 +32,7 @@ public class NewMessageActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private EditText search;
     private String smsBody = null;
+    private boolean close = false;
     private String TAG = getClass().getName();
 
     @Override
@@ -114,6 +115,14 @@ public class NewMessageActivity extends AppCompatActivity {
             }
             i.putExtras(bundle);
             startActivity(i);
+            close = true;
         }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (close)
+            finish();
+    }
 }

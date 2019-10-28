@@ -16,6 +16,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Listener.Interfaces.PasswordListener;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.Settings;
 
@@ -30,6 +32,7 @@ public class FragmentPinLock extends Fragment {
     private String password;
     private boolean anim = false;
     private Animation animation;
+    private PasswordListener passwordListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,6 +70,7 @@ public class FragmentPinLock extends Fragment {
             save.setOnClickListener(save_click_listener);
         animation = AnimationUtils.loadAnimation(getContext(), R.anim.shake);
         animation.setAnimationListener(listener);
+        passwordListener = (PasswordListener) getArguments().getSerializable(AppContents.Password_view_extras_listener);
         return view;
     }
 
@@ -96,6 +100,7 @@ public class FragmentPinLock extends Fragment {
         if (password != null && password.length() <= password_builder.length()) {
             if (password_builder.toString().equals(password)) {
                 Log.e(TAG, ": Şifre Doğru");
+                passwordListener.onAuthenticated();
             } else {
                 password_builder.setLength(0);
                 Log.e(TAG, ": Şifre Yalnış");

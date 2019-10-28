@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Listener.Interfaces.PasswordListener;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.Settings;
 import com.andrognito.patternlockview.PatternLockView;
@@ -28,6 +30,7 @@ public class FragmentPatternLock extends Fragment {
     private String patternPassword;
     private String TAG = getClass().getName();
     private TextView title;
+    private PasswordListener passwordListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,6 +42,7 @@ public class FragmentPatternLock extends Fragment {
         patternPassword = settings.getString(settings.pattern_password);
         if (patternPassword == null)
             title.setText("Yeni Şifre Belirle");
+        passwordListener = (PasswordListener) getArguments().getSerializable(AppContents.Password_view_extras_listener);
         return view;
     }
 
@@ -64,6 +68,7 @@ public class FragmentPatternLock extends Fragment {
             } else {
                 if (patternString.equals(patternPassword)) {
                     Log.e(TAG, "onComplete: password Doğru");
+                    passwordListener.onAuthenticated();
                     lockView.setViewMode(PatternLockView.PatternViewMode.CORRECT);
                 } else {
                     Log.e(TAG, "onComplete: password Hatalı");

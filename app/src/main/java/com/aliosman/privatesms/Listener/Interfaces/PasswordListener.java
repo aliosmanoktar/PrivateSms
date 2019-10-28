@@ -5,6 +5,13 @@
 
 package com.aliosman.privatesms.Listener.Interfaces;
 
-public interface PasswordListener {
-    void Unlock();
+import java.io.Serializable;
+
+public interface PasswordListener extends Serializable {
+
+    void onAuthenticated();
+
+    void onError();
+
+    void cancel();
 }

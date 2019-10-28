@@ -8,12 +8,14 @@ package com.aliosman.privatesms.Fragment;
 import android.hardware.fingerprint.FingerprintManager;
 import android.util.Log;
 
+import com.aliosman.privatesms.Listener.Interfaces.PasswordListener;
+
 public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallback {
     private final FingerprintManager mFingerprintManager;
-    private final Callback mCallback;
+    private final PasswordListener mCallback;
     private final String TAG = getClass().getName();
 
-    FingerprintUiHelper(FingerprintManager fingerprintManager, Callback callback) {
+    FingerprintUiHelper(FingerprintManager fingerprintManager, PasswordListener callback) {
         mFingerprintManager = fingerprintManager;
         mCallback = callback;
     }
@@ -56,14 +58,5 @@ public class FingerprintUiHelper extends FingerprintManager.AuthenticationCallba
         mCallback.onAuthenticated();
         Log.e("FingerPrintUiHelper", "Tanımlandı");
         mCallback.onAuthenticated();
-    }
-
-    public interface Callback {
-
-        void onAuthenticated();
-
-        void onError();
-
-        void cancel();
     }
 }

@@ -23,14 +23,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activity.LockActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <!-- Activity -->
+        <activity android:name=".Activity.LockActivity" />
         <activity android:name=".Activity.PrivateActivity" />
         <activity android:name=".Activity.NewMessageActivity" />
         <activity android:name=".Activity.ConvarsationActivity">
@@ -52,8 +46,13 @@
             android:name=".Activity.MessageActivity"
             android:launchMode="singleTask" />
         <activity android:name=".Activity.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        </activity> <!-- End Activity -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- End Activity -->
         <!-- Receiver -->
         <receiver android:name=".Receiver.DeliverReceiver">
             <intent-filter>
