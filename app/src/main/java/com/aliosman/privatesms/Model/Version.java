@@ -5,7 +5,9 @@
 
 package com.aliosman.privatesms.Model;
 
-public class Version {
+import java.io.Serializable;
+
+public class Version implements Serializable {
     private int VersionCode;
     private String Version;
     private String Url;

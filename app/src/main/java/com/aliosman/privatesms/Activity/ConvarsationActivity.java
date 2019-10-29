@@ -12,10 +12,14 @@ import android.content.IntentFilter;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +33,7 @@ import android.widget.TextView;
 
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Fragment.DialogUpdate;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Contact;
@@ -44,11 +49,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 public class ConvarsationActivity extends AppCompatActivity {
-
+    private File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+            + "/PrivateSms");
     private String TAG = getClass().getName();
     private ConversationAdapter recylerAdapter = null;
     private TextView toolbar_title;
@@ -60,6 +67,8 @@ public class ConvarsationActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        /*StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_convarsation);
         toolbar = findViewById(R.id.conversation_activity_toolbar);
@@ -296,9 +305,10 @@ public class ConvarsationActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Version version = dataSnapshot.getValue(Version.class);
-                if (CheckVersion(version))
+                if (CheckVersion(version)) {
                     Log.e(TAG, "onDataChange: Güncelleme var");
-                else Log.e(TAG, "onDataChange: Günceleme Yok");
+                    DownloadFile(version);
+                } else Log.e(TAG, "onDataChange: Günceleme Yok");
             }
 
             @Override
@@ -307,9 +317,35 @@ public class ConvarsationActivity extends AppCompatActivity {
             }
         });
     }
-
     private boolean CheckVersion(Version update) {
         Version defult = new Version();
         return defult.getVersionCode() < update.getVersionCode();
     }
+
+    private void DownloadFile(Version version) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        DialogFragment dialogFragment = new DialogUpdate();
+        Bundle bundle = new Bundle();
+        DialogUpdate.CallBack callBack = (DialogUpdate.CallBack) () -> {
+            Log.e(TAG, "Execute: CallBack");
+            dialogFragment.dismissAllowingStateLoss();
+            Intent intent = new Intent("android.intent.action.VIEW");
+            intent.addCategory("android.intent.category.DEFAULT");
+            File file = new File(getExternalCacheDir().getAbsolutePath() + File.separator + "app.apk");//new File(getFilesDir().getPath()+ File.separator+"app.apk");
+            Log.e(TAG, "DownloadFile: " + file.exists());
+            intent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(),
+                    "com.aliosman.privatesms.fileprovider",
+                    file), "application/vnd.android.package-archive");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            startActivity(intent);
+        };
+        dialogFragment.setArguments(bundle);
+
+        bundle.putSerializable(AppContents.Update_View_extras_listener, callBack);
+        bundle.putSerializable(AppContents.Update_View_extas_version, version);
+        dialogFragment.show(transaction, "dialog");
+    }
+
 }

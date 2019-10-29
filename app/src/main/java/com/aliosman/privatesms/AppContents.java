@@ -19,4 +19,6 @@ public class AppContents {
     public static final String Action_reply_sms = "Action_Reply_Sms";
     public static final String Action_reply_text = "key_text_reply";
     public static final String Password_view_extras_listener = "password_view_extras_listener";
+    public static final String Update_View_extras_listener = "update_view_extras_listener";
+    public static final String Update_View_extas_version = "update_view_etras_version";
 }

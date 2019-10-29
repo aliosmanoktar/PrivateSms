@@ -33,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.RECEIVE_SMS,
                     Manifest.permission.RECEIVE_MMS,
-                    Manifest.permission.CALL_PHONE
+                    Manifest.permission.CALL_PHONE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.INSTALL_PACKAGES
             }, 0);
         }
         mAuth = FirebaseAuth.getInstance();
@@ -66,7 +69,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-
         startActivity(new Intent(this, ConvarsationActivity.class));
         finish();
     }

@@ -7,6 +7,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.aliosman.privatesms">
 
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -97,6 +100,16 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
+        <!-- End Service-->
+        <provider
+            android:name=".GenericFileProvider"
+            android:authorities="com.aliosman.privatesms.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths" />
+        </provider>
     </application>
 
 </manifest>
