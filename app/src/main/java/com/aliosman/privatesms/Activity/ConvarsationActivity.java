@@ -306,8 +306,8 @@ public class ConvarsationActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Version version = dataSnapshot.getValue(Version.class);
                 if (CheckVersion(version)) {
-                    Log.e(TAG, "onDataChange: Güncelleme var");
-                    DownloadFile(version);
+                    UpdateQuestions(version);
+                    //DownloadFile(version);
                 } else Log.e(TAG, "onDataChange: Günceleme Yok");
             }
 
@@ -316,6 +316,21 @@ public class ConvarsationActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void UpdateQuestions(Version version) {
+        new AwesomeInfoDialog(this)
+                .setPositiveButtonText("Güncelle")
+                .setNegativeButtonText("İptal")
+                .setNegativeButtonTextColor(R.color.white)
+                .setPositiveButtonbackgroundColor(R.color.tools_theme)
+                .setNegativeButtonbackgroundColor(R.color.colorRed)
+                .setTitle("Uyarı")
+                .setMessage("Güncelleme mevcut")
+                .setPositiveButtonClick(() -> DownloadFile(version))
+                .setNegativeButtonClick(() -> {
+
+                }).show();
     }
     private boolean CheckVersion(Version update) {
         Version defult = new Version();
@@ -327,17 +342,14 @@ public class ConvarsationActivity extends AppCompatActivity {
         DialogFragment dialogFragment = new DialogUpdate();
         Bundle bundle = new Bundle();
         DialogUpdate.CallBack callBack = (DialogUpdate.CallBack) () -> {
-            Log.e(TAG, "Execute: CallBack");
             dialogFragment.dismissAllowingStateLoss();
             Intent intent = new Intent("android.intent.action.VIEW");
             intent.addCategory("android.intent.category.DEFAULT");
             File file = new File(getExternalCacheDir().getAbsolutePath() + File.separator + "app.apk");//new File(getFilesDir().getPath()+ File.separator+"app.apk");
-            Log.e(TAG, "DownloadFile: " + file.exists());
             intent.setDataAndType(FileProvider.getUriForFile(getApplicationContext(),
                     "com.aliosman.privatesms.fileprovider",
                     file), "application/vnd.android.package-archive");
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Intent.EXTRA_NOT_UNKNOWN_SOURCE, true);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(intent);
         };

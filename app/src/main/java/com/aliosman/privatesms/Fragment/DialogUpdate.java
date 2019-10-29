@@ -10,8 +10,6 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -33,29 +31,24 @@ public class DialogUpdate extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_update_version, container, false);
-        Button dismis = view.findViewById(R.id.update_dialog_btn_dismis);
-        Button update = view.findViewById(R.id.update_dialog_btn_update);
-        update.setOnClickListener(update_click);
-        dismis.setOnClickListener(dismis_click);
         callBack = (CallBack) getArguments().getSerializable(AppContents.Update_View_extras_listener);
         version = (Version) getArguments().getSerializable(AppContents.Update_View_extas_version);
         return view;
     }
 
-    private View.OnClickListener update_click = v -> UpdateVersion(version.getUrl());
-
-    private View.OnClickListener dismis_click = v -> dismiss();
+    @Override
+    public void onStart() {
+        super.onStart();
+        //UpdateVersion("https://firebasestorage.googleapis.com/v0/b/privatesms-aeb3c.appspot.com/o/WhatsApp.apk?alt=media&token=d8538beb-88b1-48bf-9b86-c79f435a89e4");
+        UpdateVersion(version.getUrl());
+    }
 
     private void UpdateVersion(String url) {
         View view = getView();
-        LinearLayout button_layout = view.findViewById(R.id.update_dialog_button_layout);
-        LinearLayout update_layout = view.findViewById(R.id.update_dialog_progress_layout);
-        progressBar = view.findViewById(R.id.update_dialog_progress);
+        progressBar = view.findViewById(R.id.update_dialog_progress_bar);
         txt_progress = view.findViewById(R.id.update_dialog_progress_txt);
         txt_size = view.findViewById(R.id.update_dialog_size_txt);
         progressBar.setIndeterminate(true);
-        button_layout.setVisibility(View.GONE);
-        update_layout.setVisibility(View.VISIBLE);
         progressBar.setProgress(0);
         progressBar.setMax(100);
         new DownloadFile(getContext().getExternalCacheDir(), listener).execute(url);

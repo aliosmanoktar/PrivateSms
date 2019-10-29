@@ -6,96 +6,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textSize="25sp"
-        android:text="Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..." />
+        android:text="Uygulama güncellenirken lütfen bekleyiniz!.."
+        android:textSize="16sp" />
 
-    <RelativeLayout
-        android:layout_marginTop="5dp"
-        android:layout_width="wrap_content"
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/update_dialog.button_layout"
+        <ProgressBar
+            android:id="@+id/update_dialog.progress_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal">
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/update_dialog.progress_txt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="5dp">
+                android:text="" />
 
-                <Button
-                    android:id="@+id/update_dialog_btn_dismis"
-                    android:text="İptal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_marginStart="5dp"
+            <TextView
+                android:id="@+id/update_dialog.size_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/update_dialog_btn_update"
-                    android:text="Güncelle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </RelativeLayout>
+                android:gravity="end"
+                android:text="" />
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/update_dialog.progress_layout"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <ProgressBar
-                    android:id="@+id/update_dialog.progress"
-                    android:layout_weight="1"
-                    style="@android:style/Widget.Material.ProgressBar.Horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-
-                <LinearLayout
-                    android:layout_marginTop="10dp"
-                    android:orientation="horizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TextView
-                        android:id="@+id/update_dialog.progress_txt"
-                        android:layout_weight="1"
-                        android:text=""
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-
-                    <TextView
-                        android:id="@+id/update_dialog.size_txt"
-                        android:gravity="end"
-                        android:layout_weight="1"
-                        android:text=""
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
-                </LinearLayout>
-            </LinearLayout>
-        </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </LinearLayout>
