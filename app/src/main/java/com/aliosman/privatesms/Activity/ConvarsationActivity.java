@@ -9,10 +9,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -50,12 +50,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ConvarsationActivity extends AppCompatActivity {
-    private File folder = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
-            + "/PrivateSms");
+
+    private List<Conversation> items = new ArrayList<>();
+    private boolean load = false;
+    private int totalItemCount, lastVisibleItem;
     private String TAG = getClass().getName();
     private ConversationAdapter recylerAdapter = null;
     private TextView toolbar_title;
@@ -64,35 +67,46 @@ public class ConvarsationActivity extends AppCompatActivity {
     private FloatingActionButton fab_button;
     private MySmsManager manager = new MySmsManager();
     private View RootView;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        /*StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
-        StrictMode.setVmPolicy(builder.build());*/
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_convarsation);
+
         toolbar = findViewById(R.id.conversation_activity_toolbar);
         toolbar.setTitle("");
         toolbar_title = toolbar.findViewById(R.id.conversation_activity_toolbar_title);
         toolbar_title.setOnClickListener(title_click);
         setSupportActionBar(toolbar);
+
         recyclerView = findViewById(R.id.conversation_activity_recylerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(recylerAdapter);
+
         fab_button = findViewById(R.id.conversation_activity_fab);
         fab_button.setOnClickListener(fab_click);
 
-        RootView = findViewById(R.id.conversation_activity_rootView);
-        setDefaultSmsApp();
-        Bundle bundle = getIntent().getExtras();
+        cursor = manager.getConversation(this);
 
+        RootView = findViewById(R.id.conversation_activity_rootView);
+
+
+        Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             String smsBody = bundle.getString(AppContents.Sms_Body);
             String smsAddress = bundle.getString(AppContents.number_extras);
             if (smsBody != null)
                 ShowMessageActivity(smsBody, smsAddress);
         }
+
+        recylerAdapter = new ConversationAdapter(items, conversation_click, selectedListener);
+        recyclerView.setAdapter(recylerAdapter);
+
+        SetReyclerListener();
+        LoadConversation();
         CheckVersion();
+        setDefaultSmsApp();
     }
 
 
@@ -100,7 +114,6 @@ public class ConvarsationActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(smsReceiver, new IntentFilter(AppContents.conversationBroadcast));
-        ReplaceScreen();
     }
 
     @Override
@@ -174,7 +187,8 @@ public class ConvarsationActivity extends AppCompatActivity {
     private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ReplaceScreen();
+            Long threadID = intent.getExtras().getLong(AppContents.conversationBroadcastThreadID, -1);
+            ReplaceItem(threadID);
         }
     };
 
@@ -203,12 +217,37 @@ public class ConvarsationActivity extends AppCompatActivity {
             startActivity(new Intent(getBaseContext(), LockActivity.class));
     };
 
+    private void SetReyclerListener() {
+        final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                totalItemCount = items.size();
+                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!load && lastVisibleItem == totalItemCount - 1) {
+                    LoadConversation();
+                    load = true;
+                    Log.e(TAG, "onScrolled: Add More");
+                }
+            }
+        });
+    }
+
+    private void LoadConversation() {
+        items.addAll(manager.getConversation(cursor, this));
+        recyclerView.post(() -> {
+            load = false;
+            recyclerView.getAdapter().notifyDataSetChanged();
+        });
+    }
+
     /***
      * Fix Edilmesi Gerek
      */
     private void ReplaceScreen() {
-        recylerAdapter = new ConversationAdapter(manager.getConversation(this), conversation_click, selectedListener);
-        recyclerView.setAdapter(recylerAdapter);
+        /*recylerAdapter = new ConversationAdapter(manager.getConversation(this), conversation_click, selectedListener);
+        recyclerView.setAdapter(recylerAdapter);*/
     }
 
     private void setDefaultSmsApp() {
@@ -236,6 +275,33 @@ public class ConvarsationActivity extends AppCompatActivity {
 
         }
         return true;
+    }
+
+    private int getConversationIndex(long ThreadID) {
+        for (int i = 0; i < items.size(); i++) {
+            if (items.get(i).getThreadId() == ThreadID)
+                return i;
+        }
+        return -1;
+    }
+
+    private void ReplaceItem(long ThreadID) {
+        if (ThreadID != -1) {
+            int index = getConversationIndex(ThreadID);
+            if (index != -1) {
+                Conversation item = manager.getConversationItem(this, ThreadID);
+                items.remove(index);
+                if (items.get(0).getDate() < item.getDate())
+                    items.add(0, item);
+                else
+                    items.add(index, item);
+                recylerAdapter.notifyDataSetChanged();
+            } else {
+                Log.e(TAG, "onReceive: Index ID -1");
+            }
+        } else {
+            Log.e(TAG, "onReceive: ThreadID ID -1");
+        }
     }
 
     private void Pinned() {
@@ -287,7 +353,7 @@ public class ConvarsationActivity extends AppCompatActivity {
                 if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
                     Log.e(TAG, "onDismissed: Silindi");
                     manager.RemoveConversations(getBaseContext(), items);
-                    ReplaceScreen();
+                    //ReplaceScreen();
                 }
             }
         });

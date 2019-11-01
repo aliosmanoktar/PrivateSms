@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.telephony.PhoneNumberUtils;
 import android.telephony.SmsManager;
@@ -23,6 +24,7 @@ import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Conversation;
 import com.aliosman.privatesms.Model.Message;
+import com.aliosman.privatesms.Model.MessageResponse;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,7 +50,7 @@ public class MySmsManager {
     private static final String _type = "type";
     private static final String _thread_id = "thread_id";
 
-    public List<Conversation> getConversation(Context ctx) {
+    public Cursor getConversation(Context ctx) {
         String selection = "";
         List<Long> ThreadIDs = new PrivateDatabase(ctx).getAllPrivateNumbers();
         for (int i = 0; i < ThreadIDs.size(); i++) {
@@ -56,7 +58,7 @@ public class MySmsManager {
             if (i != (ThreadIDs.size() - 1))
                 selection += " AND ";
         }
-        return getConversationFromSelection(ctx, selection);
+        return getConversationCursorFromSelection(ctx, selection); //getConversationFromSelection(ctx, selection);
     }
 
     public List<Conversation> getPrivateConversations(Context ctx) {
@@ -67,16 +69,21 @@ public class MySmsManager {
         for (int i = 0; i < ThreadIDs.size(); i++) {
             selection += (_thread_id + " = " + ThreadIDs.get(i));
             if (i != (ThreadIDs.size() - 1))
-                selection += "OR ";
+                selection += " OR ";
         }
         return getConversationFromSelection(ctx, selection);
     }
 
+    private Cursor getConversationCursorFromSelection(Context ctx, String selection) {
+        return ctx.getContentResolver().query(Uri.parse(_conversationString), null, selection, null, _date + " DESC");
+    }
+
     private List<Conversation> getConversationFromSelection(Context ctx, String selection) {
         List<Conversation> items = new ArrayList<>();
+        int i = 0;
         List<Long> pinned = new PrivateDatabase(ctx).getAllPinnedNumbers();
         Cursor cursor = ctx.getContentResolver().query(Uri.parse(_conversationString), null, selection, null, null);
-        while (cursor.moveToNext()) {
+        while (cursor.moveToNext() && i < 15) {
             String body = cursor.getString(cursor.getColumnIndex(_body));
             long TimeStamp = Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
             String address = cursor.getString(cursor.getColumnIndex(_address));
@@ -95,10 +102,62 @@ public class MySmsManager {
                             getContact(ctx, address)
                     )
             );
-            Log.e(TAG, "getConversationFromSelection: Conversation Item : {" + getContact(ctx, address).getNameText() + " ThreadID: " + thread_id + " }");
+            i++;
+
         }
         Collections.sort(items, new ConversationComparator());
         return items;
+    }
+
+    public List<Conversation> getConversation(Cursor cursor, Context ctx) {
+        List<Conversation> items = new ArrayList<>();
+        int i = 0;
+        while (cursor.moveToNext() && i < 10) {
+            String body = cursor.getString(cursor.getColumnIndex(_body));
+            long TimeStamp = Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
+            String address = cursor.getString(cursor.getColumnIndex(_address));
+            int read = cursor.getInt(cursor.getColumnIndex(_read));
+            int type = cursor.getInt(cursor.getColumnIndex(_type));
+            long thread_id = cursor.getLong(cursor.getColumnIndex(_thread_id));
+            items.add(new Conversation()
+                    .setMessage(body)
+                    .setDate(TimeStamp)
+                    .setRead(read == 1)
+                    .setType(type)
+                    .setCount(getNonReadSmsCount(ctx, thread_id))
+                    .setPinned(false)//.setPinned(pinned.contains(thread_id))
+                    .setThreadId(thread_id)
+                    .setContact(
+                            getContact(ctx, address)
+                    )
+            );
+            i++;
+            Log.e(TAG, "getConversation: Conversation Item : {" + getContact(ctx, address).getNameText() + " ThreadID: " + thread_id + " }");
+        }
+        return items;
+    }
+
+    public Conversation getConversationItem(Context ctx, Long ThreadID) {
+        Cursor cursor = getConversationCursorFromSelection(ctx, _thread_id + "=" + ThreadID);
+        if (!cursor.moveToNext())
+            return null;
+        String body = cursor.getString(cursor.getColumnIndex(_body));
+        long TimeStamp = Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
+        String address = cursor.getString(cursor.getColumnIndex(_address));
+        int read = cursor.getInt(cursor.getColumnIndex(_read));
+        int type = cursor.getInt(cursor.getColumnIndex(_type));
+        long thread_id = cursor.getLong(cursor.getColumnIndex(_thread_id));
+        return new Conversation()
+                .setMessage(body)
+                .setDate(TimeStamp)
+                .setRead(read == 1)
+                .setType(type)
+                .setCount(getNonReadSmsCount(ctx, thread_id))
+                .setPinned(false)//.setPinned(pinned.contains(thread_id))
+                .setThreadId(thread_id)
+                .setContact(
+                        getContact(ctx, address)
+                );
     }
 
     public Cursor getMessageCursor(Context ctx, long ThreadID) {
@@ -196,17 +255,17 @@ public class MySmsManager {
                 .setContact(
                         new Contact()
                                 .setNumber(phoneNumber));
-        int messageId = AddMessage(ctx, message);
-        Uri messageUri = getMessageUriWithID(messageId);
+        MessageResponse messageResponse = AddMessage(ctx, message);
+        Uri messageUri = getMessageUriWithID(messageResponse.getMessageID());
         Intent sentIntent = new Intent(SENT);
         sentIntent.putExtra(AppContents.MessageUri, messageUri == null ? "" : messageUri.toString());
 
         Intent deliveredIntent = new Intent(DELIVERED);
         deliveredIntent.putExtra(AppContents.MessageUri, messageUri == null ? "" : messageUri.toString());
 
-        PendingIntent sentPI = PendingIntent.getBroadcast(ctx, messageId, sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent sentPI = PendingIntent.getBroadcast(ctx, messageResponse.getMessageID(), sentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        PendingIntent deliveredPI = PendingIntent.getBroadcast(ctx, messageId,
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(ctx, messageResponse.getMessageID(),
                 deliveredIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         ArrayList<PendingIntent> sentPIS = new ArrayList<>();
         ArrayList<PendingIntent> deliveredPIS = new ArrayList<>();
@@ -217,13 +276,19 @@ public class MySmsManager {
             deliveredPIS.add(deliveredPI);
         }
         sms.sendMultipartTextMessage(phoneNumber, null, parts, sentPIS, deliveredPIS);
+
+        Intent in = new Intent(AppContents.conversationBroadcast);
+        Bundle b = new Bundle();
+        b.putLong(AppContents.conversationBroadcastThreadID, messageResponse.getThreadID());
+        in.putExtras(b);
+        ctx.sendBroadcast(in);
     }
 
     public Uri getMessageUriWithID(int ID) {
         return Uri.parse(_SmsString + ID);
     }
 
-    public int ReciveMessage(Context ctx, String phoneNumber, String messageBody) {
+    public MessageResponse ReciveMessage(Context ctx, String phoneNumber, String messageBody) {
         Calendar cal = Calendar.getInstance();
         Message message = new Message()
                 .setRead(false)
@@ -236,7 +301,7 @@ public class MySmsManager {
         return AddMessage(ctx, message);
     }
 
-    private int AddMessage(Context ctx, Message message) {
+    private MessageResponse AddMessage(Context ctx, Message message) {
         ContentValues values = new ContentValues();
         values.put(_address, message.getContact().getNumber());
         values.put(_body, message.getMessage());
@@ -253,10 +318,10 @@ public class MySmsManager {
             query.close();
         }
         query.close();
-        return messageId;
+        return new MessageResponse(messageId, threadId);
     }
 
-    private long getThreadID(Context ctx, String phoneNumber) {
+    public long getThreadID(Context ctx, String phoneNumber) {
         Uri.Builder uriBuilder = Uri.parse("content://mms-sms/threadID").buildUpon();
         uriBuilder.appendQueryParameter("recipient", phoneNumber);
         Uri uri = uriBuilder.build();

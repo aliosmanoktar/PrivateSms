@@ -39,6 +39,7 @@ import com.aliosman.privatesms.AppContents;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Message;
+import com.aliosman.privatesms.Model.MessageResponse;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.Receiver.DeliverReceiver;
 import com.aliosman.privatesms.Receiver.SentReceiver;
@@ -66,6 +67,7 @@ public class MessageActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private Contact contact;
     private View RootView;
+    private boolean isSend = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,23 +97,10 @@ public class MessageActivity extends AppCompatActivity {
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
         txt_name.setText(contact.getLookupKey().isEmpty() ? contact.getNumber() : contact.getNameText());
 
-        //back.setOnClickListener(back_click);
         toolbar.setNavigationOnClickListener(back_click);
         send.setOnClickListener(send_click);
         txt_name.setOnClickListener(name_click);
         edit_message.addTextChangedListener(edit_message_listener);
-
-        SetReyclerListener();
-        LoadMessage();
-        ClearNotification();
-        smsmanager.readAllMessage(this, contact.getThreadID());
-
-        String smsBody = getIntent().getExtras().getString(AppContents.Sms_Body);
-        if (smsBody != null) {
-            edit_message.setText(smsBody);
-            CalculateLength(smsBody);
-        }
-
 
     }
 
@@ -127,6 +116,21 @@ public class MessageActivity extends AppCompatActivity {
         super.onResume();
         registerReceiver(sentReceiver, new IntentFilter("broadCastName"));
         registerReceiver(smsReceiver, new IntentFilter(contact.getNumber()));
+        Setup();
+    }
+
+    private void Setup() {
+        SetReyclerListener();
+        LoadMessage();
+        ClearNotification();
+        smsmanager.readAllMessage(this, contact.getThreadID());
+
+        String smsBody = getIntent().getExtras().getString(AppContents.Sms_Body);
+        if (smsBody != null) {
+            edit_message.setText(smsBody);
+            CalculateLength(smsBody);
+        }
+        ReadMessagesBroadCast(contact.getThreadID());
     }
 
     @Override
@@ -134,6 +138,10 @@ public class MessageActivity extends AppCompatActivity {
         super.onDestroy();
         unregisterReceiver(sentReceiver);
         unregisterReceiver(smsReceiver);
+        if (isSend) {
+            unregisterReceiver(deliveryBroadcastReciever);
+            unregisterReceiver(sendBroadcastReceiver);
+        }
     }
 
     @Override
@@ -167,8 +175,10 @@ public class MessageActivity extends AppCompatActivity {
         public void onClick(View view) {
             if (messageAdapter.isSelect())
                 messageAdapter.RemoveSelected();
-            else
+            else {
                 finish();
+                ReadMessagesBroadCast(contact.getThreadID());
+            }
         }
     };
 
@@ -189,16 +199,16 @@ public class MessageActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             load = true;
-            int id = intent.getExtras().getInt(AppContents.messageId_extras);
+            MessageResponse messageResponse = (MessageResponse) intent.getExtras().getSerializable(AppContents.messageResponse);
             int notificationID = intent.getExtras().getInt(AppContents.notificationId_extras);
-            Message message = smsmanager.getMessage(smsmanager.getMessageUriWithID(id), context);
+            Message message = smsmanager.getMessage(smsmanager.getMessageUriWithID(messageResponse.getMessageID()), context);
             items.add(0, message);
             recyclerView.post(() -> {
                 load = false;
                 recyclerView.getAdapter().notifyDataSetChanged();
             });
             clearNotification(notificationID);
-            smsmanager.readSms(context, id);
+            smsmanager.readSms(context, messageResponse.getMessageID());
         }
     };
 
@@ -284,6 +294,7 @@ public class MessageActivity extends AppCompatActivity {
         String SENT = "SMS_SENT";
         String DELIVERED = "SMS_DELIVERED";
 
+        isSend = true;
         registerReceiver(sendBroadcastReceiver, new IntentFilter(SENT));
 
         registerReceiver(deliveryBroadcastReciever, new IntentFilter(DELIVERED));
@@ -387,5 +398,13 @@ public class MessageActivity extends AppCompatActivity {
         else
             s += (remaining + " / " + messages);
         return s;
+    }
+
+    private void ReadMessagesBroadCast(long ThreadID) {
+        Intent in = new Intent(AppContents.conversationBroadcast);
+        Bundle b = new Bundle();
+        b.putLong(AppContents.conversationBroadcastThreadID, ThreadID);
+        in.putExtras(b);
+        sendBroadcast(in);
     }
 }

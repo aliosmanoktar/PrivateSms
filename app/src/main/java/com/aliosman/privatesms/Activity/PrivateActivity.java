@@ -9,12 +9,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,11 +32,14 @@ import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
 import com.aliosman.privatesms.SmsManager.PrivateDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 public class PrivateActivity extends AppCompatActivity {
-
+    private boolean load = false;
+    private int totalItemCount, lastVisibleItem;
+    private List<Conversation> items = new ArrayList<>();
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private boolean select = false;
@@ -40,6 +47,7 @@ public class PrivateActivity extends AppCompatActivity {
     private String TAG = getClass().getName();
     private ConversationAdapter adapter;
     private PrivateDatabase database;
+    private Cursor cursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +152,7 @@ public class PrivateActivity extends AppCompatActivity {
     }
 
     private void SetPrivateAdapter() {
+        RemoveRecylerListener();
         adapter = new ConversationAdapter(manager.getPrivateConversations(this), select_listener, selectedListener);
         recyclerView.setAdapter(adapter);
     }
@@ -153,8 +162,49 @@ public class PrivateActivity extends AppCompatActivity {
      */
     private void SetSelectRecylerConversation() {
         select = true;
-        adapter = new ConversationAdapter(manager.getConversation(this), select_listener, null);
+        cursor = manager.getConversation(this);
+        SetReyclerListener();
+        adapter = new ConversationAdapter(items, select_listener, null);
         recyclerView.setAdapter(adapter);
+        /*adapter = new ConversationAdapter(manager.getConversation(this), select_listener, null);
+        recyclerView.setAdapter(adapter);*/
+    }
+
+    private void SetReyclerListener() {
+        items.clear();
+        Log.e(TAG, "SetReyclerListener: ");
+        recyclerView.addOnScrollListener(scrollListener);
+        LoadConversation();
+    }
+
+    private void RemoveRecylerListener() {
+        recyclerView.removeOnScrollListener(scrollListener);
+    }
+
+    private RecyclerView.OnScrollListener scrollListener = new RecyclerView.OnScrollListener() {
+        LinearLayoutManager linearLayoutManager = null;
+
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            if (linearLayoutManager == null)
+                linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+            super.onScrolled(recyclerView, dx, dy);
+            totalItemCount = items.size();
+            lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+            if (!load && lastVisibleItem == totalItemCount - 1) {
+                LoadConversation();
+                load = true;
+                Log.e(TAG, "onScrolled: Add More");
+            }
+        }
+    };
+
+    private void LoadConversation() {
+        items.addAll(manager.getConversation(cursor, this));
+        recyclerView.post(() -> {
+            load = false;
+            recyclerView.getAdapter().notifyDataSetChanged();
+        });
     }
 
     private RecyclerViewListener<Conversation> select_listener = new RecyclerViewListener<Conversation>() {
@@ -162,7 +212,7 @@ public class PrivateActivity extends AppCompatActivity {
         public void Onclick(Conversation item) {
             if (select) {
                 select = false;
-                database.AddNumber(item.getThreadId());
+                database.AddNumber(item.getThreadId(), item.getContact().getNumber());
                 SetPrivateAdapter();
             } else {
                 Intent i = new Intent(getBaseContext(), MessageActivity.class);

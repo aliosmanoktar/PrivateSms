@@ -10,4 +10,5 @@ public class PrivateNumberEntity {
     public static final String PinnedTableName = "PinnetNumbers";
     public static final String ID = "ID";
     public static final String ThreadID = "ThreadID";
+    public static final String Number = "Number";
 }

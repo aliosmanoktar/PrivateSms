@@ -17,7 +17,6 @@ public class PrivateDatabase {
     private Context ctx;
     private PrivateDatabaseHelper helper;
     private SQLiteDatabase db;
-    private String TAG = getClass().getName();
 
     public PrivateDatabase(Context ctx) {
         this.ctx = ctx;
@@ -25,9 +24,10 @@ public class PrivateDatabase {
         db = helper.getWritableDatabase();
     }
 
-    public void AddNumber(Long ThreadID) {
+    public void AddNumber(Long ThreadID, String Number) {
         ContentValues values = new ContentValues();
         values.put(PrivateNumberEntity.ThreadID, ThreadID);
+        values.put(PrivateNumberEntity.Number, Number);
         db.insert(PrivateNumberEntity.TableName, null, values);
     }
 
@@ -63,5 +63,10 @@ public class PrivateDatabase {
             ThreadIDs.add(ThreadID);
         }
         return ThreadIDs;
+    }
+
+    public boolean CheckNumber(String number) {
+        Cursor cr = db.query(PrivateNumberEntity.TableName, null, PrivateNumberEntity.Number + " = '" + number + "'", null, null, null, null);
+        return cr.moveToNext();
     }
 }

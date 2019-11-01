@@ -8,13 +8,15 @@ package com.aliosman.privatesms.SmsManager;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class PrivateDatabaseHelper extends SQLiteOpenHelper {
-
-    private static final int DatabaseVersion = 3;
+    private final String TAG = getClass().getName();
+    private static final int DatabaseVersion = 1;
     private static final String DataBaseName = "Private.db";
     private final String CreatePrivateNumber_SQL = "CREATE TABLE " + PrivateNumberEntity.TableName + " (" +
             PrivateNumberEntity.ID + " INTEGER PRIMARY KEY," +
+            PrivateNumberEntity.Number + " Text," +
             PrivateNumberEntity.ThreadID + " Long)";
     private final String CreatePinnedNumber_SQL = "CREATE TABLE " + PrivateNumberEntity.PinnedTableName + " (" +
             PrivateNumberEntity.ID + " INTEGER PRIMARY KEY," +
@@ -34,6 +36,7 @@ public class PrivateDatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        Log.e(TAG, "onUpgrade: ");
         db.execSQL(DeleteTable_SQL);
         db.execSQL(DeletePinnedTable_SQL);
         onCreate(db);

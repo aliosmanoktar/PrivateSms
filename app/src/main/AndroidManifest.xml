@@ -5,6 +5,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.aliosman.privatesms">
 
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
@@ -18,7 +19,9 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.USE_BIOMETRIC" />
-
+    <uses-permission
+        android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -83,7 +86,9 @@
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".Receiver.NotificationActionReceiver" /> <!-- End Receiver -->
+        <receiver android:name=".Receiver.NotificationActionReceiver" />
+        <receiver android:name=".Notification.AlarmReceiver" />
+        <!-- End Receiver -->
         <!-- Service -->
         <service
             android:name=".Services.SmsService"
@@ -98,6 +103,14 @@
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
                 <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".Notification.NotificationListener"
+            android:label="Listener"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
         </service>
         <!-- End Service-->

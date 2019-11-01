@@ -20,8 +20,10 @@ import android.telephony.SmsMessage;
 
 import com.aliosman.privatesms.Activity.MessageActivity;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Model.MessageResponse;
 import com.aliosman.privatesms.R;
 import com.aliosman.privatesms.SmsManager.MySmsManager;
+import com.aliosman.privatesms.SmsManager.PrivateDatabase;
 
 import java.util.Random;
 
@@ -39,18 +41,20 @@ public class SmsReceiver extends BroadcastReceiver {
             body += sms.getMessageBody();
         }
         MySmsManager manager = new MySmsManager();
-        int id = manager.ReciveMessage(context, phoneNumber, body);
-        int notificationID = ShowNotification(context, body, phoneNumber, manager.getName(context, phoneNumber), id);
+        MessageResponse messageResponse = manager.ReciveMessage(context, phoneNumber, body);
+        PrivateDatabase database = new PrivateDatabase(context);
+        int notificationID = -1;
+        if (!database.CheckNumber(phoneNumber))
+            notificationID = ShowNotification(context, body, phoneNumber, manager.getName(context, phoneNumber), messageResponse);
         Intent i = new Intent(phoneNumber);
         Bundle bu = new Bundle();
-        bu.putInt(AppContents.messageId_extras, id);
+        bu.putSerializable(AppContents.messageResponse, messageResponse);
         bu.putInt(AppContents.notificationId_extras, notificationID);
         i.putExtras(bu);
         context.sendBroadcast(i);
-        context.sendBroadcast(new Intent(AppContents.conversationBroadcast));
     }
 
-    private int ShowNotification(Context ctx, String body, String address, String name, int messsageID) {
+    private int ShowNotification(Context ctx, String body, String address, String name, MessageResponse response) {
         int NotificationID = new Random().nextInt();
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, AppContents.ChannelID)
                 .setSmallIcon(R.drawable.ic_message)
@@ -60,8 +64,8 @@ public class SmsReceiver extends BroadcastReceiver {
                 .setDefaults(Notification.DEFAULT_ALL)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(getClickIntent(ctx, address))
-                .addAction(R.drawable.ic_double_tick, "Okundu olarak İşaretle", getSeenIntent(ctx, NotificationID, messsageID))
-                .addAction(getQucikReply(ctx, NotificationID, messsageID, address));
+                .addAction(R.drawable.ic_double_tick, "Okundu olarak İşaretle", getSeenIntent(ctx, NotificationID, response))
+                .addAction(getQucikReply(ctx, NotificationID, response, address));
         NotificationManager notificationManager =
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -74,23 +78,23 @@ public class SmsReceiver extends BroadcastReceiver {
         return NotificationID;
     }
 
-    private PendingIntent getReplyIntent(Context ctx, int NotificationID, int MessageID, String address) {
+    private PendingIntent getReplyIntent(Context ctx, int NotificationID, String address, MessageResponse response) {
         Intent reply_intent = new Intent(ctx, NotificationActionReceiver.class);
         reply_intent.setAction(AppContents.Action_reply_sms);
         Bundle reply_bundle = new Bundle();
         reply_bundle.putInt(AppContents.notificationId_extras, NotificationID);
-        reply_bundle.putInt(AppContents.messageId_extras, MessageID);
+        reply_bundle.putSerializable(AppContents.messageResponse, response);
         reply_bundle.putString(AppContents.number_extras, address);
         reply_intent.putExtras(reply_bundle);
         return PendingIntent.getBroadcast(ctx, 0, reply_intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private PendingIntent getSeenIntent(Context ctx, int NotificationID, int MessageID) {
+    private PendingIntent getSeenIntent(Context ctx, int NotificationID, MessageResponse response) {
         Intent seen_intent = new Intent(ctx, NotificationActionReceiver.class);
         seen_intent.setAction(AppContents.Action_seen_sms);
         Bundle seen_bundle = new Bundle();
         seen_bundle.putInt(AppContents.notificationId_extras, NotificationID);
-        seen_bundle.putInt(AppContents.messageId_extras, MessageID);
+        seen_bundle.putSerializable(AppContents.messageResponse, response);
         seen_intent.putExtras(seen_bundle);
         return PendingIntent.getBroadcast(ctx, 0, seen_intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
@@ -103,14 +107,14 @@ public class SmsReceiver extends BroadcastReceiver {
         return PendingIntent.getActivity(ctx, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     }
 
-    private NotificationCompat.Action getQucikReply(Context ctx, int NotificationID, int MessadeID, String address) {
+    private NotificationCompat.Action getQucikReply(Context ctx, int NotificationID, MessageResponse response, String address) {
         String replyLabel = "Cevapla";
         RemoteInput remoteInput = new RemoteInput.Builder(AppContents.Action_reply_text)
                 .setLabel(replyLabel)
                 .build();
         NotificationCompat.Action action =
                 new NotificationCompat.Action.Builder(R.drawable.ic_reply,
-                        "Cevapla", getReplyIntent(ctx, NotificationID, MessadeID, address))
+                        "Cevapla", getReplyIntent(ctx, NotificationID, address, response))
                         .addRemoteInput(remoteInput)
                         .build();
         return action;
