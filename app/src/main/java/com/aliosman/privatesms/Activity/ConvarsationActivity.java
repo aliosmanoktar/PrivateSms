@@ -33,6 +33,7 @@ import android.widget.TextView;
 
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Fragment.DialogUpdate;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
@@ -51,6 +52,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -87,8 +89,6 @@ public class ConvarsationActivity extends AppCompatActivity {
         fab_button = findViewById(R.id.conversation_activity_fab);
         fab_button.setOnClickListener(fab_click);
 
-        cursor = manager.getConversation(this);
-
         RootView = findViewById(R.id.conversation_activity_rootView);
 
 
@@ -102,13 +102,11 @@ public class ConvarsationActivity extends AppCompatActivity {
 
         recylerAdapter = new ConversationAdapter(items, conversation_click, selectedListener);
         recyclerView.setAdapter(recylerAdapter);
-
         SetReyclerListener();
-        LoadConversation();
+        ResetRecylerListener();
         CheckVersion();
         setDefaultSmsApp();
     }
-
 
     @Override
     protected void onResume() {
@@ -136,6 +134,24 @@ public class ConvarsationActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.conversation_menu_remove:
+                List<Conversation> items = recylerAdapter.getSelected();
+                RemoveConversationQuestion(items);
+                recylerAdapter.EndSelect();
+                break;
+            case R.id.conversation_menu_pinned:
+                Pinned();
+                break;
+            case R.id.conversation_menu_unpinned:
+                Unpinned();
+                break;
+
+        }
+        return true;
+    }
 
     private RecyclerViewListener<Conversation> conversation_click = new RecyclerViewListener<Conversation>() {
         @Override
@@ -217,6 +233,13 @@ public class ConvarsationActivity extends AppCompatActivity {
             startActivity(new Intent(getBaseContext(), LockActivity.class));
     };
 
+    private void ResetRecylerListener() {
+        items.clear();
+        items.addAll(manager.getPinnedNumbers(this));
+        cursor = manager.getConversation(this);
+        LoadConversation();
+    }
+
     private void SetReyclerListener() {
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -242,39 +265,12 @@ public class ConvarsationActivity extends AppCompatActivity {
         });
     }
 
-    /***
-     * Fix Edilmesi Gerek
-     */
-    private void ReplaceScreen() {
-        /*recylerAdapter = new ConversationAdapter(manager.getConversation(this), conversation_click, selectedListener);
-        recyclerView.setAdapter(recylerAdapter);*/
-    }
-
     private void setDefaultSmsApp() {
         Intent intent =
                 new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
         intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
                 getPackageName());
         startActivity(intent);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.conversation_menu_remove:
-                List<Conversation> items = recylerAdapter.getSelected();
-                RemoveConversationQuestion(items);
-                recylerAdapter.EndSelect();
-                break;
-            case R.id.conversation_menu_pinned:
-                Pinned();
-                break;
-            case R.id.conversation_menu_unpinned:
-                Unpinned();
-                break;
-
-        }
-        return true;
     }
 
     private int getConversationIndex(long ThreadID) {
@@ -291,10 +287,8 @@ public class ConvarsationActivity extends AppCompatActivity {
             if (index != -1) {
                 Conversation item = manager.getConversationItem(this, ThreadID);
                 items.remove(index);
-                if (items.get(0).getDate() < item.getDate())
-                    items.add(0, item);
-                else
-                    items.add(index, item);
+                items.add(index, item);
+                Collections.sort(items, new ConversationComparator());
                 recylerAdapter.notifyDataSetChanged();
             } else {
                 Log.e(TAG, "onReceive: Index ID -1");
@@ -311,7 +305,8 @@ public class ConvarsationActivity extends AppCompatActivity {
             database.AddPinnedNumber(item.getThreadId());
         }
         recylerAdapter.EndSelect();
-        ReplaceScreen();
+        ResetRecylerListener();
+        //ReplaceScreen();
     }
 
     private void Unpinned() {
@@ -321,7 +316,8 @@ public class ConvarsationActivity extends AppCompatActivity {
             database.RemovePinnedNumber(item.getThreadId());
         }
         recylerAdapter.EndSelect();
-        ReplaceScreen();
+        ResetRecylerListener();
+        //ReplaceScreen();
     }
 
     private void RemoveConversationQuestion(List<Conversation> items) {
@@ -398,6 +394,7 @@ public class ConvarsationActivity extends AppCompatActivity {
 
                 }).show();
     }
+
     private boolean CheckVersion(Version update) {
         Version defult = new Version();
         return defult.getVersionCode() < update.getVersionCode();

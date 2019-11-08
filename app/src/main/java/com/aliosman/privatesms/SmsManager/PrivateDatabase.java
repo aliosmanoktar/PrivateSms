@@ -69,4 +69,9 @@ public class PrivateDatabase {
         Cursor cr = db.query(PrivateNumberEntity.TableName, null, PrivateNumberEntity.Number + " = '" + number + "'", null, null, null, null);
         return cr.moveToNext();
     }
+
+    public boolean IsPinnedNumber(long ThreadID) {
+        Cursor cr = db.query(PrivateNumberEntity.PinnedTableName, null, PrivateNumberEntity.ThreadID + " = " + ThreadID, null, null, null, null);
+        return cr.moveToNext();
+    }
 }

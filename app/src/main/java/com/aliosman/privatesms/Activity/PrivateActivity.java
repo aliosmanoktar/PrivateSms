@@ -172,7 +172,6 @@ public class PrivateActivity extends AppCompatActivity {
 
     private void SetReyclerListener() {
         items.clear();
-        Log.e(TAG, "SetReyclerListener: ");
         recyclerView.addOnScrollListener(scrollListener);
         LoadConversation();
     }

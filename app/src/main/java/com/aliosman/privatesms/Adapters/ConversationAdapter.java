@@ -6,6 +6,7 @@
 package com.aliosman.privatesms.Adapters;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.provider.ContactsContract;
@@ -70,10 +71,16 @@ public class ConversationAdapter extends BaseSelectedAdapter<Conversation, Conve
         viewHolder.name.setText(item.getContact().getNameText());
         viewHolder.avatarView.SetUser(item.getContact());
         viewHolder.date.setText(item.getTimeString());
-
+        Resources resources = viewHolder.avatarView.getResources();
         if (isSelect(item)) {
-            viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.dark));
+            viewHolder.itemView.setBackgroundColor(resources.getColor(R.color.dark));
+            viewHolder.name.setTextColor(resources.getColor(R.color.white));
+            viewHolder.message.setTextColor(resources.getColor(R.color.white));
+            viewHolder.date.setTextColor(resources.getColor(R.color.white));
         } else {
+            viewHolder.name.setTextColor(resources.getColor(R.color.black));
+            viewHolder.message.setTextColor(resources.getColor(R.color.black));
+            viewHolder.date.setTextColor(resources.getColor(R.color.black));
             viewHolder.itemView.setBackgroundColor(viewHolder.avatarView.getResources().getColor(R.color.transparent));
         }
         viewHolder.itemView.setOnClickListener(this);

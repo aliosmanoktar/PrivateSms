@@ -52,13 +52,30 @@ public class MySmsManager {
 
     public Cursor getConversation(Context ctx) {
         String selection = "";
-        List<Long> ThreadIDs = new PrivateDatabase(ctx).getAllPrivateNumbers();
+        PrivateDatabase database = new PrivateDatabase(ctx);
+        List<Long> ThreadIDs = database.getAllPrivateNumbers();
+        ThreadIDs.addAll(database.getAllPinnedNumbers());
         for (int i = 0; i < ThreadIDs.size(); i++) {
             selection += (_thread_id + " != " + ThreadIDs.get(i));
             if (i != (ThreadIDs.size() - 1))
                 selection += " AND ";
         }
-        return getConversationCursorFromSelection(ctx, selection); //getConversationFromSelection(ctx, selection);
+        return getConversationCursorFromSelection(ctx, selection);
+    }
+
+    public List<Conversation> getPinnedNumbers(Context ctx) {
+        PrivateDatabase database = new PrivateDatabase(ctx);
+        List<Long> ThreadIDs = database.getAllPinnedNumbers();
+        ThreadIDs.removeAll(database.getAllPrivateNumbers());
+        String selection = "";
+        if (ThreadIDs.isEmpty())
+            return new ArrayList<>();
+        for (int i = 0; i < ThreadIDs.size(); i++) {
+            selection += (_thread_id + " = " + ThreadIDs.get(i));
+            if (i != (ThreadIDs.size() - 1))
+                selection += " OR ";
+        }
+        return getConversationFromSelection(ctx, selection);
     }
 
     public List<Conversation> getPrivateConversations(Context ctx) {
@@ -153,7 +170,7 @@ public class MySmsManager {
                 .setRead(read == 1)
                 .setType(type)
                 .setCount(getNonReadSmsCount(ctx, thread_id))
-                .setPinned(false)//.setPinned(pinned.contains(thread_id))
+                .setPinned(new PrivateDatabase(ctx).IsPinnedNumber(thread_id))//
                 .setThreadId(thread_id)
                 .setContact(
                         getContact(ctx, address)

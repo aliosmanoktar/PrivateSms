@@ -46,12 +46,42 @@ public class SmsReceiver extends BroadcastReceiver {
         int notificationID = -1;
         if (!database.CheckNumber(phoneNumber))
             notificationID = ShowNotification(context, body, phoneNumber, manager.getName(context, phoneNumber), messageResponse);
+        else ShowNotification(context);
         Intent i = new Intent(phoneNumber);
         Bundle bu = new Bundle();
         bu.putSerializable(AppContents.messageResponse, messageResponse);
         bu.putInt(AppContents.notificationId_extras, notificationID);
         i.putExtras(bu);
         context.sendBroadcast(i);
+        SentBroadCast(messageResponse.getThreadID(), context);
+    }
+
+    private void SentBroadCast(long ThreadID, Context ctx) {
+        Intent i = new Intent(AppContents.conversationBroadcast);
+        Bundle bundle = new Bundle();
+        bundle.putLong(AppContents.conversationBroadcastThreadID, ThreadID);
+        i.putExtras(bundle);
+        ctx.sendBroadcast(i);
+    }
+
+    private int ShowNotification(Context ctx) {
+        int NotificationID = new Random().nextInt();
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(ctx, AppContents.ChannelID)
+                .setSmallIcon(R.drawable.ic_message)
+                .setContentTitle(ctx.getString(R.string.app_name))
+                .setContentText("Yeni bir mesaj olabilir")
+                .setAutoCancel(true)
+                .setDefaults(Notification.DEFAULT_ALL);
+        NotificationManager notificationManager =
+                (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationBuilder.setChannelId(AppContents.ChannelID);
+            NotificationChannel mChannel = new NotificationChannel(AppContents.ChannelID, AppContents.ChannelName, NotificationManager.IMPORTANCE_HIGH);
+            mChannel.setShowBadge(true);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+        notificationManager.notify(NotificationID, notificationBuilder.build());
+        return NotificationID;
     }
 
     private int ShowNotification(Context ctx, String body, String address, String name, MessageResponse response) {
@@ -70,7 +100,7 @@ public class SmsReceiver extends BroadcastReceiver {
                 (NotificationManager) ctx.getSystemService(Context.NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationBuilder.setChannelId(AppContents.ChannelID);
-            NotificationChannel mChannel = new NotificationChannel(AppContents.ChannelID, AppContents.ChannelName, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel mChannel = new NotificationChannel(AppContents.ChannelID, AppContents.ChannelName, NotificationManager.IMPORTANCE_DEFAULT);
             mChannel.setShowBadge(true);
             notificationManager.createNotificationChannel(mChannel);
         }
