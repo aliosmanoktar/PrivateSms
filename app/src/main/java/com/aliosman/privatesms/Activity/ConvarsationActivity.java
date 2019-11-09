@@ -188,6 +188,7 @@ public class ConvarsationActivity extends AppCompatActivity {
             toolbar.getMenu().findItem(R.id.conversation_menu_remove).setVisible(false);
             toolbar.getMenu().findItem(R.id.conversation_menu_pinned).setVisible(false);
             toolbar.getMenu().findItem(R.id.conversation_menu_unpinned).setVisible(false);
+            toolbar.getMenu().findItem(R.id.conversation_menu_settings).setVisible(true);
             toolbar_title.setText(R.string.app_name);
             toolbar.setNavigationIcon(null);
         }
@@ -197,6 +198,7 @@ public class ConvarsationActivity extends AppCompatActivity {
             toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.ic_arrow_back));
             toolbar.setNavigationOnClickListener(v -> recylerAdapter.RemoveSelected());
             toolbar.getMenu().findItem(R.id.conversation_menu_remove).setVisible(true);
+            toolbar.getMenu().findItem(R.id.conversation_menu_settings).setVisible(false);
         }
     };
 

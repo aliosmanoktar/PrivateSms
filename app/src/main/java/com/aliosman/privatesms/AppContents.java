@@ -22,4 +22,5 @@ public class AppContents {
     public static final String Password_view_extras_listener = "password_view_extras_listener";
     public static final String Update_View_extras_listener = "update_view_extras_listener";
     public static final String Update_View_extas_version = "update_view_etras_version";
+    public static final String MessageInfoDialog_Message = "message";
 }

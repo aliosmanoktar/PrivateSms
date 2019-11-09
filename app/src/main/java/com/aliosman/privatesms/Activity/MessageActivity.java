@@ -16,7 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.service.notification.StatusBarNotification;
-import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -33,9 +33,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aliosman.privatesms.Adapters.MessageAdapter;
 import com.aliosman.privatesms.AppContents;
+import com.aliosman.privatesms.Fragment.DialogMessageInfo;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
 import com.aliosman.privatesms.Model.Contact;
 import com.aliosman.privatesms.Model.Message;
@@ -151,7 +153,16 @@ public class MessageActivity extends AppCompatActivity {
                 CallNumber();
                 break;
             case R.id.message_menu_remove:
+                List<Message> items = messageAdapter.getSelected();
+                RemoveConversationQuestion(items);
                 messageAdapter.EndSelect();
+                break;
+            case R.id.message_menu_info:
+                List<Message> select_items = messageAdapter.getSelected();
+                if (select_items.size() != 1)
+                    Toast.makeText(getBaseContext(), "Mesaj Bilgisi için tek mesaj seçili olması gereklidir", Toast.LENGTH_LONG).show();
+                else
+                    ShowInfo(select_items.get(0));
                 break;
         }
         return true;
@@ -253,8 +264,7 @@ public class MessageActivity extends AppCompatActivity {
             toolbar.getMenu().findItem(R.id.message_menu_remove).setVisible(false);
             toolbar.getMenu().findItem(R.id.message_menu_info).setVisible(false);
             toolbar.getMenu().findItem(R.id.message_menu_call).setVisible(true);
-            if (items != null)
-                RemoveConversationQuestion(items);
+
         }
 
         @Override
@@ -269,7 +279,7 @@ public class MessageActivity extends AppCompatActivity {
         final LinearLayoutManager linearLayoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 totalItemCount = linearLayoutManager.getItemCount();
                 lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
@@ -288,6 +298,15 @@ public class MessageActivity extends AppCompatActivity {
             load = false;
             recyclerView.getAdapter().notifyDataSetChanged();
         });
+    }
+
+    private void ShowInfo(Message item) {
+        item.setContact(contact);
+        BottomSheetDialogFragment fr = new DialogMessageInfo();
+        Bundle b = new Bundle();
+        b.putSerializable(AppContents.MessageInfoDialog_Message, item);
+        fr.setArguments(b);
+        fr.show(getSupportFragmentManager(), "tag");
     }
 
     private void sendSMS(String phoneNumber, String message) {

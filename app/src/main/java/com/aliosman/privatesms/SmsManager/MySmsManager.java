@@ -49,7 +49,7 @@ public class MySmsManager {
     private static final String _read = "read";
     private static final String _type = "type";
     private static final String _thread_id = "thread_id";
-
+    private static final String _delivered = "date_sent";
     public Cursor getConversation(Context ctx) {
         String selection = "";
         PrivateDatabase database = new PrivateDatabase(ctx);
@@ -181,14 +181,14 @@ public class MySmsManager {
         Uri myMessage = Uri.parse(_SmsString);
         ContentResolver cr = ctx.getContentResolver();
         Cursor c = cr.query(myMessage, new String[]{_id, _address, _date,
-                _body, _read, _type, _thread_id}, _thread_id + " = " + ThreadID, null, null);
+                _body, _read, _type, _thread_id, _delivered}, _thread_id + " = " + ThreadID, null, null);
         return c;
     }
 
     private Cursor getMessageCursor(Uri uri, Context ctx) {
         ContentResolver cr = ctx.getContentResolver();
         return cr.query(uri, new String[]{_id, _address, _date,
-                _body, _read, _type, _thread_id}, null, null, null);
+                _body, _read, _type, _thread_id, _delivered}, null, null, null);
     }
 
     public List<Message> getMessages(Cursor cursor) {
@@ -200,12 +200,14 @@ public class MySmsManager {
             String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
             int type = cursor.getInt(cursor.getColumnIndex(_type));
             long threadID = cursor.getLong(cursor.getColumnIndex(_thread_id));
+            long deliveredTime = cursor.getLong(cursor.getColumnIndex(_delivered));
             items.add(new Message()
                     .setMessage(body)
-                    .setTime(date)
+                    .setSendDate(date)
                     .setType(type)
                     .setID(id)
                     .setThreadID(threadID)
+                    .setDeliveredDate(deliveredTime)
             );
         }
         return items;
@@ -218,12 +220,13 @@ public class MySmsManager {
         long date = cursor.getLong(cursor.getColumnIndexOrThrow(_date));
         String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
         int type = cursor.getInt(cursor.getColumnIndex(_type));
-
+        long deliveredTime = cursor.getLong(cursor.getColumnIndex(_delivered));
         return new Message()
                 .setMessage(body)
-                .setTime(date)
+                .setSendDate(date)
                 .setType(type)
-                .setID(id);
+                .setID(id)
+                .setDeliveredDate(deliveredTime);
     }
 
     public String getName(Context ctx, String address) {
@@ -267,7 +270,7 @@ public class MySmsManager {
         Message message = new Message()
                 .setMessage(messageBody)
                 .setType(4)
-                .setTime(cal.getTimeInMillis())
+                .setSendDate(cal.getTimeInMillis())
                 .setRead(true)
                 .setContact(
                         new Contact()
@@ -311,7 +314,7 @@ public class MySmsManager {
                 .setRead(false)
                 .setType(1)
                 .setMessage(messageBody)
-                .setTime(cal.getTimeInMillis())
+                .setSendDate(cal.getTimeInMillis())
                 .setContact(
                         new Contact().setNumber(phoneNumber)
                 );
@@ -322,7 +325,7 @@ public class MySmsManager {
         ContentValues values = new ContentValues();
         values.put(_address, message.getContact().getNumber());
         values.put(_body, message.getMessage());
-        values.put(_date, message.getTime() + "");
+        values.put(_date, message.getSendDate() + "");
         values.put(_read, message.isRead() ? 1 : 0);
         values.put(_type, message.getType());
         long threadId = getThreadID(ctx, message.getContact().getNumber());

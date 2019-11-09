@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2019. Ali Osman OKTAR
+  ~ aliosmanoktar@gmail.com
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="20dp"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:padding="10dp"
+        android:gravity="center"
+        android:textColor="@color/dark"
+        android:textSize="24sp"
+        android:text="@string/dialog_message_info_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textColor="@color/dark"
+        android:layout_marginTop="10dp"
+        android:text="number"
+        android:id="@+id/dialog_message_info.number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textColor="@color/dark"
+        android:layout_marginTop="10dp"
+        android:text="sendDate"
+        android:id="@+id/dialog_message_info.sendDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:textColor="@color/dark"
+        android:layout_marginTop="10dp"
+        android:text="deliveredTime"
+        android:id="@+id/dialog_message_info.deliveredDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/dialog_message_info.ok"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/hint_color"
+        android:background="@drawable/button_background"
+        android:text="Tamam"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>

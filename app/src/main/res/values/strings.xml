@@ -9,4 +9,8 @@
     <string name="tag_item"></string>
     <string name="fingerprint_description">Devam etmek için parmak izinizi doğrulayınız!!</string>
     <string name="fingerprint_hint">Sensöre dokunun!!</string>
+    <string name="dialog_message_info_hint">Mesaj Detayları</string>
+    <string name="dialog_message_info_number">Numara : %1$s </string>
+    <string name="dialog_message_info_sentDate">Gönderilme Zamanı : %1$s</string>
+    <string name="dialog_message_info_deliveredDate">Teslim Zamanu : %1$s</string>
 </resources>

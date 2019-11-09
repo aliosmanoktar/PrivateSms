@@ -7,19 +7,21 @@ package com.aliosman.privatesms.Model;
 
 import android.text.format.DateUtils;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class Message {
+public class Message implements Serializable {
     private int ID;
     private Contact contact;
     private String message;
-    private long time;
+    private long sendDate;
     private int type;
     private boolean read;
     private long threadID;
+    private long deliveredDate;
 
     public Message setID(int ID) {
         this.ID = ID;
@@ -36,8 +38,13 @@ public class Message {
         return this;
     }
 
-    public Message setTime(long time) {
-        this.time = time;
+    public Message setSendDate(long sendDate) {
+        this.sendDate = sendDate;
+        return this;
+    }
+
+    public Message setDeliveredDate(long deliveredDate) {
+        this.deliveredDate = deliveredDate;
         return this;
     }
 
@@ -74,8 +81,8 @@ public class Message {
         return message;
     }
 
-    public long getTime() {
-        return time;
+    public long getSendDate() {
+        return sendDate;
     }
 
     public boolean isSent() {
@@ -98,21 +105,34 @@ public class Message {
         return threadID;
     }
 
-    public String getTimeString() {
+    public String getSendTimeString() {
+        return getString(sendDate);
+    }
+
+    public long getDeliveredDate() {
+        return deliveredDate;
+    }
+
+    public String getDeliveredTimeString() {
+        return getString(deliveredDate);
+    }
+
+    private String getString(long time) {
         DateFormat dateFormat =
                 DateUtils.isToday(time) ?
                         new SimpleDateFormat("HH:mm") :
-                        (IsYear() ?
+                        (IsYear(time) ?
                                 new SimpleDateFormat("dd/MM\nHH:mm") :
                                 new SimpleDateFormat("dd/MM/yyyy\nHH:mm"));
         return dateFormat.format(new Date(time));
     }
 
-    private boolean IsYear() {
+    private boolean IsYear(long time) {
         Date date = new Date(time);
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         return calendar.get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR);
     }
+
 
 }

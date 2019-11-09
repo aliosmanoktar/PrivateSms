@@ -43,7 +43,7 @@ public class MessageAdapter extends BaseSelectedAdapter<Message, MessageAdapter.
         super.onBindViewHolder(viewHolder, i);
         Message item = items.get(i);
         viewHolder.message.setText(item.getMessage());
-        viewHolder.date.setText(item.getTimeString());
+        viewHolder.date.setText(item.getSendTimeString());
         if (isSelect(item)) {
             viewHolder.itemView.setBackgroundColor(viewHolder.itemView.getResources().getColor(R.color.colorAccent));
         } else {
