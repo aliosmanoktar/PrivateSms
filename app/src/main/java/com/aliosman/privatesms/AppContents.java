@@ -6,6 +6,7 @@
 package com.aliosman.privatesms;
 
 public class AppContents {
+    public static final String only_select_password = "only_select";
     public static final String isPrivate = "isPrivate";
     public static final String contact_extras = "Contact";
     public static final String number_extras = "address";

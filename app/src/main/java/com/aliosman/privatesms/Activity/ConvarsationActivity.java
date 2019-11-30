@@ -146,7 +146,8 @@ public class ConvarsationActivity extends AppCompatActivity {
             case R.id.conversation_menu_unpinned:
                 Unpinned();
                 break;
-
+            case R.id.conversation_menu_settings:
+                startActivity(new Intent(this, SettingsActivity.class));
         }
         return true;
     }

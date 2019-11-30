@@ -26,12 +26,18 @@ import static com.aliosman.privatesms.Fragment.FragmentPasswordSelect.CallBack;
 
 public class LockActivity extends AppCompatActivity {
     private String TAG = getClass().getName();
-    private Boolean close = false;
+    private boolean close = false;
+    private boolean onlySelect = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lock);
         SetupScreen(new Settings(this));
+        try {
+            onlySelect = getIntent().getExtras().getBoolean(AppContents.only_select_password, false);
+        } catch (NullPointerException ex) {
+            onlySelect = false;
+        }
     }
 
     private void SetupScreen(Settings settings) {
@@ -58,6 +64,8 @@ public class LockActivity extends AppCompatActivity {
         bundle.putSerializable(AppContents.Password_view_extras_listener, (CallBack) id -> {
             Settings settings = new Settings(getBaseContext());
             settings.setInt(settings.password_type, id);
+            settings.setString(settings.pattern_password, null);
+            settings.setString(settings.pin_password, null);
             SetupScreen(settings);
         });
         fr.setArguments(bundle);
@@ -75,7 +83,11 @@ public class LockActivity extends AppCompatActivity {
     private PasswordListener passwordListener = new PasswordListener() {
         @Override
         public void onAuthenticated() {
-            Log.e(TAG, "onAuthenticated: ");
+            Log.e(TAG, "onAuthenticated: " + onlySelect);
+            if (onlySelect) {
+                finish();
+                return;
+            }
             close = true;
             startActivity(new Intent(getBaseContext(), PrivateActivity.class));
             runOnUiThread(() -> {

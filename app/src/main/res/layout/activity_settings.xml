@@ -7,9 +7,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Activity.SettingsActivity"
     android:orientation="vertical">
 
+    <android.support.v7.widget.Toolbar
+        app:title="Ayarlar"
+        android:animateLayoutChanges="true"
+        android:id="@+id/setting_activity.toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/dark"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark"
+        app:popupTheme="@style/AppThemeLL" />
     <TextView
         style="@style/settingDivisionTitle"
         android:text="Mesaj Ayarları" />
@@ -31,7 +41,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/activity_settings_private_layout"
+        android:id="@+id/activity_settings.private_layout"
         android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,6 +52,7 @@
             android:text="Gizli Ayarlar" />
 
         <TextView
+            android:id="@+id/activity_settings.reset_password"
             style="@style/settingItemTitle"
             android:text="Şifreyi Sıfırla" />
     </LinearLayout>

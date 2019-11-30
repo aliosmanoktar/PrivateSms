@@ -131,6 +131,7 @@ public class FragmentPinLock extends Fragment {
             settings.setString(settings.pin_password, password_builder.toString());
             password = settings.getString(settings.pin_password);
             save.setVisibility(View.INVISIBLE);
+            password_builder.setLength(0);
             password_text.setText("");
         }
     };

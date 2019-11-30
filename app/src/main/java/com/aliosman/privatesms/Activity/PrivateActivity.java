@@ -94,6 +94,13 @@ public class PrivateActivity extends AppCompatActivity {
             case R.id.private_menu_unpinned:
                 UnPinned();
                 break;
+            case R.id.privates_menu_settings:
+                Intent i = new Intent(this, SettingsActivity.class);
+                Bundle bu = new Bundle();
+                bu.putBoolean(AppContents.isPrivate, true);
+                i.putExtras(bu);
+                startActivity(i);
+                break;
         }
         return true;
     }
