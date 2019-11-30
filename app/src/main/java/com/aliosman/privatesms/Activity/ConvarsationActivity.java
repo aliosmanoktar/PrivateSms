@@ -33,7 +33,6 @@ import android.widget.TextView;
 
 import com.aliosman.privatesms.Adapters.ConversationAdapter;
 import com.aliosman.privatesms.AppContents;
-import com.aliosman.privatesms.ConversationComparator;
 import com.aliosman.privatesms.Fragment.DialogUpdate;
 import com.aliosman.privatesms.Listener.Interfaces.RecyclerViewListener;
 import com.aliosman.privatesms.Listener.Interfaces.RecylerSelectedListener;
@@ -52,7 +51,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -169,17 +167,17 @@ public class ConvarsationActivity extends AppCompatActivity {
         @Override
         public void Selected(int count, int position, List<Conversation> items) {
             boolean isPinnedShow = IsPinnedShow(items);
-            toolbar.getMenu().findItem(R.id.conversation_menu_pinned).setVisible(isPinnedShow);
-            toolbar.getMenu().findItem(R.id.conversation_menu_unpinned).setVisible(!isPinnedShow);
+            toolbar.getMenu().findItem(R.id.conversation_menu_pinned).setVisible(false);
+            toolbar.getMenu().findItem(R.id.conversation_menu_unpinned).setVisible(false);
             if (count > 0)
                 toolbar_title.setText(count + " Selected");
             else SelectedEnded(null);
         }
 
         private boolean IsPinnedShow(List<Conversation> items) {
-            for (Conversation item : items)
+            /*for (Conversation item : items)
                 if (!item.isPinned())
-                    return true;
+                    return true;*/
             return false;
         }
 
@@ -206,7 +204,8 @@ public class ConvarsationActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Long threadID = intent.getExtras().getLong(AppContents.conversationBroadcastThreadID, -1);
-            ReplaceItem(threadID);
+            if (!new PrivateDatabase(context).CheckThreadID(threadID))
+                ReplaceItem(threadID);
         }
     };
 
@@ -290,9 +289,11 @@ public class ConvarsationActivity extends AppCompatActivity {
                 Conversation item = manager.getConversationItem(this, ThreadID);
                 items.remove(index);
                 items.add(index, item);
-                Collections.sort(items, new ConversationComparator());
                 recylerAdapter.notifyDataSetChanged();
             } else {
+                Conversation item = manager.getConversationItem(this, ThreadID);
+                items.add(0, item);
+                recylerAdapter.notifyDataSetChanged();
                 Log.e(TAG, "onReceive: Index ID -1");
             }
         } else {

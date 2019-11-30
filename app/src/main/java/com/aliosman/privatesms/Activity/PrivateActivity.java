@@ -37,6 +37,7 @@ import java.util.List;
 
 
 public class PrivateActivity extends AppCompatActivity {
+
     private boolean load = false;
     private int totalItemCount, lastVisibleItem;
     private List<Conversation> items = new ArrayList<>();

@@ -70,6 +70,11 @@ public class PrivateDatabase {
         return cr.moveToNext();
     }
 
+    public boolean CheckThreadID(long threadID) {
+        Cursor cr = db.query(PrivateNumberEntity.TableName, null, PrivateNumberEntity.ThreadID + " = '" + threadID + "'", null, null, null, null);
+        return cr.moveToNext();
+    }
+
     public boolean IsPinnedNumber(long ThreadID) {
         Cursor cr = db.query(PrivateNumberEntity.PinnedTableName, null, PrivateNumberEntity.ThreadID + " = " + ThreadID, null, null, null, null);
         return cr.moveToNext();

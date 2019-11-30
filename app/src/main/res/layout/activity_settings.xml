@@ -3,10 +3,46 @@
   ~ aliosmanoktar@gmail.com
   -->
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.SettingsActivity">
+    tools:context=".Activity.SettingsActivity"
+    android:orientation="vertical">
 
-</android.support.constraint.ConstraintLayout>
+    <TextView
+        style="@style/settingDivisionTitle"
+        android:text="Mesaj Ayarları" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            style="@style/settingItemTitle"
+            android:text="İletildi Bildirimleri" />
+
+        <android.support.v7.widget.SwitchCompat
+            android:layout_marginEnd="15dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/activity_settings_private_layout"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/settingDivisionTitle"
+            android:text="Gizli Ayarlar" />
+
+        <TextView
+            style="@style/settingItemTitle"
+            android:text="Şifreyi Sıfırla" />
+    </LinearLayout>
+</LinearLayout>
