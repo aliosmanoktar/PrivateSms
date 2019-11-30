@@ -27,7 +27,7 @@ public class DialogMessageInfo extends BottomSheetDialogFragment {
     private Message message;
     private TextView sendDate, deliveredDate, number;
     private Button btn_OK;
-
+    private String TAG = getClass().getName();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_message_info, container, false);
@@ -45,6 +45,8 @@ public class DialogMessageInfo extends BottomSheetDialogFragment {
     }
 
     private String getTime(long time) {
+        if (time == 0)
+            return "    --";
         DateFormat dateFormat =
                 DateUtils.isToday(time) ?
                         new SimpleDateFormat("HH:mm") :
