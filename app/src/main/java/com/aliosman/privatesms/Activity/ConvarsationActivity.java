@@ -204,7 +204,13 @@ public class ConvarsationActivity extends AppCompatActivity {
     private BroadcastReceiver smsReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Long threadID = intent.getExtras().getLong(AppContents.conversationBroadcastThreadID, -1);
+            Bundle b = intent.getExtras();
+            boolean isReset = b.getBoolean(AppContents.conversation_reset, false);
+            if (isReset) {
+                ResetRecylerListener();
+                return;
+            }
+            Long threadID = b.getLong(AppContents.conversationBroadcastThreadID, -1);
             if (!new PrivateDatabase(context).CheckThreadID(threadID))
                 ReplaceItem(threadID);
         }

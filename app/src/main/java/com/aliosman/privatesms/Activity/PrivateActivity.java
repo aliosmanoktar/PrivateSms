@@ -49,6 +49,8 @@ public class PrivateActivity extends AppCompatActivity {
     private ConversationAdapter adapter;
     private PrivateDatabase database;
     private Cursor cursor;
+    private boolean reset = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +129,14 @@ public class PrivateActivity extends AppCompatActivity {
             } else if (adapter.isSelect()) {
                 adapter.EndSelect();
             } else {
+                if (reset) {
+                    Intent in = new Intent(AppContents.conversationBroadcast);
+                    Bundle b = new Bundle();
+                    b.putBoolean(AppContents.conversation_reset, true);
+                    in.putExtras(b);
+                    sendBroadcast(in);
+                    Log.e(TAG, "onClick: reset");
+                }
                 finish();
             }
         }
@@ -157,6 +167,7 @@ public class PrivateActivity extends AppCompatActivity {
         for (Conversation item : items)
             database.RemoveNumber(item.getThreadId());
         adapter.RemoveSelected();
+        reset = true;
     }
 
     private void SetPrivateAdapter() {
@@ -220,6 +231,7 @@ public class PrivateActivity extends AppCompatActivity {
             if (select) {
                 select = false;
                 database.AddNumber(item.getThreadId(), item.getContact().getNumber());
+                reset = true;
                 SetPrivateAdapter();
             } else {
                 Intent i = new Intent(getBaseContext(), MessageActivity.class);
