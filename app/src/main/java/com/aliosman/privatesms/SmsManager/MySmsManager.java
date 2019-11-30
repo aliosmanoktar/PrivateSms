@@ -107,6 +107,11 @@ public class MySmsManager {
             int read = cursor.getInt(cursor.getColumnIndex(_read));
             int type = cursor.getInt(cursor.getColumnIndex(_type));
             long thread_id = cursor.getLong(cursor.getColumnIndex(_thread_id));
+            Contact c = getContact(ctx, address);
+            if (c == null) {
+                Log.e(TAG, "getConversation: null { ThreadID: " + thread_id + " addres:" + address + " }");
+                continue;
+            }
             items.add(new Conversation()
                     .setMessage(body)
                     .setDate(TimeStamp)
@@ -115,9 +120,7 @@ public class MySmsManager {
                     .setCount(getNonReadSmsCount(ctx, thread_id))
                     .setPinned(pinned.contains(thread_id))
                     .setThreadId(thread_id)
-                    .setContact(
-                            getContact(ctx, address)
-                    )
+                    .setContact(c)
             );
             i++;
 
@@ -136,6 +139,11 @@ public class MySmsManager {
             int read = cursor.getInt(cursor.getColumnIndex(_read));
             int type = cursor.getInt(cursor.getColumnIndex(_type));
             long thread_id = cursor.getLong(cursor.getColumnIndex(_thread_id));
+            Contact c = getContact(ctx, address);
+            if (c == null) {
+                Log.e(TAG, "getConversation: null { ThreadID: " + thread_id + " addres:" + address + " }");
+                continue;
+            }
             items.add(new Conversation()
                     .setMessage(body)
                     .setDate(TimeStamp)
@@ -144,9 +152,7 @@ public class MySmsManager {
                     .setCount(getNonReadSmsCount(ctx, thread_id))
                     .setPinned(false)//.setPinned(pinned.contains(thread_id))
                     .setThreadId(thread_id)
-                    .setContact(
-                            getContact(ctx, address)
-                    )
+                    .setContact(c)
             );
             i++;
             Log.e(TAG, "getConversation: Conversation Item : {" + getContact(ctx, address).getNameText() + " ThreadID: " + thread_id + " }");
@@ -164,6 +170,7 @@ public class MySmsManager {
         int read = cursor.getInt(cursor.getColumnIndex(_read));
         int type = cursor.getInt(cursor.getColumnIndex(_type));
         long thread_id = cursor.getLong(cursor.getColumnIndex(_thread_id));
+        Contact c = getContact(ctx, address);
         return new Conversation()
                 .setMessage(body)
                 .setDate(TimeStamp)
@@ -244,6 +251,8 @@ public class MySmsManager {
     }
 
     public Contact getContact(Context ctx, String address) {
+        if (address.isEmpty())
+            return null;
         Uri Nameuri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(address));
         Cursor cs = ctx.getContentResolver().query(Nameuri, null, ContactsContract.PhoneLookup.NUMBER + "='" + address + "'", null, null);
         String name = "";

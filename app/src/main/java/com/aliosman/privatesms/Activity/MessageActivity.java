@@ -70,7 +70,6 @@ public class MessageActivity extends AppCompatActivity {
     private Contact contact;
     private View RootView;
     private boolean isSend = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +102,11 @@ public class MessageActivity extends AppCompatActivity {
         send.setOnClickListener(send_click);
         txt_name.setOnClickListener(name_click);
         edit_message.addTextChangedListener(edit_message_listener);
-
+        Log.e(TAG, "onCreate: " + contact.getNumber());
+        if (contact.getNumber().matches("[a-zA-Z]+")) {
+            Log.e(TAG, "onCreate: {not number : " + contact.getNumber() + " }");
+            findViewById(R.id.message_activity_send_layout).setVisibility(View.GONE);
+        }
     }
 
     @Override
