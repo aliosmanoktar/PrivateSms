@@ -92,14 +92,22 @@ public class MySmsManager {
     }
 
     private Cursor getConversationCursorFromSelection(Context ctx, String selection) {
-        return ctx.getContentResolver().query(Uri.parse(_conversationString), null, selection, null, _date + " DESC");
+        String[] projection = {"thread_id", "MAX(date)", "COUNT(*) AS msg_count", "body", _address, _read, _type, _date};
+        if (!selection.isEmpty())
+            selection += " AND ";
+        return ctx.getContentResolver().query(Uri.parse(_SmsString), projection, selection + "thread_id) GROUP BY (thread_id", null, null);
+        ///return ctx.getContentResolver().query(Uri.parse(_conversationString), null, selection, null, _date + " DESC");
     }
 
     private List<Conversation> getConversationFromSelection(Context ctx, String selection) {
         List<Conversation> items = new ArrayList<>();
         int i = 0;
+        String[] projection = {"thread_id", "MAX(date)", "COUNT(*) AS msg_count", "body", _address, _read, _type, _date};
+        Cursor cursor = ctx.getContentResolver().query(Uri.parse(_SmsString), projection, selection + " AND thread_id) GROUP BY (thread_id", null, null);
         List<Long> pinned = new PrivateDatabase(ctx).getAllPinnedNumbers();
-        Cursor cursor = ctx.getContentResolver().query(Uri.parse(_conversationString), null, selection, null, null);
+        /*Cursor cursor = ctx.getContentResolver().query(Uri.parse(_conversationString),
+                null,
+                selection, null, null);*/
         while (cursor.moveToNext() && i < 15) {
             String body = cursor.getString(cursor.getColumnIndex(_body));
             long TimeStamp = Long.parseLong(cursor.getString(cursor.getColumnIndex(_date)));
@@ -180,7 +188,7 @@ public class MySmsManager {
                 .setPinned(new PrivateDatabase(ctx).IsPinnedNumber(thread_id))//
                 .setThreadId(thread_id)
                 .setContact(
-                        getContact(ctx, address)
+                        c
                 );
     }
 
@@ -218,6 +226,22 @@ public class MySmsManager {
             );
         }
         return items;
+    }
+
+    public Message getMessage(Cursor cursor) {
+        int id = cursor.getInt(cursor.getColumnIndexOrThrow(_id));
+        long date = cursor.getLong(cursor.getColumnIndexOrThrow(_date));
+        String body = cursor.getString(cursor.getColumnIndexOrThrow(_body));
+        int type = cursor.getInt(cursor.getColumnIndex(_type));
+        long threadID = cursor.getLong(cursor.getColumnIndex(_thread_id));
+        long deliveredTime = cursor.getLong(cursor.getColumnIndex(_delivered));
+        return new Message()
+                .setMessage(body)
+                .setSendDate(date)
+                .setType(type)
+                .setID(id)
+                .setThreadID(threadID)
+                .setDeliveredDate(deliveredTime);
     }
 
     public Message getMessage(Uri uri, Context ctx) {
@@ -330,7 +354,7 @@ public class MySmsManager {
         return AddMessage(ctx, message);
     }
 
-    private MessageResponse AddMessage(Context ctx, Message message) {
+    public MessageResponse AddMessage(Context ctx, Message message) {
         ContentValues values = new ContentValues();
         values.put(_address, message.getContact().getNumber());
         values.put(_body, message.getMessage());
@@ -401,6 +425,10 @@ public class MySmsManager {
             cr.delete(Uri.parse(_SmsString), _id + " = " + item.getID(), null);
     }
 
+    public void RemoveMessages(Context ctx, long ThreadID) {
+        ContentResolver cr = ctx.getContentResolver();
+        cr.delete(Uri.parse(_SmsString), _thread_id + "=" + ThreadID, null);
+    }
     /***
      * Hatalar var düzeltilmesi gerek
      * @param ctx
